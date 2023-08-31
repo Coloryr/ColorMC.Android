@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34004.107
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Android", "ColorMC.Android.csproj", "{044FD105-E455-4D1A-AC5B-9AB94E3F29B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Android", "ColorMC.Android\ColorMC.Android.csproj", "{044FD105-E455-4D1A-AC5B-9AB94E3F29B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Gui", "ColorMC\src\ColorMC.Gui\ColorMC.Gui.csproj", "{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +19,10 @@ Global
 		{044FD105-E455-4D1A-AC5B-9AB94E3F29B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{044FD105-E455-4D1A-AC5B-9AB94E3F29B4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{044FD105-E455-4D1A-AC5B-9AB94E3F29B4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

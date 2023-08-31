@@ -42,9 +42,9 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.0.4" />
 	<PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.2" />
-  </ItemGroup>
+  </ItemGroup>	
 
   <ItemGroup>
-    <ProjectReference Include="..\ColorMC.Gui\ColorMC.Gui.csproj" />
+    <ProjectReference Include="..\ColorMC\src\ColorMC.Gui\ColorMC.Gui.csproj" />
   </ItemGroup>
 </Project>
