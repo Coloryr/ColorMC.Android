@@ -1,0 +1,3 @@
+[submodule "src/ColorMC"]
+	path = src/ColorMC
+	url = https://github.com/Coloryr/ColorMC.git
