@@ -1,0 +1,21 @@
+﻿<metadata>
+  <!--
+  This sample removes the class: android.support.v4.content.AsyncTaskLoader.LoadTask:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='AsyncTaskLoader.LoadTask']" />
+  
+  This sample removes the method: android.support.v4.content.CursorLoader.loadInBackground:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='CursorLoader']/method[@name='loadInBackground']" />
+  -->
+	<remove-node path="/api/package[@name='net.kdt.pojavview.progresskeeper']/class[@name='ProgressKeeper']" />
+	<remove-node path="/api/package[@name='net.kdt.pojavview.progresskeeper']/interface[@name='ProgressListener']" />
+	<remove-node path="/api/package[@name='org.apache.commons.io']" />
+	<remove-node path="/api/package[@name='org.apache.commons.io.input']" />
+	<remove-node path="/api/package[@name='org.apache.commons.io.output']" />
+	<remove-node path="/api/package[@name='com.google.gson']" />
+	<remove-node path="/api/package[@name='com.google.gson.internal']" />
+	<remove-node path="/api/package[@name='com.ipaulpro.afilechooser']" />
+	<remove-node path="/api/package[@name='com.kdt.pickafile']" />
+	<remove-node path="/api/package[@name='org.apache.commons.compress.archivers']" />
+	<remove-node path="/api/package[@name='org.apache.commons.io.comparator']" />
+	<remove-node path="/api/package[@name='org.apache.commons.collections4.iterators']" />
+</metadata>

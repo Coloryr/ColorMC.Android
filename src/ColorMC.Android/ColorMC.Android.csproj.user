@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <SelectedDevice>Xiaomi 2211133C</SelectedDevice>
+    <SelectedDevice>vivo V2218A</SelectedDevice>
     <SelectedPlatformGroup>PhysicalDevice</SelectedPlatformGroup>
-    <ActiveDebugProfile>Xiaomi 2211133C (Android 13.0 - API 33)</ActiveDebugProfile>
+    <ActiveDebugProfile>vivo V2218A (Android 12.1 - API 32)</ActiveDebugProfile>
     <DefaultDevice>Pixel_4_API_30</DefaultDevice>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

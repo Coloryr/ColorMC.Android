@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="AAR\android_gamepad_remapper-eb92e3a5bb.aar" />
+    <None Remove="AAR\app_pojavlauncher-release.aar" />
+    <None Remove="AAR\checkerboarddrawable-1.0.2.aar" />
+    <None Remove="AAR\exp4j-60eaec6f78.jar" />
+    <None Remove="AAR\ExtendedView-1.0.0.aar" />
+    <None Remove="AAR\portrait-sdp-ed33e89cbc.aar" />
+    <None Remove="AAR\portrait-ssp-6c02fd739b.aar" />
+    <None Remove="AAR\virtual-joystick-android-cb7bf45ba5.aar" />
+    <None Remove="AAR\xz-1.8.jar" />
+  </ItemGroup>
+</Project>
