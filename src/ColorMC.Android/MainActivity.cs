@@ -21,7 +21,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     protected override void OnCreate(Bundle savedInstanceState)
     {
         ColorMCCore.PhoneGameLaunch = Start;
-        ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath);
+        ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
         base.OnCreate(savedInstanceState);
     }
 
