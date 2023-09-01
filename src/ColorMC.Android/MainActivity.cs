@@ -1,26 +1,12 @@
-﻿using Android;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
-using Android.Widget;
-using AndroidX.Core.App;
-using AndroidX.Core.Content;
 using Avalonia.Android;
 using ColorMC.Core;
-using ColorMC.Core.Game;
 using ColorMC.Gui;
-using Esprima.Ast;
-using Java.Lang;
-using Java.Security;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Environment = Android.OS.Environment;
-using Permission = Android.Content.PM.Permission;
 
 namespace ColorMC.Android;
 
@@ -34,84 +20,9 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     protected override void OnCreate(Bundle savedInstanceState)
     {
-        ColorMCGui.StartPhone("/storage/emulated/0/ColorMC/");
-        RequestPermission();
-        base.OnCreate(savedInstanceState);
-    }
-
-    private void Start()
-    {
         ColorMCCore.PhoneGameLaunch = Start;
-        ColorMCGui.PhoneOk();
-    }
-
-    private void RequestPermission()
-    {
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
-        {
-            // 先判断有没有权限
-            if (Environment.IsExternalStorageManager)
-            {
-                Start();
-            }
-            else
-            {
-                var intent = new Intent("android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION");
-                intent.SetData(Uri.Parse("package:" + ApplicationContext.PackageName));
-                StartActivityForResult(intent, 1);
-            }
-        }
-        else if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
-        {
-            // 先判断有没有权限
-            if (CheckSelfPermission(Manifest.Permission.ReadExternalStorage) == Permission.Granted &&
-                    ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) == Permission.Granted)
-            {
-                Start();
-            }
-            else
-            {
-                ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage }, 1);
-            }
-        }
-        else
-        {
-            Start();
-        }
-    }
-
-    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
-    {
-        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1)
-        {
-            if (CheckSelfPermission(Manifest.Permission.ReadExternalStorage) == Permission.Granted &&
-                    ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) == Permission.Granted)
-            {
-                Start();
-            }
-            else
-            {
-                Toast.MakeText(BaseContext, "存储权限获取失败", ToastLength.Short);
-            }
-        }
-    }
-
-    protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
-    {
-        base.OnActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && Build.VERSION.SdkInt >= BuildVersionCodes.R)
-        {
-            if (Environment.IsExternalStorageManager)
-            {
-                Start();
-            }
-            else
-            {
-                Toast.MakeText(BaseContext, "存储权限获取失败", ToastLength.Short);
-            }
-        }
+        ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath);
+        base.OnCreate(savedInstanceState);
     }
 
     public void OpenUrl(string url)

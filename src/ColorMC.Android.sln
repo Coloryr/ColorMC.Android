@@ -7,6 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Android", "ColorMC.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Gui", "ColorMC\src\ColorMC.Gui\ColorMC.Gui.csproj", "{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Core", "ColorMC\src\ColorMC.Core\ColorMC.Core.csproj", "{91E85065-5163-44ED-B137-22908354E72E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Live2DCSharpSDK.App", "ColorMC\Live2DCSharpSDK\Live2DCSharpSDK.App\Live2DCSharpSDK.App.csproj", "{8CF3EB19-F97F-49A4-99D6-6B28B7F8E0A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Live2DCSharpSDK.Framework", "ColorMC\Live2DCSharpSDK\Live2DCSharpSDK.Framework\Live2DCSharpSDK.Framework.csproj", "{71804DEA-E71C-4097-A499-3C664FBF77C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +29,18 @@ Global
 		{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFF06F00-FDE8-4129-9BA8-2D0467ACCF14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91E85065-5163-44ED-B137-22908354E72E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91E85065-5163-44ED-B137-22908354E72E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91E85065-5163-44ED-B137-22908354E72E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91E85065-5163-44ED-B137-22908354E72E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CF3EB19-F97F-49A4-99D6-6B28B7F8E0A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CF3EB19-F97F-49A4-99D6-6B28B7F8E0A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CF3EB19-F97F-49A4-99D6-6B28B7F8E0A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CF3EB19-F97F-49A4-99D6-6B28B7F8E0A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71804DEA-E71C-4097-A499-3C664FBF77C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71804DEA-E71C-4097-A499-3C664FBF77C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71804DEA-E71C-4097-A499-3C664FBF77C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71804DEA-E71C-4097-A499-3C664FBF77C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
