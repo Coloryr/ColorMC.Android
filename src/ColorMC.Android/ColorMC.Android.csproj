@@ -23,9 +23,23 @@
   <PropertyGroup Condition="'$(RunAOTCompilation)'=='' and '$(Configuration)'=='Release' and '$(TF_BUILD)'==''">
 	<RunAOTCompilation>True</RunAOTCompilation>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AndroidLibrary Remove="components\arc_dns_injector\arc_dns_injector.jar" />
+    <AndroidLibrary Remove="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
+    <AndroidLibrary Remove="components\caciocavallo17\cacio-tta-1.18-SNAPSHOT.jar" />
+    <AndroidLibrary Remove="components\caciocavallo\cacio-androidnw-1.10-SNAPSHOT.jar" />
+    <AndroidLibrary Remove="components\caciocavallo\cacio-shared-1.10-SNAPSHOT.jar" />
+    <AndroidLibrary Remove="components\caciocavallo\ResConfHack.jar" />
+    <AndroidLibrary Remove="components\lwjgl3\lwjgl-glfw-classes.jar" />
+    <AndroidLibrary Remove="components\security\pro-grade.jar" />
+  </ItemGroup>
 	
   <ItemGroup>
     <None Remove="Icon.png" />
+    <None Remove="components\security\java_sandbox.policy" />
+    <None Remove="components\security\log4j-rce-patch-1.12.xml" />
+    <None Remove="components\security\log4j-rce-patch-1.7.xml" />
     <None Remove="Resources\drawable\icon.png" />
     <None Remove="Resources\values-v31\styles.xml" />
   </ItemGroup>
@@ -37,7 +51,24 @@
 
 	<ItemGroup>
 	<AndroidEnvironment Condition="'$(IsEmulator)'=='True'" Include="environment.emulator.txt" />
-  </ItemGroup>	
+  </ItemGroup>
+
+	<ItemGroup>
+	  <AndroidAsset Include="components\arc_dns_injector\arc_dns_injector.jar" />
+	  <AndroidAsset Include="components\caciocavallo\cacio-androidnw-1.10-SNAPSHOT.jar" />
+	  <AndroidAsset Include="components\caciocavallo\cacio-shared-1.10-SNAPSHOT.jar" />
+	  <AndroidAsset Include="components\caciocavallo\ResConfHack.jar" />
+	  <AndroidAsset Include="components\lwjgl3\lwjgl-glfw-classes.jar" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidAsset Include="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
+	  <AndroidAsset Include="components\caciocavallo17\cacio-tta-1.18-SNAPSHOT.jar" />
+	  <AndroidAsset Include="components\security\java_sandbox.policy" />
+	  <AndroidAsset Include="components\security\log4j-rce-patch-1.12.xml" />
+	  <AndroidAsset Include="components\security\log4j-rce-patch-1.7.xml" />
+	  <AndroidAsset Include="components\security\pro-grade.jar" />
+	</ItemGroup>	
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.0.4" />
@@ -50,5 +81,20 @@
   <ItemGroup>
     <ProjectReference Include="..\ColorMC.Android.Lib\ColorMC.Android.Lib.csproj" />
     <ProjectReference Include="..\ColorMC\src\ColorMC.Gui\ColorMC.Gui.csproj" />
+  </ItemGroup>	
+
+  <ItemGroup>
+    <Compile Update="Resources\Resource1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>	
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
