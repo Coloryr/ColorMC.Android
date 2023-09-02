@@ -16,12 +16,14 @@ using ColorMC.Core.Objs;
 using ColorMC.Gui;
 using Esprima.Ast;
 using Java.Lang;
+using Java.Net;
 using Net.Kdt.Pojavview;
 using Net.Kdt.Pojavview.Multirt;
 using Net.Kdt.Pojavview.Tasks;
 using Net.Kdt.Pojavview.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using static Java.Lang.Thread;
@@ -73,6 +75,8 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
         ColorMCCore.PhoneGameLaunch = Start;
         ColorMCCore.PhoneJvmIntasll = PhoneJvmIntasll;
         ColorMCCore.PhoneReadJvm = PhoneReadJvm;
+        ColorMCCore.PhoneReadFile = PhoneReadFile;
+        ColorMCGui.PhoneOpenSetting = Setting;
         ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
         base.OnCreate(savedInstanceState);
 
@@ -81,6 +85,11 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
         if((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
         
         PojavApplication.Init(this);
+    }
+
+    public Stream? PhoneReadFile(string file)
+    {
+        return ContentResolver?.OpenInputStream(Uri.Parse(file));
     }
 
     public bool IsStorageAllowed()
@@ -115,6 +124,8 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
 
     public JavaInfo? PhoneReadJvm(string path)
     {
+        var file = new FileInfo(path);
+        path = file.Directory.Parent.FullName;
         var info = MultiRTUtils.Read(path);
         if(info == null)
         {
@@ -127,6 +138,14 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
             MajorVersion = info.JavaVersion,
             Type = "openjdk",
             Version = info.VersionString!,
+            Arch = info.Arch switch 
+            {
+                "aarch64" => ArchEnum.aarch64,
+                "arm" => ArchEnum.armV7,
+                "x86" => ArchEnum.x32,
+                "x86_64" => ArchEnum.x64,
+                _ => ArchEnum.unknow
+            }
         };
     }
 
@@ -141,6 +160,13 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
         StartActivity(new Intent(Intent.ActionView, uri));
     }
 
+    public void Setting()
+    {
+        var mainIntent = new Intent();
+        mainIntent.SetAction("ColorMC.Minecraft.Setting");
+        StartActivity(mainIntent);
+    }
+
     public void Start(GameSettingObj obj, List<string> list)
     {
         var file = obj.GetOptionsFile();
@@ -150,7 +176,7 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
         }
         int i = 0;
         var mainIntent = new Intent();
-        mainIntent.SetAction("ColorMC.Minecraft");
+        mainIntent.SetAction("ColorMC.Minecraft.Launch");
         mainIntent.PutExtra("GAME_DIR", list[i++]);
         mainIntent.PutExtra("JAVA_DIR", list[i++]);
         mainIntent.PutExtra("GAME_VERSION", list[i++]);
