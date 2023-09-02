@@ -1,10 +1,13 @@
-﻿using Android.App;
+﻿using Android;
+using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.OS;
 using Android.Util;
+using Android.Widget;
 using AndroidX.Core.App;
+using AndroidX.Core.Content;
 using Avalonia.Android;
 using ColorMC.Android.Resources;
 using ColorMC.Core;
@@ -22,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using static Java.Lang.Thread;
+using Environment = Android.OS.Environment;
 using StringBuilder = System.Text.StringBuilder;
 using Uri = Android.Net.Uri;
 
@@ -73,6 +77,40 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
         base.OnCreate(savedInstanceState);
 
         Tools.AppName = "ColorMC";
+
+        if((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
+        
+        PojavApplication.Init(this);
+    }
+
+    public bool IsStorageAllowed()
+    {
+        //Getting the permission status
+        Permission result1 = ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage);
+        Permission result2 = ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage);
+
+        //If permission is granted returning true
+        return result1 == Permission.Granted &&
+                result2 == Permission.Granted;
+    }
+
+    private void RequestStoragePermission()
+    {
+        RequestPermissions(new string[]{ Manifest.Permission.WriteExternalStorage,
+                Manifest.Permission.ReadExternalStorage }, 1);
+    }
+
+    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+    {
+        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1)
+        {
+            if (!IsStorageAllowed())
+            {
+                Toast.MakeText(this, "需要权限才能运行", ToastLength.Long).Show();
+                RequestStoragePermission();
+            }
+        }
     }
 
     public JavaInfo? PhoneReadJvm(string path)
