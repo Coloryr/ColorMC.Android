@@ -61,6 +61,12 @@ public class MainActivity : AvaloniaMainActivity<App>
         PojavApplication.Init(this);
     }
 
+    public void PhoneJvmIntasll(string path, string file)
+    {
+        var stream = ContentResolver?.OpenInputStream(Uri.Parse(file));
+        MultiRTUtils.InstallRuntimeNamed(path, stream);
+    }
+
     public string PhoneGetDataDir()
     {
         return AppContext.BaseDirectory;
@@ -126,11 +132,6 @@ public class MainActivity : AvaloniaMainActivity<App>
                 _ => ArchEnum.unknow
             }
         };
-    }
-
-    public void PhoneJvmIntasll(string path, string name)
-    {
-        MultiRTUtils.InstallRuntimeNamed(path);
     }
 
     public void OpenUrl(string url)

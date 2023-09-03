@@ -3,21 +3,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
-    <ApplicationId>coloryr.ColorMC.Android</ApplicationId>
+    <ApplicationId>coloryr.colormc.android</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
-    <EnableLLVM>False</EnableLLVM>
-    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
-    <EnableLLVM>False</EnableLLVM>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(RunAOTCompilation)'=='' and '$(Configuration)'=='Release' and '$(TF_BUILD)'==''">
