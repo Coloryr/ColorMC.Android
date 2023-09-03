@@ -27,7 +27,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using static Java.Lang.Thread;
-using Environment = Android.OS.Environment;
 using StringBuilder = System.Text.StringBuilder;
 using Uri = Android.Net.Uri;
 
