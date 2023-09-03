@@ -25,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using static Java.Lang.Thread;
-using StringBuilder = System.Text.StringBuilder;
+using Environment = System.Environment;
 using Uri = Android.Net.Uri;
 
 namespace ColorMC.Android;
@@ -38,43 +36,20 @@ namespace ColorMC.Android;
     MainLauncher = true,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode,
     ScreenOrientation = ScreenOrientation.FullSensor)]
-public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
+public class MainActivity : AvaloniaMainActivity<App>
 {
     protected override void AttachBaseContext(Context? context)
     {
         base.AttachBaseContext(LocaleUtils.SetLocale(context));
     }
 
-    public void UncaughtException(Thread t, Throwable e)
-    {
-        string file = GetExternalFilesDir(null).AbsolutePath + "/" + "latestcrash.txt";
-        try
-        {
-            var crashStream = new StringBuilder();
-            crashStream.Append("PojavLauncher crash report\n");
-            crashStream.Append(" - Time: ").Append(DateTime.Now.ToString()).Append("\n");
-            crashStream.Append(" - Device: ").Append(Build.Product).Append(" ").Append(Build.Model).Append("\n");
-            crashStream.Append(" - Android version: ").Append(Build.VERSION.Release).Append("\n");
-            crashStream.Append(" - Crash stack trace:\n");
-            //crashStream.append(" - Launcher version: " + BuildConfig.VERSION_NAME + "\n");
-            crashStream.Append(Log.GetStackTraceString(e));
-            File.WriteAllText(file, crashStream.ToString());
-        }
-        catch (Throwable throwable)
-        {
-            Log.Error("ColorMC_Crash", " - Exception attempt saving crash stack trace:", throwable);
-            Log.Error("ColorMC_Crash", " - The crash stack trace was:", e);
-        }
-    }
-
     protected override void OnCreate(Bundle savedInstanceState)
     {
-        DefaultUncaughtExceptionHandler = this;
-
         ColorMCCore.PhoneGameLaunch = Start;
         ColorMCCore.PhoneJvmIntasll = PhoneJvmIntasll;
         ColorMCCore.PhoneReadJvm = PhoneReadJvm;
         ColorMCCore.PhoneReadFile = PhoneReadFile;
+        ColorMCCore.PhoneGetDataDir = PhoneGetDataDir;
         ColorMCGui.PhoneOpenSetting = Setting;
         ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
         base.OnCreate(savedInstanceState);
@@ -84,6 +59,11 @@ public class MainActivity : AvaloniaMainActivity<App>, IUncaughtExceptionHandler
         if((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
         
         PojavApplication.Init(this);
+    }
+
+    public string PhoneGetDataDir()
+    {
+        return AppContext.BaseDirectory;
     }
 
     public Stream? PhoneReadFile(string file)

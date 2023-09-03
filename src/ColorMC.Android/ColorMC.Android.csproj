@@ -36,6 +36,11 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <None Remove="components\arc_dns_injector\version" />
+    <None Remove="components\caciocavallo17\version" />
+    <None Remove="components\caciocavallo\version" />
+    <None Remove="components\lwjgl3\version" />
+    <None Remove="components\security\version" />
     <None Remove="Icon.png" />
     <None Remove="components\security\java_sandbox.policy" />
     <None Remove="components\security\log4j-rce-patch-1.12.xml" />
@@ -55,19 +60,21 @@
 
 	<ItemGroup>
 	  <AndroidAsset Include="components\arc_dns_injector\arc_dns_injector.jar" />
+	  <AndroidAsset Include="components\arc_dns_injector\version" />
+	  <AndroidAsset Include="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
+	  <AndroidAsset Include="components\caciocavallo17\cacio-tta-1.18-SNAPSHOT.jar" />
+	  <AndroidAsset Include="components\caciocavallo17\version" />
 	  <AndroidAsset Include="components\caciocavallo\cacio-androidnw-1.10-SNAPSHOT.jar" />
 	  <AndroidAsset Include="components\caciocavallo\cacio-shared-1.10-SNAPSHOT.jar" />
 	  <AndroidAsset Include="components\caciocavallo\ResConfHack.jar" />
+	  <AndroidAsset Include="components\caciocavallo\version" />
 	  <AndroidAsset Include="components\lwjgl3\lwjgl-glfw-classes.jar" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <AndroidAsset Include="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
-	  <AndroidAsset Include="components\caciocavallo17\cacio-tta-1.18-SNAPSHOT.jar" />
+	  <AndroidAsset Include="components\lwjgl3\version" />
 	  <AndroidAsset Include="components\security\java_sandbox.policy" />
 	  <AndroidAsset Include="components\security\log4j-rce-patch-1.12.xml" />
 	  <AndroidAsset Include="components\security\log4j-rce-patch-1.7.xml" />
 	  <AndroidAsset Include="components\security\pro-grade.jar" />
+	  <AndroidAsset Include="components\security\version" />
 	</ItemGroup>	
 
   <ItemGroup>
