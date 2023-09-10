@@ -4,7 +4,9 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.OS;
+using Android.Runtime;
 using Android.Util;
+using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
@@ -25,7 +27,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Environment = System.Environment;
+using System.Threading;
+using System.Threading.Tasks;
 using Uri = Android.Net.Uri;
 
 namespace ColorMC.Android;
@@ -38,9 +41,18 @@ namespace ColorMC.Android;
     ScreenOrientation = ScreenOrientation.FullSensor)]
 public class MainActivity : AvaloniaMainActivity<App>
 {
+    private readonly Semaphore _semaphore = new(0, 2);
+    private bool _runData;
     protected override void AttachBaseContext(Context? context)
     {
         base.AttachBaseContext(LocaleUtils.SetLocale(context));
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        App.Close();
     }
 
     protected override void OnCreate(Bundle savedInstanceState)
@@ -50,8 +62,10 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCCore.PhoneReadJvm = PhoneReadJvm;
         ColorMCCore.PhoneReadFile = PhoneReadFile;
         ColorMCCore.PhoneGetDataDir = PhoneGetDataDir;
+        ColorMCCore.PhoneJvmRun = PhoneJvmRun;
         ColorMCGui.PhoneOpenSetting = Setting;
         ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
+
         base.OnCreate(savedInstanceState);
 
         Tools.AppName = "ColorMC";
@@ -59,6 +73,23 @@ public class MainActivity : AvaloniaMainActivity<App>
         if((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
         
         PojavApplication.Init(this);
+    }
+
+    public async Task<bool> PhoneJvmRun(string path, List<string> arg)
+    {
+        var mainIntent = new Intent();
+        mainIntent.SetAction("ColorMC.Minecraft.JvmRun");
+        mainIntent.PutExtra("JAVA_DIR", path);
+        mainIntent.PutExtra("JAVA_ARG", arg.ToArray());
+        mainIntent.AddFlags(ActivityFlags.SingleTop);
+        mainIntent.AddFlags(ActivityFlags.NewTask);
+        StartActivityForResult(mainIntent, 200);
+        await Task.Run(() =>
+        {
+            _semaphore.WaitOne();
+        });
+
+        return true;
     }
 
     public void PhoneJvmIntasll(string path, string file)
@@ -74,7 +105,8 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public Stream? PhoneReadFile(string file)
     {
-        return ContentResolver?.OpenInputStream(Uri.Parse(file));
+        var uri = Uri.Parse(file);
+        return ContentResolver?.OpenInputStream(uri);
     }
 
     public bool IsStorageAllowed()
@@ -92,6 +124,17 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         RequestPermissions(new string[]{ Manifest.Permission.WriteExternalStorage,
                 Manifest.Permission.ReadExternalStorage }, 1);
+    }
+
+    protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+    {
+        base.OnActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 200)
+        {
+            _runData = data.GetBooleanExtra("res", false);
+            _semaphore.Release();
+        }
     }
 
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
