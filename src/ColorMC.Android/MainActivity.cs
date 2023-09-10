@@ -58,7 +58,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     protected override void OnCreate(Bundle savedInstanceState)
     {
         ColorMCCore.PhoneGameLaunch = Start;
-        ColorMCCore.PhoneJvmIntasll = PhoneJvmIntasll;
+        ColorMCCore.PhoneJvmInstall = PhoneJvmInstall;
         ColorMCCore.PhoneReadJvm = PhoneReadJvm;
         ColorMCCore.PhoneReadFile = PhoneReadFile;
         ColorMCCore.PhoneGetDataDir = PhoneGetDataDir;
@@ -75,24 +75,23 @@ public class MainActivity : AvaloniaMainActivity<App>
         PojavApplication.Init(this);
     }
 
-    public async Task<bool> PhoneJvmRun(string path, List<string> arg)
+    public async Task<bool> PhoneJvmRun(string path, string dir, List<string> arg)
     {
         var mainIntent = new Intent();
         mainIntent.SetAction("ColorMC.Minecraft.JvmRun");
         mainIntent.PutExtra("JAVA_DIR", path);
         mainIntent.PutExtra("JAVA_ARG", arg.ToArray());
-        mainIntent.AddFlags(ActivityFlags.SingleTop);
-        mainIntent.AddFlags(ActivityFlags.NewTask);
-        StartActivityForResult(mainIntent, 200);
+        mainIntent.PutExtra("GAME_DIR", dir);
+        StartActivityForResult(mainIntent, 400);
         await Task.Run(() =>
         {
             _semaphore.WaitOne();
         });
 
-        return true;
+        return _runData;
     }
 
-    public void PhoneJvmIntasll(string path, string file)
+    public void PhoneJvmInstall(string path, string file)
     {
         var stream = ContentResolver?.OpenInputStream(Uri.Parse(file));
         MultiRTUtils.InstallRuntimeNamed(path, stream);
@@ -130,9 +129,9 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         base.OnActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 200)
+        if (requestCode == 400 && resultCode == Result.Ok)
         {
-            _runData = data.GetBooleanExtra("res", false);
+            _runData = data?.GetBooleanExtra("res", false) ?? false;
             _semaphore.Release();
         }
     }
