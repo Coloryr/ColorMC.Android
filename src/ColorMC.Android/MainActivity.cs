@@ -63,6 +63,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCCore.PhoneReadFile = PhoneReadFile;
         ColorMCCore.PhoneGetDataDir = PhoneGetDataDir;
         ColorMCCore.PhoneJvmRun = PhoneJvmRun;
+        ColorMCCore.PhoneOpenUrl = PhoneOpenUrl;
         ColorMCGui.PhoneOpenSetting = Setting;
         ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
 
@@ -176,7 +177,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         };
     }
 
-    public void OpenUrl(string url)
+    public void PhoneOpenUrl(string url)
     {
         Uri uri = Uri.Parse(url);
         StartActivity(new Intent(Intent.ActionView, uri));
