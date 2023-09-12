@@ -30,6 +30,7 @@
     <None Remove="components\arc_dns_injector\version" />
     <None Remove="components\caciocavallo17\version" />
     <None Remove="components\caciocavallo\version" />
+    <None Remove="components\lwjgl3\lwjgl-glfw-classes.jar" />
     <None Remove="components\lwjgl3\version" />
     <None Remove="components\security\version" />
     <None Remove="Icon.png" />
