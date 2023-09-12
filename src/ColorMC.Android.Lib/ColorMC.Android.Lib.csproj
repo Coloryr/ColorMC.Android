@@ -11,6 +11,10 @@
     <None Remove="AAR\checkerboarddrawable-1.0.2.aar" />
     <None Remove="AAR\exp4j-60eaec6f78.jar" />
     <None Remove="AAR\ExtendedView-1.0.0.aar" />
+    <None Remove="AAR\netty-buffer-4.1.97.Final.jar" />
+    <None Remove="AAR\netty-codec-4.1.97.Final.jar" />
+    <None Remove="AAR\netty-common-4.1.97.Final.jar" />
+    <None Remove="AAR\netty-transport-4.1.97.Final.jar" />
     <None Remove="AAR\portrait-sdp-ed33e89cbc.aar" />
     <None Remove="AAR\portrait-ssp-6c02fd739b.aar" />
     <None Remove="AAR\virtual-joystick-android-cb7bf45ba5.aar" />

@@ -16,4 +16,18 @@
 	<remove-node path="/api/package[@name='org.apache.commons.compress.archivers']" />
 	<remove-node path="/api/package[@name='org.apache.commons.io.comparator']" />
 	<remove-node path="/api/package[@name='org.apache.commons.collections4.iterators']" />
+
+	<remove-node path="/api/package[@name='io.netty.bootstrap']" />
+	<remove-node path="/api/package[@name='io.netty.buffer']" />
+	<remove-node path="/api/package[@name='io.netty.buffer.search']" />
+	<remove-node path="/api/package[@name='io.netty.channel']" />
+	<remove-node path="/api/package[@name='io.netty.util.collection']" />
+	<remove-node path="/api/package[@name='io.netty.channel.local']" />
+	<remove-node path="/api/package[@name='io.netty.handler.codec']" />
+	<remove-node path="/api/package[@name='io.netty.util']" />
+	<remove-node path="/api/package[@name='io.netty.util.concurrent']" />
+	<remove-node path="/api/package[@name='io.netty.util.internal']" />
+	<remove-node path="/api/package[@name='io.netty.util.internal.logging']" />
+	<remove-node path="/api/package[@name='io.netty.util.internal.shaded.org.jctools.queues']" />
+	<remove-node path="/api/package[@name='io.netty.util.internal.shaded.org.jctools.queues.atomic']" />
 </metadata>
