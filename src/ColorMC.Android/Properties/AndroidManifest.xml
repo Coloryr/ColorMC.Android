@@ -25,6 +25,7 @@
 				 android:resizeableActivity="true"
 				 android:requestLegacyExternalStorage="true"
 				 android:theme="@style/AppTheme"
+				 android:name="net.kdt.pojavview.PojavApplication"
 				 android:usesCleartextTraffic="true">
 		<meta-data
             android:name="android.max_aspect"

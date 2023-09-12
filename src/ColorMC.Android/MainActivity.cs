@@ -16,9 +16,6 @@ using ColorMC.Core;
 using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
 using ColorMC.Gui;
-using Esprima.Ast;
-using Java.Lang;
-using Java.Net;
 using Net.Kdt.Pojavview;
 using Net.Kdt.Pojavview.Multirt;
 using Net.Kdt.Pojavview.Tasks;
@@ -43,10 +40,6 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     private readonly Semaphore _semaphore = new(0, 2);
     private bool _runData;
-    protected override void AttachBaseContext(Context? context)
-    {
-        base.AttachBaseContext(LocaleUtils.SetLocale(context));
-    }
 
     protected override void OnDestroy()
     {
@@ -72,8 +65,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         Tools.AppName = "ColorMC";
 
         if((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
-        
-        PojavApplication.Init(this);
     }
 
     public async Task<bool> PhoneJvmRun(string path, string dir, List<string> arg)
