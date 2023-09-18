@@ -27,7 +27,6 @@
 				 android:requestLegacyExternalStorage="true"
 				 android:theme="@style/AppTheme"
 				 android:usesCleartextTraffic="true">
-
 		<meta-data
 				android:name="android.max_aspect"
 				android:value="ratio_float" />

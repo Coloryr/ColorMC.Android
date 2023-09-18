@@ -2,13 +2,10 @@
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
-using Android.Net;
 using Android.OS;
+using Android.Provider;
 using Android.Runtime;
-using Android.Util;
-using Android.Views;
 using Android.Widget;
-using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using Avalonia.Android;
 using ColorMC.Android.Resources;
@@ -18,7 +15,6 @@ using ColorMC.Core.Objs;
 using ColorMC.Gui;
 using Net.Kdt.Pojavview;
 using Net.Kdt.Pojavview.Multirt;
-using Net.Kdt.Pojavview.Tasks;
 using Net.Kdt.Pojavview.Utils;
 using System;
 using System.Collections.Generic;
@@ -50,6 +46,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     protected override void AttachBaseContext(Context? context)
     {
+
         base.AttachBaseContext(LocaleUtils.SetLocale(context));
     }
 
@@ -69,7 +66,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         Tools.AppName = "ColorMC";
 
-        if((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
+        if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
 
         PojavApplication.Init(this);
     }
@@ -97,7 +94,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     }
 
     public string PhoneGetDataDir()
-    {
+    { 
         return AppContext.BaseDirectory;
     }
 
@@ -153,7 +150,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         var file = new FileInfo(path);
         path = file.Directory.Parent.FullName;
         var info = MultiRTUtils.Read(path);
-        if(info == null)
+        if (info == null)
         {
             return null;
         }
@@ -164,7 +161,7 @@ public class MainActivity : AvaloniaMainActivity<App>
             MajorVersion = info.JavaVersion,
             Type = "openjdk",
             Version = info.VersionString!,
-            Arch = info.Arch switch 
+            Arch = info.Arch switch
             {
                 "aarch64" => ArchEnum.aarch64,
                 "arm" => ArchEnum.armV7,
