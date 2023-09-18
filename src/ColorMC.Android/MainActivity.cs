@@ -48,6 +48,11 @@ public class MainActivity : AvaloniaMainActivity<App>
         App.Close();
     }
 
+    protected override void AttachBaseContext(Context? context)
+    {
+        base.AttachBaseContext(LocaleUtils.SetLocale(context));
+    }
+
     protected override void OnCreate(Bundle savedInstanceState)
     {
         ColorMCCore.PhoneGameLaunch = Start;
@@ -65,6 +70,8 @@ public class MainActivity : AvaloniaMainActivity<App>
         Tools.AppName = "ColorMC";
 
         if((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
+
+        PojavApplication.Init(this);
     }
 
     public async Task<bool> PhoneJvmRun(string path, string dir, List<string> arg)
@@ -217,6 +224,5 @@ public class MainActivity : AvaloniaMainActivity<App>
         mainIntent.AddFlags(ActivityFlags.SingleTop);
         mainIntent.AddFlags(ActivityFlags.NewTask);
         StartActivity(mainIntent);
-        //Finish();
     }
 }
