@@ -8,7 +8,10 @@
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>ARM64</PlatformTarget>
+    <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
+    <IsPublishable>True</IsPublishable>
+    <Platforms>ARM64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(RunAOTCompilation)'=='' and '$(Configuration)'=='Release' and '$(TF_BUILD)'==''">
