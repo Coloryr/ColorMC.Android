@@ -3,7 +3,6 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Provider;
 using Android.Runtime;
 using Android.Widget;
 using AndroidX.Core.Content;
@@ -13,9 +12,9 @@ using ColorMC.Core;
 using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
 using ColorMC.Gui;
-using Net.Kdt.Pojavview;
-using Net.Kdt.Pojavview.Multirt;
-using Net.Kdt.Pojavview.Utils;
+using Net.Kdt.Pojavlaunch;
+using Net.Kdt.Pojavlaunch.Multirt;
+using Net.Kdt.Pojavlaunch.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,7 +30,7 @@ namespace ColorMC.Android;
     Icon = "@drawable/icon",
     MainLauncher = true,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode,
-    ScreenOrientation = ScreenOrientation.FullSensor)]
+    ScreenOrientation = ScreenOrientation.FullUser)]
 public class MainActivity : AvaloniaMainActivity<App>
 {
     private readonly Semaphore _semaphore = new(0, 2);
@@ -46,7 +45,6 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     protected override void AttachBaseContext(Context? context)
     {
-
         base.AttachBaseContext(LocaleUtils.SetLocale(context));
     }
 
@@ -69,6 +67,14 @@ public class MainActivity : AvaloniaMainActivity<App>
         if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
 
         PojavApplication.Init(this);
+
+        BackRequested += MainActivity_BackRequested;
+    }
+
+    private void MainActivity_BackRequested(object? sender, AndroidBackRequestedEventArgs e)
+    {
+        App.AllWindow?.Back();
+        e.Handled = true;
     }
 
     public async Task<bool> PhoneJvmRun(string path, string dir, List<string> arg)

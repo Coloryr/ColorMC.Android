@@ -15,6 +15,7 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	
 	<application android:label="ColorMC"
 				 android:icon="@drawable/Icon"
 				 android:appCategory="game"
@@ -31,7 +32,7 @@
 				android:name="android.max_aspect"
 				android:value="ratio_float" />
 		<activity
-				android:name="net.kdt.pojavview.LauncherActivity"
+				android:name="net.kdt.pojavlaunch.LauncherActivity"
 				android:exported="true">
 			<intent-filter>
 				<action android:name="ColorMC.Minecraft.Setting" />
@@ -39,7 +40,7 @@
 			</intent-filter>
 		</activity>
 		<activity
-				android:name="net.kdt.pojavview.ImportControlActivity"
+				android:name="net.kdt.pojavlaunch.ImportControlActivity"
 				android:configChanges="keyboard|keyboardHidden"
 				android:exported="true"
 				android:launchMode="singleInstance"
@@ -59,15 +60,15 @@
 			</intent-filter>
 		</activity>
 		<activity
-				android:name="net.kdt.pojavview.FatalErrorActivity"
+				android:name="net.kdt.pojavlaunch.FatalErrorActivity"
 				android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
 				android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
 		<activity
-				android:name="net.kdt.pojavview.ExitActivity"
+				android:name="net.kdt.pojavlaunch.ExitActivity"
 				android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
 				android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
 		<activity
-				android:name="net.kdt.pojavview.JavaGUILauncherActivity"
+				android:name="net.kdt.pojavlaunch.JavaGUILauncherActivity"
 				android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
 				android:screenOrientation="sensorLandscape"
 				android:exported="true">
@@ -77,17 +78,17 @@
 			</intent-filter>
 		</activity>
 		<activity
-				android:name="net.kdt.pojavview.CustomControlsActivity"
+				android:name="net.kdt.pojavlaunch.CustomControlsActivity"
 				android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
 				android:exported="false"
 				android:screenOrientation="sensorLandscape">
 			<intent-filter>
-				<action android:name="net.kdt.pojavview.CustomControlsActivity" />
+				<action android:name="net.kdt.pojavlaunch.CustomControlsActivity" />
 				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</activity>
 		<activity
-				android:name="net.kdt.pojavview.MainActivity"
+				android:name="net.kdt.pojavlaunch.MainActivity"
 				android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
 				android:launchMode="standard"
 				android:process=":game"
@@ -100,7 +101,7 @@
 		</activity>
 
 		<provider
-				android:name="net.kdt.pojavview.scoped.FolderProvider"
+				android:name="net.kdt.pojavlaunch.scoped.FolderProvider"
 				android:authorities="@string/storageProviderAuthorities"
 				android:exported="true"
 				android:grantUriPermissions="true"
