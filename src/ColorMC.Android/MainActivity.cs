@@ -93,10 +93,9 @@ public class MainActivity : AvaloniaMainActivity<App>
         return _runData;
     }
 
-    public void PhoneJvmInstall(string path, string file)
+    public void PhoneJvmInstall(Stream stream, string file)
     {
-        var stream = ContentResolver?.OpenInputStream(Uri.Parse(file));
-        MultiRTUtils.InstallRuntimeNamed(path, stream);
+        MultiRTUtils.InstallRuntimeNamed(file, stream);
     }
 
     public string PhoneGetDataDir()
