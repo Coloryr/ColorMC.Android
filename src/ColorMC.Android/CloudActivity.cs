@@ -29,6 +29,7 @@ public class CloudActivity : AppCompatActivity
             if (args.Length > 1)
             {
                 var key = args[1];
+                GuiConfigUtils.Init(GetExternalFilesDir(null).AbsolutePath + "/");
                 GuiConfigUtils.Config.ServerKey = key;
                 GuiConfigUtils.SaveNow();
 
