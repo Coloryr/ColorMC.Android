@@ -151,7 +151,6 @@ public class MainActivity : AvaloniaMainActivity<App>
 
                 if (resultCode != Result.Ok || data.GetIntExtra("res", -1) != 0)
                 {
-                    App.AllWindow?.Model.Show(App.GetLanguage("Gui.Error6"));
                     App.ShowGameLog(_obj);
                 }
             }
