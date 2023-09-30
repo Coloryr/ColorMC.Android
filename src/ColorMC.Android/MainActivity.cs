@@ -9,9 +9,11 @@ using AndroidX.Core.Content;
 using Avalonia.Android;
 using ColorMC.Android.Resources;
 using ColorMC.Core;
+using ColorMC.Core.Helpers;
 using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
 using ColorMC.Gui;
+using ColorMC.Gui.UIBinding;
 using Net.Kdt.Pojavlaunch;
 using Net.Kdt.Pojavlaunch.Multirt;
 using Net.Kdt.Pojavlaunch.Utils;
@@ -35,6 +37,8 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     private readonly Semaphore _semaphore = new(0, 2);
     private bool _runData;
+    private GameSettingObj _obj;
+
 
     protected override void OnDestroy()
     {
@@ -77,13 +81,17 @@ public class MainActivity : AvaloniaMainActivity<App>
         e.Handled = true;
     }
 
-    public async Task<bool> PhoneJvmRun(string path, string dir, List<string> arg)
+    public async Task<bool> PhoneJvmRun(GameSettingObj obj, string path, string dir, List<string> arg)
     {
+        _obj = obj;
+
+        string log = Path.GetFullPath(obj.GetLogPath() + "/" + "run.log");
         var mainIntent = new Intent();
         mainIntent.SetAction("ColorMC.Minecraft.JvmRun");
         mainIntent.PutExtra("JAVA_DIR", path);
         mainIntent.PutExtra("JAVA_ARG", arg.ToArray());
         mainIntent.PutExtra("GAME_DIR", dir);
+        mainIntent.PutExtra("LOG_FILE", log);
         StartActivityForResult(mainIntent, 400);
         await Task.Run(() =>
         {
@@ -134,6 +142,19 @@ public class MainActivity : AvaloniaMainActivity<App>
         {
             _runData = data?.GetBooleanExtra("res", false) ?? false;
             _semaphore.Release();
+        }
+        else if (requestCode == 100)
+        {
+            if (_obj != null)
+            {
+                App.MainWindow?.GameClose(_obj.UUID);
+
+                if (resultCode != Result.Ok || data.GetIntExtra("res", -1) != 0)
+                {
+                    App.AllWindow?.Model.Show(App.GetLanguage("Gui.Error6"));
+                    App.ShowGameLog(_obj);
+                }
+            }
         }
     }
 
@@ -192,6 +213,13 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public void Start(GameSettingObj obj, List<string> list)
     {
+        string dir = obj.GetLogPath();
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+        _obj = obj;
+
         var file = obj.GetOptionsFile();
         if (!File.Exists(file))
         {
@@ -223,8 +251,9 @@ public class MainActivity : AvaloniaMainActivity<App>
         }
         mainIntent.PutExtra("GAME_ARGS", list2.ToArray());
 
-        mainIntent.AddFlags(ActivityFlags.SingleTop);
-        mainIntent.AddFlags(ActivityFlags.NewTask);
-        StartActivity(mainIntent);
+        string log = Path.GetFullPath(dir + "/" + "phone.log");
+        mainIntent.PutExtra("LOG_FILE", log);
+
+        StartActivityForResult(mainIntent, 100);
     }
 }
