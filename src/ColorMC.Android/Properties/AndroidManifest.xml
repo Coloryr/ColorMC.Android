@@ -80,7 +80,7 @@
 		<activity
 				android:name="net.kdt.pojavlaunch.CustomControlsActivity"
 				android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-				android:exported="false"
+				android:exported="true"
 				android:screenOrientation="sensorLandscape">
 			<intent-filter>
 				<action android:name="net.kdt.pojavlaunch.CustomControlsActivity" />
@@ -102,7 +102,7 @@
 
 		<provider
 				android:name="net.kdt.pojavlaunch.scoped.FolderProvider"
-				android:authorities="@string/storageProviderAuthorities"
+				android:authorities="colormc.android.scoped.gamefolder"
 				android:exported="true"
 				android:grantUriPermissions="true"
 				android:permission="android.permission.MANAGE_DOCUMENTS">

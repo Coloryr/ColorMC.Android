@@ -71,6 +71,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
 
         PojavApplication.Init(this);
+        PojavApplication.Unpack(this);
 
         BackRequested += MainActivity_BackRequested;
     }
