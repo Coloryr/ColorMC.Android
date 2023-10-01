@@ -7,6 +7,7 @@ using Android.Runtime;
 using Android.Widget;
 using AndroidX.Core.Content;
 using Avalonia.Android;
+using Avalonia.Threading;
 using ColorMC.Android.Resources;
 using ColorMC.Core;
 using ColorMC.Core.Helpers;
@@ -144,18 +145,18 @@ public class MainActivity : AvaloniaMainActivity<App>
             _runData = data?.GetBooleanExtra("res", false) ?? false;
             _semaphore.Release();
         }
-        else if (requestCode == 100)
-        {
-            if (_obj != null)
-            {
-                App.MainWindow?.GameClose(_obj.UUID);
+        //else if (requestCode == 100)
+        //{
+        //    if (_obj != null)
+        //    {
+        //        App.MainWindow?.GameClose(_obj.UUID);
 
-                if (resultCode != Result.Ok || data.GetIntExtra("res", -1) != 0)
-                {
-                    App.ShowGameLog(_obj);
-                }
-            }
-        }
+        //        if (resultCode != Result.Ok || data.GetIntExtra("res", -1) != 0)
+        //        {
+        //            App.ShowGameLog(_obj);
+        //        }
+        //    }
+        //}
     }
 
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
@@ -254,6 +255,17 @@ public class MainActivity : AvaloniaMainActivity<App>
         string log = Path.GetFullPath(dir + "/" + "phone.log");
         mainIntent.PutExtra("LOG_FILE", log);
 
-        StartActivityForResult(mainIntent, 100);
+        mainIntent.AddFlags(ActivityFlags.SingleTop);
+        mainIntent.AddFlags(ActivityFlags.NewTask);
+
+        StartActivity(mainIntent);
+        if (_obj != null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                App.MainWindow?.GameClose(_obj.UUID);
+                App.ShowGameLog(_obj);
+            });
+        }
     }
 }
