@@ -39,6 +39,7 @@
     <None Remove="components\security\java_sandbox.policy" />
     <None Remove="components\security\log4j-rce-patch-1.12.xml" />
     <None Remove="components\security\log4j-rce-patch-1.7.xml" />
+    <None Remove="RemoveNode.xml" />
     <None Remove="Resources\drawable\icon.png" />
     <None Remove="Resources\values-v31\styles.xml" />
   </ItemGroup>
@@ -46,6 +47,20 @@
   <PropertyGroup Condition="'$(AndroidEnableProfiler)'=='True'">
 	<IsEmulator Condition="'$(IsEmulator)' == ''">True</IsEmulator>
 	<DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|anycpu'">
+    <AndroidUseAapt2>True</AndroidUseAapt2>
+    <Debugger>Xamarin</Debugger>
+    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|anycpu'">
+    <AndroidUseAapt2>True</AndroidUseAapt2>
+    <Debugger>Xamarin</Debugger>
+    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -69,14 +84,18 @@
 	  <AndroidAsset Include="components\security\log4j-rce-patch-1.7.xml" />
 	  <AndroidAsset Include="components\security\pro-grade.jar" />
 	  <AndroidAsset Include="components\security\version" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidManifestOverlay Include="RemoveNode.xml" />
 	</ItemGroup>	
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.0.4" />
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.10.1.2" />
-	<PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.2" />
-	<PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1" />
-	<PackageReference Include="Xamarin.Google.Android.Material" Version="1.9.0.2" />
+    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.12.0.1" />
+	<PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.3" />
+	<PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1.1" />
+	<PackageReference Include="Xamarin.Google.Android.Material" Version="1.9.0.3" />
   </ItemGroup>	
 
   <ItemGroup>
@@ -99,3 +118,4 @@
     </EmbeddedResource>
   </ItemGroup>
 </Project>
+ 

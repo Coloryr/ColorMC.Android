@@ -13,9 +13,11 @@
 	<remove-node path="/api/package[@name='com.google.gson.internal']" />
 	<remove-node path="/api/package[@name='com.ipaulpro.afilechooser']" />
 	<remove-node path="/api/package[@name='com.kdt.pickafile']" />
+	<remove-node path="/api/package[@name='net.kdt.pojavlaunch.progresskeeper']" />
+	<remove-node path="/api/package[@name='net.kdt.pojavlaunch.profiles']" />
+	<remove-node path="/api/package[@name='org.apache.commons.collections4.iterators']" />
 	<remove-node path="/api/package[@name='org.apache.commons.compress.archivers']" />
 	<remove-node path="/api/package[@name='org.apache.commons.io.comparator']" />
-	<remove-node path="/api/package[@name='org.apache.commons.collections4.iterators']" />
 
 	<remove-node path="/api/package[@name='io.netty.bootstrap']" />
 	<remove-node path="/api/package[@name='io.netty.buffer']" />

@@ -71,7 +71,6 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
 
-        PojavApplication.Init(this);
         PojavApplication.Unpack(this);
 
         BackRequested += MainActivity_BackRequested;
@@ -85,6 +84,12 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public async Task<bool> PhoneJvmRun(GameSettingObj obj, string path, string dir, List<string> arg)
     {
+        string dir1 = obj.GetLogPath();
+        if (!Directory.Exists(dir1))
+        {
+            Directory.CreateDirectory(dir1);
+        }
+
         _obj = obj;
 
         string log = Path.GetFullPath(obj.GetLogPath() + "/" + "run.log");
@@ -145,18 +150,6 @@ public class MainActivity : AvaloniaMainActivity<App>
             _runData = data?.GetBooleanExtra("res", false) ?? false;
             _semaphore.Release();
         }
-        //else if (requestCode == 100)
-        //{
-        //    if (_obj != null)
-        //    {
-        //        App.MainWindow?.GameClose(_obj.UUID);
-
-        //        if (resultCode != Result.Ok || data.GetIntExtra("res", -1) != 0)
-        //        {
-        //            App.ShowGameLog(_obj);
-        //        }
-        //    }
-        //}
     }
 
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
@@ -242,7 +235,8 @@ public class MainActivity : AvaloniaMainActivity<App>
             list1.Add(list[i++]);
         }
         mainIntent.PutExtra("JVM_ARGS", list1.ToArray());
-        mainIntent.PutExtra("CLASSPATH", list[i++]);
+        string cp = list[i++];
+        mainIntent.PutExtra("CLASSPATH", cp);
         mainIntent.PutExtra("MAINCLASS", list[i++]);
         var gamearg = int.Parse(list[i++]);
         var list2 = new List<string>();
