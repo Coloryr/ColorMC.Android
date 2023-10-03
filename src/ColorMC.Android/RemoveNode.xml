@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-		  xmlns:tools="http://schemas.android.com/tools"
-		  package="coloryr.colormc.android">
-	<application android:name="coloryr.colormc.load.MainApplication">
-		<provider android:name="mono.MonoRuntimeProvider_1" tools:node="removeAll" />
+		  xmlns:tools="http://schemas.android.com/tools">
+	<application>
+		<provider android:name="mono.MonoRuntimeProvider_1" tools:node="remove" />
 	</application>
 </manifest>
