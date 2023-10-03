@@ -86,6 +86,7 @@
 					android:name="net.kdt.pojavlaunch.JavaGUILauncherActivity"
 					android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
 					android:screenOrientation="sensorLandscape"
+					android:process=":install"
 					android:exported="true">
 				<intent-filter>
 					<action android:name="ColorMC.Minecraft.JvmRun" />

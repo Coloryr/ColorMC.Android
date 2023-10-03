@@ -4,16 +4,21 @@
     <TargetFramework>net7.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationVersion>4</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <IsPublishable>True</IsPublishable>
     <Platforms>anycpu</Platforms>
+	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(RunAOTCompilation)'=='' and '$(Configuration)'=='Release' and '$(TF_BUILD)'==''">
+	<ItemGroup>
+		<AndroidManifestOverlay Include="RemoveNode.xml" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(RunAOTCompilation)'=='' and '$(Configuration)'=='Release' and '$(TF_BUILD)'==''">
 	<RunAOTCompilation>True</RunAOTCompilation>
   </PropertyGroup>
 
@@ -64,10 +69,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-	<AndroidEnvironment Condition="'$(IsEmulator)'=='True'" Include="environment.emulator.txt" />
-  </ItemGroup>
-
-	<ItemGroup>
 	  <AndroidAsset Include="components\arc_dns_injector\arc_dns_injector.jar" />
 	  <AndroidAsset Include="components\arc_dns_injector\version" />
 	  <AndroidAsset Include="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
@@ -86,9 +87,7 @@
 	  <AndroidAsset Include="components\security\version" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <AndroidManifestOverlay Include="RemoveNode.xml" />
-	</ItemGroup>	
+	
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.0.4" />

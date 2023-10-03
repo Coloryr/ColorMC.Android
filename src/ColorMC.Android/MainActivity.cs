@@ -145,7 +145,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         base.OnActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 400 && resultCode == Result.Ok)
+        if (requestCode == 400)
         {
             _runData = data?.GetBooleanExtra("res", false) ?? false;
             _semaphore.Release();

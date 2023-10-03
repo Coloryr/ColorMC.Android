@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 		  xmlns:tools="http://schemas.android.com/tools">
 	<application>
-		<provider android:name="mono.MonoRuntimeProvider_1" tools:node="remove" />
+		<provider tools:node="remove"
+            android:name="mono.MonoRuntimeProvider_1" />
+		<provider tools:node="remove"
+            android:name="mono.MonoRuntimeProvider_2" />
 	</application>
 </manifest>
