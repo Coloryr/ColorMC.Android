@@ -5,6 +5,7 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Android.Widget;
+using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using Avalonia.Android;
 using Avalonia.Threading;
@@ -22,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Uri = Android.Net.Uri;
@@ -70,6 +72,10 @@ public class MainActivity : AvaloniaMainActivity<App>
         Tools.AppName = "ColorMC";
 
         if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
+
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu && 
+            ContextCompat.CheckSelfPermission(this, Manifest.Permission.PostNotifications) == Permission.Denied) 
+                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.PostNotifications }, 1);
 
         PojavApplication.Unpack(this);
 
@@ -222,7 +228,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         int i = 0;
         var mainIntent = new Intent();
         mainIntent.SetAction("ColorMC.Minecraft.Launch");
-        mainIntent.PutExtra("GAME_DIR", list[i++]);
+        mainIntent.PutExtra("GAME_DIR", Encoding.UTF8.GetBytes(list[i++]));
         mainIntent.PutExtra("JAVA_DIR", list[i++]);
         mainIntent.PutExtra("GAME_VERSION", list[i++]);
         mainIntent.PutExtra("JVM_VERSION", list[i++]);
