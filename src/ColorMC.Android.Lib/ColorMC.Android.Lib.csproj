@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0-android</TargetFramework>
-    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>AnyCPU;ARM64</Platforms>
@@ -20,5 +20,6 @@
     <None Remove="AAR\portrait-ssp-6c02fd739b.aar" />
     <None Remove="AAR\virtual-joystick-android-cb7bf45ba5.aar" />
     <None Remove="AAR\xz-1.8.jar" />
+    <None Remove="libColorMCNative.so" />
   </ItemGroup>
 </Project>

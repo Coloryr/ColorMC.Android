@@ -1,0 +1,8 @@
+﻿  ANDROID_HOME=E:\Android
+  ANDROID_SDK_ROOT=E:\Android
+  ANT_HOME=
+  JAVA_HOME=C:\Program Files\Android\jdk\jdk-8.0.302.8-hotspot\jdk8u302-b08
+  NDK_ROOT=E:\Android\ndk\23.1.7779620
+  pch.h
+  ColorMC_Android_Native.cpp
+  ColorMC.Android.Native.vcxproj -> E:\code\ColorMC.Android\src\x64\Release\libColorMC_Android_Native.so

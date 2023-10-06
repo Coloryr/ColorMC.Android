@@ -1,0 +1,1 @@
+E:\code\ColorMC.Android\src\ColorMC.Android.Native\x64\Release\libColorMC_Android_Native.so

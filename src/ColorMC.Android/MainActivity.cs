@@ -9,6 +9,7 @@ using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using Avalonia.Android;
 using Avalonia.Threading;
+using ColorMC.Android.Lib;
 using ColorMC.Android.Resources;
 using ColorMC.Core;
 using ColorMC.Core.Helpers;

@@ -12,6 +12,7 @@
     <IsPublishable>True</IsPublishable>
     <Platforms>anycpu</Platforms>
 	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -115,6 +116,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>	
+
+  <ItemGroup>
+    <Folder Include="Game\" />
   </ItemGroup>
 </Project>
  
