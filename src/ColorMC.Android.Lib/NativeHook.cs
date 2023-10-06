@@ -32,5 +32,9 @@ public static partial class NativeHook
 
     [LibraryImport(LibName, EntryPoint = "java_on_exit_init")]
     public static partial void JavaOnExitInit();
+
+    //java run
+    [LibraryImport(LibName, EntryPoint = "java_run_init")]
+    public static partial void JavaRunInit();
 }
 #pragma warning restore CA1401 // P/Invokes 应该是不可见的
