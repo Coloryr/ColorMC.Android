@@ -75,7 +75,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu && 
             ContextCompat.CheckSelfPermission(this, Manifest.Permission.PostNotifications) == Permission.Denied) 
-                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.PostNotifications }, 1);
+                ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.PostNotifications }, 1);
 
         PojavApplication.Unpack(this);
 
@@ -163,7 +163,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1)
         {
-            if (!IsStorageAllowed())
+            if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed())
             {
                 Toast.MakeText(this, "需要权限才能运行", ToastLength.Long).Show();
                 RequestStoragePermission();
