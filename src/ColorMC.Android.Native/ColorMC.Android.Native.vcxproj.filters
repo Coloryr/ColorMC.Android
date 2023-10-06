@@ -1,10 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="abi_info.cpp" />
+    <ClCompile Include="abi_info.c" />
     <ClCompile Include="java_run.c" />
+    <ClCompile Include="java_log.c" />
+    <ClCompile Include="xhook\xh_jni.c" />
+    <ClCompile Include="xhook\xh_log.c" />
+    <ClCompile Include="xhook\xh_util.c" />
+    <ClCompile Include="xhook\xh_version.c" />
+    <ClCompile Include="xhook\xhook.c" />
+    <ClCompile Include="xhook\xh_core.c" />
+    <ClCompile Include="xhook\xh_elf.c" />
+    <ClCompile Include="java_exit.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="java_log.h" />
+    <ClInclude Include="abi_info.h" />
+    <ClInclude Include="xhook\xh_elf.h" />
+    <ClInclude Include="xhook\xh_errno.h" />
+    <ClInclude Include="xhook\xh_log.h" />
+    <ClInclude Include="xhook\xh_util.h" />
+    <ClInclude Include="xhook\xh_version.h" />
+    <ClInclude Include="xhook\xhook.h" />
+    <ClInclude Include="xhook\queue.h" />
+    <ClInclude Include="xhook\tree.h" />
+    <ClInclude Include="xhook\xh_core.h" />
+    <ClInclude Include="java_exit.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="xhook">
+      <UniqueIdentifier>{df3b9855-2048-471b-8af4-3b06fdbc156c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

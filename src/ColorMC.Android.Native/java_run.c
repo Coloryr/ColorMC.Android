@@ -35,7 +35,6 @@
 
 #include "log.h"
 #include "utils.h"
-#include "environ/environ.h"
 
 // Uncomment to try redirect signal handling to JVM
 // #define TRY_SIG2JVM
@@ -159,9 +158,6 @@ JNIEXPORT jint JNICALL Java_com_oracle_dalvik_VMLauncher_launchJVM(JNIEnv* env, 
     CATCHSIG(SIGPIPE);
     CATCHSIG(SIGXFSZ);
     //Signal trapper ready
-
-     // Save dalvik JNIEnv pointer for JVM launch thread
-    pojav_environ->dalvikJNIEnvPtr_ANDROID = env;
 
     if (argsArray == NULL) {
         LOGE("Args array null, returning");

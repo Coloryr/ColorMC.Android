@@ -121,11 +121,33 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="abi_info.cpp" />
+    <ClCompile Include="abi_info.c" />
+    <ClCompile Include="java_exit.c" />
+    <ClCompile Include="java_log.c" />
     <ClCompile Include="java_run.c" />
+    <ClCompile Include="xhook\xhook.c" />
+    <ClCompile Include="xhook\xh_core.c" />
+    <ClCompile Include="xhook\xh_elf.c" />
+    <ClCompile Include="xhook\xh_jni.c" />
+    <ClCompile Include="xhook\xh_log.c" />
+    <ClCompile Include="xhook\xh_util.c" />
+    <ClCompile Include="xhook\xh_version.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="abi_info.h" />
+    <ClInclude Include="java_exit.h" />
+    <ClInclude Include="java_log.h" />
+    <ClInclude Include="log.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="xhook\queue.h" />
+    <ClInclude Include="xhook\tree.h" />
+    <ClInclude Include="xhook\xhook.h" />
+    <ClInclude Include="xhook\xh_core.h" />
+    <ClInclude Include="xhook\xh_elf.h" />
+    <ClInclude Include="xhook\xh_errno.h" />
+    <ClInclude Include="xhook\xh_log.h" />
+    <ClInclude Include="xhook\xh_util.h" />
+    <ClInclude Include="xhook\xh_version.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

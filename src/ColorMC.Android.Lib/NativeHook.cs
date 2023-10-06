@@ -25,12 +25,12 @@ public static partial class NativeHook
     //java exit
 
     public unsafe delegate void JavaExitHandel(int code);
+    public unsafe delegate void JavaExitHandel1();
 
-    public static partial void SetJavaExitHandel()
-    { 
-        
-    }
+    [LibraryImport(LibName, EntryPoint = "java_set_exit_handel")]
+    public static partial void SetJavaExitHandel(JavaExitHandel handel, JavaExitHandel1 handel1);
 
-    
+    [LibraryImport(LibName, EntryPoint = "java_on_exit_init")]
+    public static partial void JavaOnExitInit();
 }
 #pragma warning restore CA1401 // P/Invokes 应该是不可见的
