@@ -1,14 +1,21 @@
 ﻿using Android.App;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ColorMC.Android.Lib;
 
 namespace ColorMC.Android;
 
-//[Application(Name = "coloryr.colormc.load.MainApplication")]
+//[Application(Name = "coloryr.colormc.MainApplication")]
 //public class MainApplication : Application
 //{
-    
+//    public static string BaseDir;
+//    public override void OnCreate()
+//    {
+//        base.OnCreate();
+
+//        //BaseDir = GetExternalFilesDir(null)!.AbsolutePath + "/";
+//        //JavaLoad.NativeLibPath = Context!.ApplicationInfo!.NativeLibraryDir!;
+//    }
+//    //protected override void AttachBaseContext(Context? context)
+//    //{
+//    //    base.AttachBaseContext(context);
+//    //}
 //}

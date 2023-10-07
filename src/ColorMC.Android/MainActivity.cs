@@ -42,8 +42,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     private readonly Semaphore _semaphore = new(0, 2);
     private bool _runData;
-    private GameSettingObj _obj;
-    private string _baseDir;
+    public static string BaseDir;
 
     protected override void OnDestroy()
     {
@@ -52,15 +51,11 @@ public class MainActivity : AvaloniaMainActivity<App>
         App.Close();
     }
 
-    protected override void AttachBaseContext(Context? context)
-    {
-        base.AttachBaseContext(LocaleUtils.SetLocale(context));
-        _baseDir = GetExternalFilesDir(null)!.AbsolutePath + "/";
-        JavaLoad.NativeLibPath = context!.ApplicationInfo!.NativeLibraryDir!;
-    }
 
     protected override void OnCreate(Bundle savedInstanceState)
     {
+        BaseDir = GetExternalFilesDir(null)!.AbsolutePath + "/";
+
         ColorMCCore.PhoneGameLaunch = Start;
         ColorMCCore.PhoneJvmInstall = PhoneJvmInstall;
         ColorMCCore.PhoneReadJvm = PhoneReadJvm;
@@ -69,11 +64,9 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCCore.PhoneJvmRun = PhoneJvmRun;
         ColorMCCore.PhoneOpenUrl = PhoneOpenUrl;
         ColorMCGui.PhoneOpenSetting = Setting;
-        ColorMCGui.StartPhone(_baseDir);
+        ColorMCGui.StartPhone(BaseDir);
 
         base.OnCreate(savedInstanceState);
-
-        Tools.AppName = "ColorMC";
 
         if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 
             && !IsStorageAllowed()) RequestStoragePermission();
@@ -82,8 +75,10 @@ public class MainActivity : AvaloniaMainActivity<App>
             ContextCompat.CheckSelfPermission(this, Manifest.Permission.PostNotifications) == Permission.Denied) 
                 ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.PostNotifications }, 1);
 
-        UnpackComponent.Init(_baseDir);
+        UnpackComponent.Init(BaseDir);
         UnpackComponent.UnpackTask(this);
+
+        NativeHook.JavaOnExitInit();
 
         BackRequested += MainActivity_BackRequested;
     }
@@ -101,8 +96,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         {
             Directory.CreateDirectory(dir1);
         }
-
-        _obj = obj;
 
         string log = Path.GetFullPath(obj.GetLogPath() + "/" + "run.log");
         var mainIntent = new Intent();
@@ -214,7 +207,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         {
             Directory.CreateDirectory(dir1);
         }
-        _obj = obj;
 
         var file = obj.GetOptionsFile();
         if (!File.Exists(file))
@@ -227,13 +219,10 @@ public class MainActivity : AvaloniaMainActivity<App>
         intent.PutExtra("ARG", list.ToArray());
         StartActivity(intent);
 
-        if (_obj != null)
+        Dispatcher.UIThread.Post(() =>
         {
-            Dispatcher.UIThread.Post(() =>
-            {
-                App.MainWindow?.GameClose(_obj.UUID);
-                App.ShowGameLog(_obj);
-            });
-        }
+            App.MainWindow?.GameClose(obj.UUID);
+            App.ShowGameLog(obj);
+        });
     }
 }

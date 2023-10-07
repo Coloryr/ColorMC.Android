@@ -3,6 +3,7 @@ using Android.Graphics;
 using Android.Renderscripts;
 using Android.Runtime;
 using Android.Views;
+using ColorMC.Android.Lib;
 using Java.Interop;
 using Net.Kdt.Pojavlaunch.Utils;
 using System;
@@ -46,15 +47,19 @@ public class MinecraftGLSurface : View
 
     private void TextureView_SurfaceTextureAvailable(object? sender, TextureView.SurfaceTextureAvailableEventArgs e)
     {
-        Surface tSurface = new Surface(e.Surface);
+        var tSurface = new Surface(e.Surface);
         if (isCalled)
         {
-            //JREUtils.setupBridgeWindow(tSurface);
+            NativeHook.SetupWindow(JNIEnv.ToJniHandle(tSurface));
             return;
         }
         isCalled = true;
 
+        NativeHook.SetupWindow(JNIEnv.ToJniHandle(tSurface));
+
         Run();
+
+        
 
         //realStart(tSurface);
     }

@@ -124,6 +124,7 @@
     <ClCompile Include="abi_info.c" />
     <ClCompile Include="java_exit.c" />
     <ClCompile Include="java_log.c" />
+    <ClCompile Include="java_render.c" />
     <ClCompile Include="java_run.c" />
     <ClCompile Include="xhook\xhook.c" />
     <ClCompile Include="xhook\xh_core.c" />

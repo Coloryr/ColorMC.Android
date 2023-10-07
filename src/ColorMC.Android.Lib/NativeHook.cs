@@ -48,5 +48,9 @@ public static partial class NativeHook
 
     [LibraryImport(LibName, EntryPoint = "set_native_ld", StringMarshalling = StringMarshalling.Utf8)]
     public static partial void SetNativeLd(string path);
+
+    //render
+    [LibraryImport(LibName, EntryPoint = "setup_window")]
+    public static partial void SetupWindow(IntPtr obj1);
 }
 #pragma warning restore CA1401 // P/Invokes 应该是不可见的

@@ -17,7 +17,6 @@
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 		<application
-			     android:name="coloryr.colormc.load.MainApplication"
 			     android:debuggable="true"
 			     android:label="ColorMC"
 				 android:icon="@drawable/Icon"
