@@ -9,17 +9,18 @@ namespace ColorMC.Android.Lib;
 public static class JavaExit
 {
     private static int s_exitCode;
-    private static event Action<int>? GameExit;
+    public static event Action<int>? GameExit;
 
     public static void Start()
     {
-        NativeHook.SetJavaExitHandel(OnExit, OnExit);
+        NativeHook.JavaExitSetHandel(OnExit, OnExit);
         NativeHook.JavaOnExitInit();
     }
 
     public static void OnExit(int code)
     {
         s_exitCode = code;
+        GameExit?.Invoke(s_exitCode);
     }
 
     public static void OnExit()

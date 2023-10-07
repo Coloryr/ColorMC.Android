@@ -98,7 +98,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -138,7 +138,6 @@
     <ClInclude Include="java_exit.h" />
     <ClInclude Include="java_log.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="pch.h" />
     <ClInclude Include="xhook\queue.h" />
     <ClInclude Include="xhook\tree.h" />
     <ClInclude Include="xhook\xhook.h" />

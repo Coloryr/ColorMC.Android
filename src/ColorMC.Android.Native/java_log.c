@@ -4,17 +4,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-static log log_handel;
+log log_handel;
 
 static int pfd[2];
 
-static void set_log_handel(log* handel)
+void java_log_set_handel(log handel)
 {
     log_handel = handel;
     LOGI("Log handel set");
 }
 
-static void start_java_log()
+void java_log_start()
 {
     setvbuf(stdout, 0, _IOLBF, 0); // make stdout line-buffered
     setvbuf(stderr, 0, _IONBF, 0); // make stderr unbuffered
@@ -25,13 +25,14 @@ static void start_java_log()
     dup2(pfd[1], 2);
 }
 
-static void java_log_read()
+void java_log_read()
 {
     char buf[4096];
-    ssize_t  rsize;
+    int rsize;
     while ((rsize = read(pfd[0], buf, sizeof(buf) - 1)) > 0)
     {
-        if (buf[rsize - 1] == '\n') {
+        if (buf[rsize - 1] == '\n') 
+        {
             rsize = rsize - 1; //truncate
         }
         buf[rsize] = 0x00;

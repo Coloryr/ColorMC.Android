@@ -14,7 +14,6 @@
     <ClCompile Include="java_exit.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="java_log.h" />
     <ClInclude Include="abi_info.h" />

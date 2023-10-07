@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using ColorMC.Android.Lib;
 using ColorMC.Android.Resources;
 using ColorMC.Core;
+using ColorMC.Core.Game;
 using ColorMC.Core.Helpers;
 using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
@@ -42,7 +43,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     private readonly Semaphore _semaphore = new(0, 2);
     private bool _runData;
     private GameSettingObj _obj;
-
+    private string _baseDir;
 
     protected override void OnDestroy()
     {
@@ -54,6 +55,8 @@ public class MainActivity : AvaloniaMainActivity<App>
     protected override void AttachBaseContext(Context? context)
     {
         base.AttachBaseContext(LocaleUtils.SetLocale(context));
+        _baseDir = GetExternalFilesDir(null)!.AbsolutePath + "/";
+        JavaLoad.NativeLibPath = context!.ApplicationInfo!.NativeLibraryDir!;
     }
 
     protected override void OnCreate(Bundle savedInstanceState)
@@ -66,19 +69,21 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCCore.PhoneJvmRun = PhoneJvmRun;
         ColorMCCore.PhoneOpenUrl = PhoneOpenUrl;
         ColorMCGui.PhoneOpenSetting = Setting;
-        ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
+        ColorMCGui.StartPhone(_baseDir);
 
         base.OnCreate(savedInstanceState);
 
         Tools.AppName = "ColorMC";
 
-        if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
+        if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 
+            && !IsStorageAllowed()) RequestStoragePermission();
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu && 
             ContextCompat.CheckSelfPermission(this, Manifest.Permission.PostNotifications) == Permission.Denied) 
                 ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.PostNotifications }, 1);
 
-        PojavApplication.Unpack(this);
+        UnpackComponent.Init(_baseDir);
+        UnpackComponent.UnpackTask(this);
 
         BackRequested += MainActivity_BackRequested;
     }
@@ -89,7 +94,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         e.Handled = true;
     }
 
-    public async Task<bool> PhoneJvmRun(GameSettingObj obj, string path, string dir, List<string> arg)
+    public async Task<bool> PhoneJvmRun(GameSettingObj obj, JavaInfo info, string dir, List<string> arg)
     {
         string dir1 = obj.GetLogPath();
         if (!Directory.Exists(dir1))
@@ -102,7 +107,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         string log = Path.GetFullPath(obj.GetLogPath() + "/" + "run.log");
         var mainIntent = new Intent();
         mainIntent.SetAction("ColorMC.Minecraft.JvmRun");
-        mainIntent.PutExtra("JAVA_DIR", path);
+        mainIntent.PutExtra("JAVA_DIR", info.Path);
         mainIntent.PutExtra("JAVA_ARG", arg.ToArray());
         mainIntent.PutExtra("GAME_DIR", dir);
         mainIntent.PutExtra("LOG_FILE", log);
@@ -175,28 +180,8 @@ public class MainActivity : AvaloniaMainActivity<App>
     public JavaInfo? PhoneReadJvm(string path)
     {
         var file = new FileInfo(path);
-        path = file.Directory.Parent.FullName;
-        var info = MultiRTUtils.Read(path);
-        if (info == null)
-        {
-            return null;
-        }
-
-        return new()
-        {
-            Path = path,
-            MajorVersion = info.JavaVersion,
-            Type = "openjdk",
-            Version = info.VersionString!,
-            Arch = info.Arch switch
-            {
-                "aarch64" => ArchEnum.aarch64,
-                "arm" => ArchEnum.armV7,
-                "x86" => ArchEnum.x32,
-                "x86_64" => ArchEnum.x64,
-                _ => ArchEnum.unknow
-            }
-        };
+        path = file.Directory!.Parent!.FullName;
+        return JavaLoad.ReadJava(path);
     }
 
     public void PhoneOpenUrl(string url)
@@ -212,12 +197,22 @@ public class MainActivity : AvaloniaMainActivity<App>
         StartActivity(mainIntent);
     }
 
-    public void Start(GameSettingObj obj, List<string> list)
+    public void Start(GameSettingObj obj, JavaInfo info, List<string> list)
     {
         string dir = obj.GetLogPath();
         if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
+        }
+        string dir1 = obj.GetGameCachePath();
+        if (!Directory.Exists(dir1))
+        {
+            Directory.CreateDirectory(dir1);
+        }
+        dir1 = obj.GetGameTempPath();
+        if (!Directory.Exists(dir1))
+        {
+            Directory.CreateDirectory(dir1);
         }
         _obj = obj;
 
@@ -226,40 +221,12 @@ public class MainActivity : AvaloniaMainActivity<App>
         {
             File.WriteAllText(file, Resource1.options);
         }
-        int i = 0;
-        var mainIntent = new Intent();
-        mainIntent.SetAction("ColorMC.Minecraft.Launch");
-        mainIntent.PutExtra("GAME_DIR", Encoding.UTF8.GetBytes(list[i++]));
-        mainIntent.PutExtra("JAVA_DIR", list[i++]);
-        mainIntent.PutExtra("GAME_VERSION", list[i++]);
-        mainIntent.PutExtra("JVM_VERSION", list[i++]);
-        mainIntent.PutExtra("GAME_TIME", list[i++]);
-        mainIntent.PutExtra("GAME_V2", list[i++] == "true");
-        var jvmarg = int.Parse(list[i++]);
-        var list1 = new List<string>();
-        for (int a = 0; a < jvmarg; a++)
-        {
-            list1.Add(list[i++]);
-        }
-        mainIntent.PutExtra("JVM_ARGS", list1.ToArray());
-        string cp = list[i++];
-        mainIntent.PutExtra("CLASSPATH", cp);
-        mainIntent.PutExtra("MAINCLASS", list[i++]);
-        var gamearg = int.Parse(list[i++]);
-        var list2 = new List<string>();
-        for (int a = 0; a < gamearg; a++)
-        {
-            list2.Add(list[i++]);
-        }
-        mainIntent.PutExtra("GAME_ARGS", list2.ToArray());
+        Intent intent = new Intent(this, typeof(GameActivity));
+        intent.PutExtra("GAME", obj.UUID);
+        intent.PutExtra("JAVA", info.Name);
+        intent.PutExtra("ARG", list.ToArray());
+        StartActivity(intent);
 
-        string log = Path.GetFullPath(dir + "/" + "phone.log");
-        mainIntent.PutExtra("LOG_FILE", log);
-
-        mainIntent.AddFlags(ActivityFlags.SingleTop);
-        mainIntent.AddFlags(ActivityFlags.NewTask);
-
-        StartActivity(mainIntent);
         if (_obj != null)
         {
             Dispatcher.UIThread.Post(() =>

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ColorMC.Android.Lib;
@@ -12,7 +14,8 @@ public static class JavaLog
     private static FileStream s_stream;
     public unsafe static void Start(string file)
     {
-        NativeHook.SetLogHandel(Log);
+        NativeHook.JavaLogSetHandel(Log);
+        NativeHook.JavaLogStart();
 
         if (File.Exists(file))
         {
