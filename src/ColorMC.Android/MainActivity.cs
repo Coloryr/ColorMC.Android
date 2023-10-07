@@ -78,8 +78,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         UnpackComponent.Init(BaseDir);
         UnpackComponent.UnpackTask(this);
 
-        NativeHook.JavaOnExitInit();
-
         BackRequested += MainActivity_BackRequested;
     }
 

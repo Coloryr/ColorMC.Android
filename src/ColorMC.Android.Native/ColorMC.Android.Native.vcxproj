@@ -124,7 +124,7 @@
     <ClCompile Include="abi_info.c" />
     <ClCompile Include="java_exit.c" />
     <ClCompile Include="java_log.c" />
-    <ClCompile Include="java_render.c" />
+    <ClCompile Include="render.c" />
     <ClCompile Include="java_run.c" />
     <ClCompile Include="xhook\xhook.c" />
     <ClCompile Include="xhook\xh_core.c" />
@@ -139,6 +139,7 @@
     <ClInclude Include="java_exit.h" />
     <ClInclude Include="java_log.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="render.h" />
     <ClInclude Include="xhook\queue.h" />
     <ClInclude Include="xhook\tree.h" />
     <ClInclude Include="xhook\xhook.h" />
