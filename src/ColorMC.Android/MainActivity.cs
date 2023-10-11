@@ -88,7 +88,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         e.Handled = true;
     }
 
-    public async Task<bool> PhoneJvmRun(GameSettingObj obj, string path, string dir, List<string> arg)
+    public async Task<bool> PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg)
     {
         string dir1 = obj.GetLogPath();
         if (!Directory.Exists(dir1))
@@ -101,7 +101,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         string log = Path.GetFullPath(obj.GetLogPath() + "/" + "run.log");
         var mainIntent = new Intent();
         mainIntent.SetAction("ColorMC.Minecraft.JvmRun");
-        mainIntent.PutExtra("JAVA_DIR", path);
+        mainIntent.PutExtra("JAVA_DIR", jvm.Path);
         mainIntent.PutExtra("JAVA_ARG", arg.ToArray());
         mainIntent.PutExtra("GAME_DIR", dir);
         mainIntent.PutExtra("LOG_FILE", log);
@@ -190,9 +190,9 @@ public class MainActivity : AvaloniaMainActivity<App>
             Arch = info.Arch switch
             {
                 "aarch64" => ArchEnum.aarch64,
-                "arm" => ArchEnum.armV7,
-                "x86" => ArchEnum.x32,
-                "x86_64" => ArchEnum.x64,
+                "arm" => ArchEnum.arm,
+                "x86" => ArchEnum.x86,
+                "x86_64" => ArchEnum.x86_64,
                 _ => ArchEnum.unknow
             }
         };
@@ -211,8 +211,9 @@ public class MainActivity : AvaloniaMainActivity<App>
         StartActivity(mainIntent);
     }
 
-    public void Start(GameSettingObj obj, List<string> list)
+    public void Start(GameSettingObj obj, JavaInfo jvm, List<string> list)
     {
+        var version = VersionPath.GetGame(obj.Version)!;
         string dir = obj.GetLogPath();
         if (!Directory.Exists(dir))
         {
@@ -228,29 +229,28 @@ public class MainActivity : AvaloniaMainActivity<App>
         int i = 0;
         var mainIntent = new Intent();
         mainIntent.SetAction("ColorMC.Minecraft.Launch");
-        mainIntent.PutExtra("GAME_DIR", Encoding.UTF8.GetBytes(list[i++]));
-        mainIntent.PutExtra("JAVA_DIR", list[i++]);
-        mainIntent.PutExtra("GAME_VERSION", list[i++]);
-        mainIntent.PutExtra("JVM_VERSION", list[i++]);
-        mainIntent.PutExtra("GAME_TIME", list[i++]);
-        mainIntent.PutExtra("GAME_V2", list[i++] == "true");
-        var jvmarg = int.Parse(list[i++]);
-        var list1 = new List<string>();
-        for (int a = 0; a < jvmarg; a++)
+        mainIntent.PutExtra("GAME_DIR", obj.GetGamePath());
+        mainIntent.PutExtra("JAVA_DIR", jvm.Path);
+        mainIntent.PutExtra("GAME_VERSION", obj.Version);
+        mainIntent.PutExtra("GAME_TIME", version.time);
+        mainIntent.PutExtra("GAME_V2", CheckHelpers.GameLaunchVersionV2(version));
+        var native = ApplicationInfo!.NativeLibraryDir;
+        var classpath = false;
+        for (int a = 0; a < list.Count; a++)
         {
-            list1.Add(list[i++]);
+            list[a] = list[a].Replace("%natives_directory%", native);
+            if (list[a].StartsWith("-cp"))
+            {
+                classpath = true;
+            }
+            if (classpath)
+            {
+                classpath = false;
+
+                list[a] = Tools.LWJGL3ClassPath + ":" + list[a];
+            }
         }
-        mainIntent.PutExtra("JVM_ARGS", list1.ToArray());
-        string cp = list[i++];
-        mainIntent.PutExtra("CLASSPATH", cp);
-        mainIntent.PutExtra("MAINCLASS", list[i++]);
-        var gamearg = int.Parse(list[i++]);
-        var list2 = new List<string>();
-        for (int a = 0; a < gamearg; a++)
-        {
-            list2.Add(list[i++]);
-        }
-        mainIntent.PutExtra("GAME_ARGS", list2.ToArray());
+        mainIntent.PutExtra("ARGS", list.ToArray());
 
         string log = Path.GetFullPath(dir + "/" + "phone.log");
         mainIntent.PutExtra("LOG_FILE", log);

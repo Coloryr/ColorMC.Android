@@ -1,27 +1,38 @@
-﻿using Android.App;
-using Android.Runtime;
-using Net.Kdt.Pojavlaunch;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//using Android.App;
+//using Android.Content;
+//using Android.Runtime;
+//using Net.Kdt.Pojavlaunch;
+//using Net.Kdt.Pojavlaunch.Utils;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
 
-namespace ColorMC.Android;
+//namespace ColorMC.Android;
 
-[Application(Name = "coloryr.colormc.load.MainApplication")]
-public partial class MainApplication : Application
-{
-    public MainApplication(IntPtr handle, JniHandleOwnership transfer)
-        : base(handle, transfer)
-    {
+//public partial class MainApplication : Application
+//{
+//    public MainApplication() : base()
+//    { 
         
-    }
+//    }
 
-    public override void OnCreate()
-    {
-        base.OnCreate();
+//    public MainApplication(IntPtr handle, JniHandleOwnership transfer)
+//        : base(handle, transfer)
+//    {
+        
+//    }
 
-        PojavApplication.Init(this);
-    }
-}
+//    //protected override void AttachBaseContext(Context? context)
+//    //{
+//        //base.AttachBaseContext(LocaleUtils.SetLocale(context));
+//    //}
+
+//    public override void OnCreate()
+//    {
+//        base.OnCreate();
+
+//        PojavApplication.Init(this);
+//    }
+//}
