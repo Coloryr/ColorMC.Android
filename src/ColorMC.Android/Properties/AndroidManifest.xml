@@ -16,108 +16,106 @@
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-		<application
-			     android:name="coloryr.colormc.load.MainApplication"
-			     android:debuggable="true"
-			     android:label="ColorMC"
-				 android:icon="@drawable/Icon"
-				 android:appCategory="game"
-				 android:allowNativeHeapPointerTagging="false"
-				 android:hasFragileUserData="true"
-				 android:isGame="true"
-				 android:process=":launcher"
-				 android:resizeableActivity="true"
-				 android:allowBackup="true"
-				 android:requestLegacyExternalStorage="true"
-				 android:theme="@style/AppTheme"
-				 android:usesCleartextTraffic="true">
-			<meta-data
-					android:name="android.max_aspect"
-					android:value="ratio_float" />
-			<activity
-					android:name="net.kdt.pojavlaunch.LauncherActivity"
-					android:exported="true">
-				<intent-filter>
-					<action android:name="ColorMC.Minecraft.Setting" />
-					<category android:name="android.intent.category.DEFAULT" />
-				</intent-filter>
-			</activity>
-			<activity
-					android:name="net.kdt.pojavlaunch.ImportControlActivity"
-					android:configChanges="keyboard|keyboardHidden"
-					android:exported="true"
-					android:launchMode="singleInstance"
-					android:windowSoftInputMode="stateVisible">
-				<intent-filter
-						android:label="@string/import_control_label"
-						android:scheme="content"
-						tools:ignore="AppLinkUrlError">
-					<action android:name="android.intent.action.VIEW" />
-					<action android:name="android.intent.action.SEND" />
+	<application
+			    android:name="coloryr.colormc.load.MainApplication"
+			    android:label="ColorMC"
+				android:icon="@drawable/Icon"
+				android:appCategory="game"
+				android:allowNativeHeapPointerTagging="false"
+				android:hasFragileUserData="true"
+				android:isGame="true"
+				android:process=":launcher"
+				android:resizeableActivity="true"
+				android:allowBackup="true"
+				android:theme="@style/AppTheme"
+				android:usesCleartextTraffic="true">
+		<meta-data
+				android:name="android.max_aspect"
+				android:value="ratio_float" />
+		<activity
+				android:name="net.kdt.pojavlaunch.LauncherActivity"
+				android:exported="false">
+			<intent-filter>
+				<action android:name="ColorMC.Minecraft.Setting" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		<activity
+				android:name="net.kdt.pojavlaunch.ImportControlActivity"
+				android:configChanges="keyboard|keyboardHidden"
+				android:exported="true"
+				android:launchMode="singleInstance"
+				android:windowSoftInputMode="stateVisible">
+			<intent-filter
+					android:label="@string/import_control_label"
+					android:scheme="content"
+					tools:ignore="AppLinkUrlError">
+				<action android:name="android.intent.action.VIEW" />
+				<action android:name="android.intent.action.SEND" />
 
-					<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.DEFAULT" />
 
-					<data android:mimeType="application/json" />
-					<data android:mimeType="text/json" />
-					<data android:mimeType="text/plain" />
-				</intent-filter>
-			</activity>
-			<activity
-					android:name="net.kdt.pojavlaunch.FatalErrorActivity"
-					android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-					android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
-			<activity
-					android:name="net.kdt.pojavlaunch.ExitActivity"
-					android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-					android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
+				<data android:mimeType="application/json" />
+				<data android:mimeType="text/json" />
+				<data android:mimeType="text/plain" />
+			</intent-filter>
+		</activity>
+		<activity
+				android:name="net.kdt.pojavlaunch.FatalErrorActivity"
+				android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
+				android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
+		<activity
+				android:name="net.kdt.pojavlaunch.ExitActivity"
+				android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
+				android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
 		
-			<activity
-					android:name="net.kdt.pojavlaunch.CustomControlsActivity"
-					android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-					android:exported="true"
-					android:screenOrientation="sensorLandscape">
-				<intent-filter>
-					<action android:name="net.kdt.pojavlaunch.CustomControlsActivity" />
-					<category android:name="android.intent.category.DEFAULT" />
-				</intent-filter>
-			</activity>
+		<activity
+				android:name="net.kdt.pojavlaunch.CustomControlsActivity"
+				android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
+				android:exported="true"
+				android:screenOrientation="sensorLandscape">
+			<intent-filter>
+				<action android:name="net.kdt.pojavlaunch.CustomControlsActivity" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 
-			<activity
-					android:name="net.kdt.pojavlaunch.JavaGUILauncherActivity"
-					android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
-					android:screenOrientation="sensorLandscape"
-					android:process=":install"
-					android:exported="true">
-				<intent-filter>
-					<action android:name="ColorMC.Minecraft.JvmRun" />
-					<category android:name="android.intent.category.DEFAULT" />
-				</intent-filter>
-			</activity>
-			<activity
-					android:name="net.kdt.pojavlaunch.MainActivity"
-					android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
-					android:launchMode="standard"
-					android:process=":game"
-					android:exported="true"
-					android:screenOrientation="sensorLandscape" >
-				<intent-filter>
-					<action android:name="ColorMC.Minecraft.Launch" />
-					<category android:name="android.intent.category.DEFAULT" />
-				</intent-filter>
-			</activity>
+		<activity
+				android:name="net.kdt.pojavlaunch.JavaGUILauncherActivity"
+				android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
+				android:screenOrientation="sensorLandscape"
+				android:exported="false"
+				android:process=":install">
+			<intent-filter>
+				<action android:name="ColorMC.Minecraft.JvmRun" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		<activity
+				android:name="net.kdt.pojavlaunch.MainActivity"
+				android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
+				android:launchMode="standard"
+				android:process=":game"
+				android:exported="false"
+				android:screenOrientation="sensorLandscape" >
+			<intent-filter>
+				<action android:name="ColorMC.Minecraft.Launch" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 
-			<provider
-					android:name="net.kdt.pojavlaunch.scoped.FolderProvider"
-					android:authorities="colormc.android.scoped.gamefolder"
-					android:exported="true"
-					android:grantUriPermissions="true"
-					android:permission="android.permission.MANAGE_DOCUMENTS">
-				<intent-filter>
-					<action android:name="android.content.action.DOCUMENTS_PROVIDER" />
-				</intent-filter>
-			</provider>
-			<service
-				android:name="net.kdt.pojavview.services.GameService"
-				android:process=":game" />
+		<provider
+				android:name="net.kdt.pojavlaunch.scoped.FolderProvider"
+				android:authorities="colormc.android.scoped.gamefolder"
+				android:exported="true"
+				android:grantUriPermissions="true"
+				android:permission="android.permission.MANAGE_DOCUMENTS">
+			<intent-filter>
+				<action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+			</intent-filter>
+		</provider>
+		<service
+			android:name="net.kdt.pojavlaunch.services.GameService"
+			android:process=":game" />
 	</application>
 </manifest>

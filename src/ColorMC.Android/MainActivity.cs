@@ -40,19 +40,12 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     private readonly Semaphore _semaphore = new(0, 2);
     private bool _runData;
-    private GameSettingObj _obj;
-
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
 
         App.Close();
-    }
-
-    protected override void AttachBaseContext(Context? context)
-    {
-        base.AttachBaseContext(LocaleUtils.SetLocale(context));
     }
 
     protected override void OnCreate(Bundle savedInstanceState)
@@ -68,14 +61,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
 
         base.OnCreate(savedInstanceState);
-
-        Tools.AppName = "ColorMC";
-
-        if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed()) RequestStoragePermission();
-
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu && 
-            ContextCompat.CheckSelfPermission(this, Manifest.Permission.PostNotifications) == Permission.Denied) 
-                ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.PostNotifications }, 1);
 
         PojavApplication.Unpack(this);
 
@@ -95,8 +80,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         {
             Directory.CreateDirectory(dir1);
         }
-
-        _obj = obj;
 
         string log = Path.GetFullPath(obj.GetLogPath() + "/" + "run.log");
         var mainIntent = new Intent();
@@ -130,23 +113,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         return ContentResolver?.OpenInputStream(uri);
     }
 
-    public bool IsStorageAllowed()
-    {
-        //Getting the permission status
-        Permission result1 = ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage);
-        Permission result2 = ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage);
-
-        //If permission is granted returning true
-        return result1 == Permission.Granted &&
-                result2 == Permission.Granted;
-    }
-
-    private void RequestStoragePermission()
-    {
-        RequestPermissions(new string[]{ Manifest.Permission.WriteExternalStorage,
-                Manifest.Permission.ReadExternalStorage }, 1);
-    }
-
     protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
     {
         base.OnActivityResult(requestCode, resultCode, data);
@@ -155,19 +121,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         {
             _runData = data?.GetBooleanExtra("res", false) ?? false;
             _semaphore.Release();
-        }
-    }
-
-    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
-    {
-        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1)
-        {
-            if ((int)Build.VERSION.SdkInt >= 23 && (int)Build.VERSION.SdkInt < 29 && !IsStorageAllowed())
-            {
-                Toast.MakeText(this, "需要权限才能运行", ToastLength.Long).Show();
-                RequestStoragePermission();
-            }
         }
     }
 
@@ -219,14 +172,13 @@ public class MainActivity : AvaloniaMainActivity<App>
         {
             Directory.CreateDirectory(dir);
         }
-        _obj = obj;
 
         var file = obj.GetOptionsFile();
         if (!File.Exists(file))
         {
             File.WriteAllText(file, Resource1.options);
         }
-        int i = 0;
+
         var mainIntent = new Intent();
         mainIntent.SetAction("ColorMC.Minecraft.Launch");
         mainIntent.PutExtra("GAME_DIR", obj.GetGamePath());
@@ -242,6 +194,7 @@ public class MainActivity : AvaloniaMainActivity<App>
             if (list[a].StartsWith("-cp"))
             {
                 classpath = true;
+                continue;
             }
             if (classpath)
             {
@@ -259,13 +212,10 @@ public class MainActivity : AvaloniaMainActivity<App>
         mainIntent.AddFlags(ActivityFlags.NewTask);
 
         StartActivity(mainIntent);
-        if (_obj != null)
+        Dispatcher.UIThread.Post(() =>
         {
-            Dispatcher.UIThread.Post(() =>
-            {
-                App.MainWindow?.GameClose(_obj.UUID);
-                App.ShowGameLog(_obj);
-            });
-        }
+            App.MainWindow?.GameClose(obj.UUID);
+            App.ShowGameLog(obj);
+        });
     }
 }
