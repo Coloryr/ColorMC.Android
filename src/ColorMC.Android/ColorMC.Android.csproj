@@ -22,9 +22,8 @@
 	<RunAOTCompilation>True</RunAOTCompilation>
   </PropertyGroup>
 
-  <ItemGroup>
-    <AndroidLibrary Remove="components\arc_dns_injector\arc_dns_injector.jar" />
-    <AndroidLibrary Remove="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
+  <ItemGroup>    
+	<AndroidLibrary Remove="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
     <AndroidLibrary Remove="components\caciocavallo17\cacio-tta-1.18-SNAPSHOT.jar" />
     <AndroidLibrary Remove="components\caciocavallo\cacio-androidnw-1.10-SNAPSHOT.jar" />
     <AndroidLibrary Remove="components\caciocavallo\cacio-shared-1.10-SNAPSHOT.jar" />
@@ -34,7 +33,6 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <None Remove="components\arc_dns_injector\version" />
     <None Remove="components\caciocavallo17\version" />
     <None Remove="components\caciocavallo\version" />
     <None Remove="components\lwjgl3\lwjgl-glfw-classes.jar" />
@@ -69,8 +67,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-	  <AndroidAsset Include="components\arc_dns_injector\arc_dns_injector.jar" />
-	  <AndroidAsset Include="components\arc_dns_injector\version" />
 	  <AndroidAsset Include="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
 	  <AndroidAsset Include="components\caciocavallo17\cacio-tta-1.18-SNAPSHOT.jar" />
 	  <AndroidAsset Include="components\caciocavallo17\version" />
