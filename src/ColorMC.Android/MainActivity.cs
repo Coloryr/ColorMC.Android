@@ -185,7 +185,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         mainIntent.PutExtra("JAVA_DIR", jvm.Path);
         mainIntent.PutExtra("GAME_VERSION", obj.Version);
         mainIntent.PutExtra("GAME_TIME", version.time);
-        mainIntent.PutExtra("GAME_V2", CheckHelpers.GameLaunchVersionV2(version));
+        mainIntent.PutExtra("GAME_V2", CheckHelpers.ISGameVersionV2(version));
         var native = ApplicationInfo!.NativeLibraryDir;
         var classpath = false;
         for (int a = 0; a < list.Count; a++)
