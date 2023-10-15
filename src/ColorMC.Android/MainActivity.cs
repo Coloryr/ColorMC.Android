@@ -151,9 +151,13 @@ public class MainActivity : AvaloniaMainActivity<App>
         };
     }
 
-    public void PhoneOpenUrl(string url)
+    public void PhoneOpenUrl(string? url)
     {
-        Uri uri = Uri.Parse(url);
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return;
+        }
+        Uri uri = Uri.Parse(url)!;
         StartActivity(new Intent(Intent.ActionView, uri));
     }
 
