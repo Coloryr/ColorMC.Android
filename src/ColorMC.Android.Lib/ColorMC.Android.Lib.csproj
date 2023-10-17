@@ -18,7 +18,7 @@
     <None Remove="AAR\netty-transport-4.1.97.Final.jar" />
     <None Remove="AAR\portrait-sdp-ed33e89cbc.aar" />
     <None Remove="AAR\portrait-ssp-6c02fd739b.aar" />
-    <None Remove="AAR\virtual-joystick-android-cb7bf45ba5.aar" />
+    <None Remove="AAR\virtual-joystick-android-2e7aa25e50.aar" />
     <None Remove="AAR\xz-1.8.jar" />
   </ItemGroup>
 </Project>
