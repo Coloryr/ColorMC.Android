@@ -14,6 +14,7 @@ using ColorMC.Core;
 using ColorMC.Core.Helpers;
 using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
+using ColorMC.Core.Utils;
 using ColorMC.Gui;
 using ColorMC.Gui.UIBinding;
 using Net.Kdt.Pojavlaunch;
@@ -40,6 +41,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     private readonly Semaphore _semaphore = new(0, 2);
     private bool _runData;
+    private GameSettingObj _obj;
 
     protected override void OnDestroy()
     {
@@ -122,6 +124,19 @@ public class MainActivity : AvaloniaMainActivity<App>
             _runData = data?.GetBooleanExtra("res", false) ?? false;
             _semaphore.Release();
         }
+        else if (requestCode == 200)
+        {
+            GameCount.GameClose(_obj);
+            var res = data?.GetIntExtra("res", -1) ?? -1;
+            if (res != 0)
+            {
+                App.AllWindow!.Model.Show("游戏退出，代码：" + res);
+            }
+            Dispatcher.UIThread.Post(() =>
+            {
+                App.MainWindow?.GameClose(_obj.UUID);
+            });
+        }
     }
 
     public JavaInfo? PhoneReadJvm(string path)
@@ -170,8 +185,11 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public void Start(GameSettingObj obj, JavaInfo jvm, List<string> list)
     {
+        _obj = obj;
+
         var version = VersionPath.GetGame(obj.Version)!;
         string dir = obj.GetLogPath();
+        
         if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
@@ -212,14 +230,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         string log = Path.GetFullPath(dir + "/" + "phone.log");
         mainIntent.PutExtra("LOG_FILE", log);
 
-        mainIntent.AddFlags(ActivityFlags.SingleTop);
-        mainIntent.AddFlags(ActivityFlags.NewTask);
-
-        StartActivity(mainIntent);
-        Dispatcher.UIThread.Post(() =>
-        {
-            App.MainWindow?.GameClose(obj.UUID);
-            App.ShowGameLog(obj);
-        });
+        StartActivityForResult(mainIntent, 200);
+        GameCount.LaunchDone(obj);
     }
 }
