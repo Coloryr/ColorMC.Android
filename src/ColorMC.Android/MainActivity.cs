@@ -59,6 +59,12 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         PojavApplication.Unpack(this);
 
+        var file = Tools.CtrlmapPath + "/" + "default.json";
+        if (!File.Exists(file))
+        {
+            PathHelper.WriteBytes(file, Resource1._default);
+        }
+
         BackRequested += MainActivity_BackRequested;
     }
 

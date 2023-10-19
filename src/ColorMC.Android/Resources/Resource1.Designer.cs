@@ -61,6 +61,16 @@ namespace ColorMC.Android.Resources {
         }
         
         /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] _default {
+            get {
+                object obj = ResourceManager.GetObject("_default", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 invertYMouse:false
         ///mouseSensitivity:0.5
         ///fov:0.0
