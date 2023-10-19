@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0-android</TargetFramework>
     <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
@@ -7,7 +7,7 @@
     <Platforms>AnyCPU;ARM64</Platforms>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="AAR\android_gamepad_remapper-eb92e3a5bb.aar" />
+    <None Remove="AAR\android_gamepad_remapper-67b4fd4448.aar" />
     <None Remove="AAR\app_pojavlauncher-release.aar" />
     <None Remove="AAR\checkerboarddrawable-1.0.2.aar" />
     <None Remove="AAR\exp4j-60eaec6f78.jar" />

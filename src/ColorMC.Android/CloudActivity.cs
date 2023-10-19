@@ -4,16 +4,11 @@ using Android.OS;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using ColorMC.Gui.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ColorMC.Android;
 
 [Activity(Name = "colormc.android.CloudActivity", Exported = true)]
-[IntentFilter(new[] { Intent.ActionView }, Categories = new[] 
+[IntentFilter(new[] { Intent.ActionView }, Categories = new[]
 {
     "android.intent.category.BROWSABLE", "android.intent.category.DEFAULT"
 }, DataScheme = "colormc", DataHost = "colormc", DataPath = "/cloud", DataPort = "80")]

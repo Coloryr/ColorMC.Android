@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
     <ApplicationVersion>12</ApplicationVersion>
-    <ApplicationDisplayVersion>21.2023.1016</ApplicationDisplayVersion>
+    <ApplicationDisplayVersion>21.2023.1018</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>

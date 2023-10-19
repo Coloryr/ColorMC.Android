@@ -15,13 +15,13 @@
 //{
 //    public MainApplication() : base()
 //    { 
-        
+
 //    }
 
 //    public MainApplication(IntPtr handle, JniHandleOwnership transfer)
 //        : base(handle, transfer)
 //    {
-        
+
 //    }
 
 //    //protected override void AttachBaseContext(Context? context)

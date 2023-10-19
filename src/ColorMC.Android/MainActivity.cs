@@ -1,12 +1,8 @@
-﻿using Android;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
-using Android.Widget;
-using AndroidX.Core.App;
-using AndroidX.Core.Content;
 using Avalonia.Android;
 using Avalonia.Threading;
 using ColorMC.Android.Resources;
@@ -16,15 +12,12 @@ using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
 using ColorMC.Core.Utils;
 using ColorMC.Gui;
-using ColorMC.Gui.UIBinding;
 using Net.Kdt.Pojavlaunch;
 using Net.Kdt.Pojavlaunch.Multirt;
-using Net.Kdt.Pojavlaunch.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Uri = Android.Net.Uri;
@@ -105,7 +98,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     }
 
     public string PhoneGetDataDir()
-    { 
+    {
         return AppContext.BaseDirectory;
     }
 
@@ -189,7 +182,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         var version = VersionPath.GetGame(obj.Version)!;
         string dir = obj.GetLogPath();
-        
+
         if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
