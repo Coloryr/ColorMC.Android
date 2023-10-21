@@ -4,7 +4,7 @@
     <TargetFramework>net7.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>15</ApplicationVersion>
+    <ApplicationVersion>16</ApplicationVersion>
     <ApplicationDisplayVersion>21.2023.1020</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
@@ -29,6 +29,8 @@
     <AndroidLibrary Remove="components\caciocavallo\cacio-shared-1.10-SNAPSHOT.jar" />
     <AndroidLibrary Remove="components\caciocavallo\ResConfHack.jar" />
     <AndroidLibrary Remove="components\lwjgl3\lwjgl-glfw-classes.jar" />
+    <AndroidLibrary Remove="components\lwjgl3\lwjgl-vulkan-native.jar" />
+    <AndroidLibrary Remove="components\lwjgl3\lwjgl-vulkan.jar" />
     <AndroidLibrary Remove="components\security\pro-grade.jar" />
   </ItemGroup>
 	
@@ -36,6 +38,8 @@
     <None Remove="components\caciocavallo17\version" />
     <None Remove="components\caciocavallo\version" />
     <None Remove="components\lwjgl3\lwjgl-glfw-classes.jar" />
+    <None Remove="components\lwjgl3\lwjgl-vulkan-native.jar" />
+    <None Remove="components\lwjgl3\lwjgl-vulkan.jar" />
     <None Remove="components\lwjgl3\version" />
     <None Remove="components\security\version" />
     <None Remove="Icon.png" />
@@ -75,6 +79,8 @@
 	  <AndroidAsset Include="components\caciocavallo\ResConfHack.jar" />
 	  <AndroidAsset Include="components\caciocavallo\version" />
 	  <AndroidAsset Include="components\lwjgl3\lwjgl-glfw-classes.jar" />
+	  <AndroidAsset Include="components\lwjgl3\lwjgl-vulkan-native.jar" />
+	  <AndroidAsset Include="components\lwjgl3\lwjgl-vulkan.jar" />
 	  <AndroidAsset Include="components\lwjgl3\version" />
 	  <AndroidAsset Include="components\security\java_sandbox.policy" />
 	  <AndroidAsset Include="components\security\log4j-rce-patch-1.12.xml" />
@@ -98,6 +104,9 @@
   </ItemGroup>	
 
   <ItemGroup>
+    <Compile Update="PhoneControl.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Resource1.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

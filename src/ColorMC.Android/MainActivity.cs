@@ -4,6 +4,7 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Avalonia.Android;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using ColorMC.Android.Resources;
 using ColorMC.Core;
@@ -52,8 +53,11 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCCore.PhoneGetDataDir = PhoneGetDataDir;
         ColorMCCore.PhoneJvmRun = PhoneJvmRun;
         ColorMCCore.PhoneOpenUrl = PhoneOpenUrl;
-        ColorMCGui.PhoneOpenSetting = Setting;
-        ColorMCGui.StartPhone(GetExternalFilesDir(null).AbsolutePath + "/");
+
+        ColorMCGui.PhoneGetSetting = PhoneGetSetting;
+
+        ColorMCGui.StartPhone(GetExternalFilesDir(null)!.AbsolutePath + "/");
+        PhoneConfigUtils.Init(ColorMCCore.BaseDir);
 
         base.OnCreate(savedInstanceState);
 
@@ -72,6 +76,11 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         App.AllWindow?.Back();
         e.Handled = true;
+    }
+
+    public Control PhoneGetSetting()
+    {
+        return new PhoneControl(this);
     }
 
     public async Task<bool> PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg)
@@ -221,7 +230,15 @@ public class MainActivity : AvaloniaMainActivity<App>
             {
                 classpath = false;
 
-                list[a] = Tools.LWJGL3ClassPath + ":" + list[a];
+                string lwjgl = Tools.ComponentsDir + "/lwjgl3/lwjgl-glfw-classes.jar";
+
+                if (PhoneConfigUtils.Config.LwjglVk)
+                {
+                    lwjgl += ":" + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan.jar" + ":"
+                        + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan-native.jar";
+                }
+
+                list[a] = lwjgl + ":" + list[a];
             }
         }
         mainIntent.PutExtra("ARGS", list.ToArray());
