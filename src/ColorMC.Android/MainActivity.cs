@@ -195,7 +195,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         _obj = obj;
 
-        var version = VersionPath.GetGame(obj.Version)!;
+        var version = VersionPath.GetVersion(obj.Version)!;
         string dir = obj.GetLogPath();
 
         if (!Directory.Exists(dir))
