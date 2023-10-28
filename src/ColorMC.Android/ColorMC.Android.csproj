@@ -4,8 +4,8 @@
     <TargetFramework>net7.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>17</ApplicationVersion>
-    <ApplicationDisplayVersion>21.2023.1021</ApplicationDisplayVersion>
+    <ApplicationVersion>18</ApplicationVersion>
+    <ApplicationDisplayVersion>21.2023.1028</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
