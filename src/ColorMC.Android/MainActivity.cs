@@ -55,6 +55,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCCore.PhoneOpenUrl = PhoneOpenUrl;
 
         ColorMCGui.PhoneGetSetting = PhoneGetSetting;
+        ColorMCGui.PhoneGetFrp = PhoneGetFrp;
 
         ColorMCGui.StartPhone(GetExternalFilesDir(null)!.AbsolutePath + "/");
         PhoneConfigUtils.Init(ColorMCCore.BaseDir);
@@ -70,6 +71,11 @@ public class MainActivity : AvaloniaMainActivity<App>
         }
 
         BackRequested += MainActivity_BackRequested;
+    }
+
+    private string PhoneGetFrp()
+    {
+        return ApplicationInfo!.NativeLibraryDir + "/" + "libfrpc.so";
     }
 
     private void MainActivity_BackRequested(object? sender, AndroidBackRequestedEventArgs e)
@@ -245,6 +251,8 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         string log = Path.GetFullPath(dir + "/" + "phone.log");
         mainIntent.PutExtra("LOG_FILE", log);
+
+        mainIntent.SetFlags(ActivityFlags.NewTask);
 
         StartActivityForResult(mainIntent, 200);
         GameCount.LaunchDone(obj);

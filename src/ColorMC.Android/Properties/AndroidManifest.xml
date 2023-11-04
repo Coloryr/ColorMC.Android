@@ -94,8 +94,9 @@
 		<activity
 				android:name="net.kdt.pojavlaunch.MainActivity"
 				android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
-				android:launchMode="standard"
+				android:launchMode="singleInstance"
 				android:process=":game"
+				android:taskAffinity="colormc.android.game.task"
 				android:exported="false"
 				android:screenOrientation="sensorLandscape" >
 			<intent-filter>
