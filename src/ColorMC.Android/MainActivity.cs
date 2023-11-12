@@ -80,8 +80,11 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     private void MainActivity_BackRequested(object? sender, AndroidBackRequestedEventArgs e)
     {
-        App.AllWindow?.Back();
-        e.Handled = true;
+        if (App.AllWindow is { } window)
+        {
+            window.Model.BackClick();
+            e.Handled = true;
+        }
     }
 
     public Control PhoneGetSetting()
