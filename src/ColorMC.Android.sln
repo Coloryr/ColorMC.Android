@@ -19,6 +19,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorMC.Android.Render", "C
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedObject1", "SharedObject1\SharedObject1.vcxproj", "{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{CD48B1C6-4318-4E67-A311-FB96CA0E7504}"
+	ProjectSection(SolutionItems) = preProject
+		ColorMC\src\Directory.Build.props = ColorMC\src\Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
