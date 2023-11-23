@@ -4,8 +4,8 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>26</ApplicationVersion>
-    <ApplicationDisplayVersion>21.2023.1121</ApplicationDisplayVersion>
+    <ApplicationVersion>27</ApplicationVersion>
+    <ApplicationDisplayVersion>21.2023.1123</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <SupportedOSPlatformVersion>25.0</SupportedOSPlatformVersion>
@@ -92,7 +92,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Android" Version="11.1.999-cibuild0042086-beta" />
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.6.1.5" />
     <PackageReference Include="Xamarin.AndroidX.Core" Version="1.12.0.2" />
 	<PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.4" />
@@ -121,6 +121,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>	
+
+  <ItemGroup>
+    <Folder Include="Frp\x86\" />
   </ItemGroup>
 </Project>
  
