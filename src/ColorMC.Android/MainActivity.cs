@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Uri = Android.Net.Uri;
@@ -46,7 +47,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     protected override void OnCreate(Bundle savedInstanceState)
     {
-        ColorMCCore.PhoneGameLaunch = Start;
+        ColorMCCore.PhoneGameLaunch = PhoneGameLaunch;
         ColorMCCore.PhoneJvmInstall = PhoneJvmInstall;
         ColorMCCore.PhoneReadJvm = PhoneReadJvm;
         ColorMCCore.PhoneReadFile = PhoneReadFile;
@@ -92,7 +93,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         return new PhoneControl(this);
     }
 
-    public async Task<bool> PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg)
+    public async Task<bool> PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg, Dictionary<string, string> env)
     {
         string dir1 = obj.GetLogPath();
         if (!Directory.Exists(dir1))
@@ -107,6 +108,8 @@ public class MainActivity : AvaloniaMainActivity<App>
         mainIntent.PutExtra("JAVA_ARG", arg.ToArray());
         mainIntent.PutExtra("GAME_DIR", dir);
         mainIntent.PutExtra("LOG_FILE", log);
+        mainIntent.PutExtra("ENV_KEY", env.Keys.ToArray());
+        mainIntent.PutExtra("ENV_VALUE", env.Values.ToArray());
         StartActivityForResult(mainIntent, 400);
         await Task.Run(() =>
         {
@@ -200,7 +203,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         StartActivity(mainIntent);
     }
 
-    public void Start(GameSettingObj obj, JavaInfo jvm, List<string> list)
+    public void PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list, Dictionary<string, string> env)
     {
         _obj = obj;
 
@@ -225,6 +228,8 @@ public class MainActivity : AvaloniaMainActivity<App>
         mainIntent.PutExtra("GAME_VERSION", obj.Version);
         mainIntent.PutExtra("GAME_TIME", version.time);
         mainIntent.PutExtra("GAME_V2", CheckHelpers.ISGameVersionV2(version));
+        mainIntent.PutExtra("ENV_KEY", env.Keys.ToArray());
+        mainIntent.PutExtra("ENV_VALUE", env.Values.ToArray());
         var native = ApplicationInfo!.NativeLibraryDir;
         var classpath = false;
         for (int a = 0; a < list.Count; a++)

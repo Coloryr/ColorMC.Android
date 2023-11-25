@@ -4,11 +4,11 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>27</ApplicationVersion>
+    <ApplicationVersion>28</ApplicationVersion>
     <ApplicationDisplayVersion>21.2023.1123</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
-    <SupportedOSPlatformVersion>25.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <IsPublishable>True</IsPublishable>
     <Platforms>anycpu</Platforms>
 	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
@@ -60,16 +60,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|anycpu'">
     <AndroidUseAapt2>True</AndroidUseAapt2>
     <Debugger>Xamarin</Debugger>
-    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|anycpu'">
     <AndroidUseAapt2>True</AndroidUseAapt2>
     <Debugger>Xamarin</Debugger>
-    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Avalonia">
+    <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
 	<ItemGroup>
