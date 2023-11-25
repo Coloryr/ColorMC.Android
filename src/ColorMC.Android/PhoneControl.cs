@@ -13,7 +13,7 @@ public partial class PhoneControl : UserControl
         WrapPanel panel = new();
         Button button = new()
         {
-            Width = 120,
+            Width = 140,
             Height = 25,
             Content = "打开手机渲染设置",
             Margin = new(0, 0, 5 ,0)
