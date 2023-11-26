@@ -196,6 +196,22 @@ public class MainActivity : AvaloniaMainActivity<App>
         StartActivity(new Intent(Intent.ActionView, uri));
     }
 
+    /// <summary>
+    /// 保持splash不开启
+    /// </summary>
+    /// <param name="obj">游戏实例</param>
+    private void ConfigSet(GameSettingObj obj)
+    {
+        var dir = obj.GetConfigPath();
+        Directory.CreateDirectory(dir);
+        var file = dir + "splash.properties";
+        string data = PathHelper.ReadText(file) ?? "enabled=true";
+        if (data.Contains("enabled=true"))
+        {
+            PathHelper.WriteText(file, data.Replace("enabled=true", "enabled=false"));
+        }
+    }
+
     public void Setting()
     {
         var mainIntent = new Intent();
@@ -206,6 +222,8 @@ public class MainActivity : AvaloniaMainActivity<App>
     public void PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list, Dictionary<string, string> env)
     {
         _obj = obj;
+
+        ConfigSet(obj);
 
         var version = VersionPath.GetVersion(obj.Version)!;
         string dir = obj.GetLogPath();
