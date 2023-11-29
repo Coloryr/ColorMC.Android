@@ -4,8 +4,8 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>30</ApplicationVersion>
-    <ApplicationDisplayVersion>22.2023.1126</ApplicationDisplayVersion>
+    <ApplicationVersion>31</ApplicationVersion>
+    <ApplicationDisplayVersion>22.2023.1129</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
