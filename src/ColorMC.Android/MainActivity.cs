@@ -13,6 +13,7 @@ using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
 using ColorMC.Core.Utils;
 using ColorMC.Gui;
+using ColorMC.Gui.Objs;
 using Net.Kdt.Pojavlaunch;
 using Net.Kdt.Pojavlaunch.Multirt;
 using System;
@@ -74,8 +75,12 @@ public class MainActivity : AvaloniaMainActivity<App>
         BackRequested += MainActivity_BackRequested;
     }
 
-    private string PhoneGetFrp()
+    private string PhoneGetFrp(FrpType type)
     {
+        if (type == FrpType.OpenFrp)
+        {
+            return ApplicationInfo!.NativeLibraryDir + "/" + "libfrpc_openfrp.so";
+        }
         return ApplicationInfo!.NativeLibraryDir + "/" + "libfrpc.so";
     }
 
@@ -150,7 +155,7 @@ public class MainActivity : AvaloniaMainActivity<App>
             var res = data?.GetIntExtra("res", -1) ?? -1;
             if (res != 0)
             {
-                App.AllWindow!.Model.Show("游戏退出，代码：" + res);
+                //App.AllWindow!.Model.Show("游戏退出，代码：" + res);
             }
             Dispatcher.UIThread.Post(() =>
             {

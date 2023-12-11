@@ -21,9 +21,10 @@ public partial class PhoneControl : UserControl
         button.Click += Button_Click;
         panel.Children.Add(button);
 
-        CheckBox check = new()
+        ToggleSwitch check = new()
         {
-            Content = "使用lwjgl-vulkan运行库",
+            OffContent = "加载lwjgl-vulkan",
+            OnContent = "加载lwjgl-vulkan",
             IsChecked = PhoneConfigUtils.Config.LwjglVk
         };
         check.IsCheckedChanged += Check_IsCheckedChanged;
