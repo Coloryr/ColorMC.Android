@@ -25,6 +25,11 @@
 #include "nsbypass.h"
 #include "hook.h"
 
+// This means that the function is an external API and that it will be used
+#define EXTERNAL_API __attribute__((used))
+// This means that you are forced to have this function/variable for ABI compatibility
+#define ABI_COMPAT __attribute__((unused))
+
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "ColorMC", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "ColorMC", __VA_ARGS__))
 
@@ -59,7 +64,7 @@ static void set_vulkan_ptr(void* ptr) {
     setenv("VULKAN_PTR", envval, 1);
 }
 
-void load_vulkan() {
+EXTERNAL_API void load_vulkan() {
     if (android_get_device_api_level() >= 28) { // the loader does not support below that
         void* result = load_turnip_vulkan();
         if (result != NULL) {
