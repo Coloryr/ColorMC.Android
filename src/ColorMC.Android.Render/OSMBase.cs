@@ -141,6 +141,7 @@ public static class OSMBase
 
         IntPtr dl_handle = NativeLoader.LoadLibrary("libColorMCNative.so");
         ColorMCNative.Load(dl_handle);
+        ColorMCNative.LoadVulkan();
 
         dl_handle = NativeLoader.LoadLibrary("libOSMesa.so");
         OSM.Load(dl_handle);

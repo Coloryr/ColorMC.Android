@@ -17,7 +17,7 @@
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 	<application
-			    android:name="coloryr.colormc.load.MainApplication"
+			   
 			    android:label="ColorMC"
 				android:icon="@drawable/Icon"
 				android:appCategory="game"
@@ -27,9 +27,9 @@
 				android:process=":launcher"
 				android:resizeableActivity="true"
 				android:allowBackup="true"
-				android:theme="@style/AppTheme"
+				
 				android:usesCleartextTraffic="true">
-		<meta-data
+		<!--<meta-data
 				android:name="android.max_aspect"
 				android:value="ratio_float" />
 		<activity
@@ -117,6 +117,6 @@
 		</provider>
 		<service
 			android:name="net.kdt.pojavlaunch.services.GameService"
-			android:process=":game" />
+			android:process=":game" />-->
 	</application>
 </manifest>

@@ -14,8 +14,8 @@ using ColorMC.Core.Objs;
 using ColorMC.Core.Utils;
 using ColorMC.Gui;
 using ColorMC.Gui.Objs;
-using Net.Kdt.Pojavlaunch;
-using Net.Kdt.Pojavlaunch.Multirt;
+//using Net.Kdt.Pojavlaunch;
+//using Net.Kdt.Pojavlaunch.Multirt;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -64,13 +64,13 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         base.OnCreate(savedInstanceState);
 
-        PojavApplication.Unpack(this);
+        //PojavApplication.Unpack(this);
 
-        var file = Tools.CtrlmapPath + "/" + "default.json";
-        if (!File.Exists(file))
-        {
-            PathHelper.WriteBytes(file, Resource1._default);
-        }
+        //var file = Tools.CtrlmapPath + "/" + "default.json";
+        //if (!File.Exists(file))
+        //{
+        //    PathHelper.WriteBytes(file, Resource1._default);
+        //}
 
         BackRequested += MainActivity_BackRequested;
     }
@@ -126,7 +126,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public void PhoneJvmInstall(Stream stream, string file)
     {
-        MultiRTUtils.InstallRuntimeNamed(file, stream);
+        //MultiRTUtils.InstallRuntimeNamed(file, stream);
     }
 
     public string PhoneGetDataDir()
@@ -166,29 +166,31 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public JavaInfo? PhoneReadJvm(string path)
     {
+        return null; 
+
         var file = new FileInfo(path);
         path = file.Directory.Parent.FullName;
-        var info = MultiRTUtils.Read(path);
-        if (info == null)
-        {
-            return null;
-        }
+        //var info = MultiRTUtils.Read(path);
+        //if (info == null)
+        //{
+        //    return null;
+        //}
 
-        return new()
-        {
-            Path = path,
-            MajorVersion = info.JavaVersion,
-            Type = "openjdk",
-            Version = info.VersionString!,
-            Arch = info.Arch switch
-            {
-                "aarch64" => ArchEnum.aarch64,
-                "arm" => ArchEnum.arm,
-                "x86" => ArchEnum.x86,
-                "x86_64" => ArchEnum.x86_64,
-                _ => ArchEnum.unknow
-            }
-        };
+        //return new()
+        //{
+        //    Path = path,
+        //    MajorVersion = info.JavaVersion,
+        //    Type = "openjdk",
+        //    Version = info.VersionString!,
+        //    Arch = info.Arch switch
+        //    {
+        //        "aarch64" => ArchEnum.aarch64,
+        //        "arm" => ArchEnum.arm,
+        //        "x86" => ArchEnum.x86,
+        //        "x86_64" => ArchEnum.x86_64,
+        //        _ => ArchEnum.unknow
+        //    }
+        //};
     }
 
     public void PhoneOpenUrl(string? url)
@@ -267,15 +269,15 @@ public class MainActivity : AvaloniaMainActivity<App>
             {
                 classpath = false;
 
-                string lwjgl = Tools.ComponentsDir + "/lwjgl3/lwjgl-glfw-classes.jar";
+                //string lwjgl = Tools.ComponentsDir + "/lwjgl3/lwjgl-glfw-classes.jar";
 
-                if (PhoneConfigUtils.Config.LwjglVk)
-                {
-                    lwjgl += ":" + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan.jar" + ":"
-                        + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan-native.jar";
-                }
+                //if (PhoneConfigUtils.Config.LwjglVk)
+                //{
+                //    lwjgl += ":" + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan.jar" + ":"
+                //        + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan-native.jar";
+                //}
 
-                list[a] = lwjgl + ":" + list[a];
+                //list[a] = lwjgl + ":" + list[a];
             }
         }
         mainIntent.PutExtra("ARGS", list.ToArray());
