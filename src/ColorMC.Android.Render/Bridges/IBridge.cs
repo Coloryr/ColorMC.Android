@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ColorMC.Android.Render.Bridges;
+namespace ColorMC.Android.GLRender.Bridges;
 
 public interface IBridge<T> where T : BasicRenderWindow
 {
@@ -14,5 +14,5 @@ public interface IBridge<T> where T : BasicRenderWindow
     public T? GetCurrent();
     public void SwapBuffers();
     public void SetupWindow();
-    public void WwapInterval(int swapInterval);
+    public void SwapInterval(int swapInterval);
 }

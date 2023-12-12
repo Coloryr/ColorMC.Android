@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ColorMC.Android.Render.Bridges;
+namespace ColorMC.Android.GLRender.Bridges;
 
 [StructLayout(LayoutKind.Sequential)]
 public struct AndroidNativeBase
@@ -60,20 +60,20 @@ public static class SwapInterval
         ANativeWindowReal nativeWindowReal = Marshal.PtrToStructure<ANativeWindowReal>(nativeWindow);
         if (nativeWindowReal.common.magic != ANDROID_NATIVE_WINDOW_MAGIC) 
         {
-            RenderLog.Wran("SwapIntervalNoEGL", $"ANativeWindow magic does not match. " +
+            RenderLog.Warn("SwapIntervalNoEGL", $"ANativeWindow magic does not match. " +
                 $"Expected {ANDROID_NATIVE_WINDOW_MAGIC}, got {nativeWindowReal.common.magic}");
             return;
         }
         if (nativeWindowReal.common.version != Marshal.SizeOf<ANativeWindowReal>()) 
         {
-            RenderLog.Wran("SwapIntervalNoEGL", $"ANativeWindow version does not match. " +
+            RenderLog.Warn("SwapIntervalNoEGL", $"ANativeWindow version does not match. " +
                 $"Expected {Marshal.SizeOf<ANativeWindowReal>()}, got {nativeWindowReal.common.version}");
             return;
         }
         int error;
         if ((error = nativeWindowReal.setSwapInterval(nativeWindow, swapInterval)) != 0)
         {
-            RenderLog.Wran("SwapIntervalNoEGL", $"Failed to set swap interval: {-error}");
+            RenderLog.Warn("SwapIntervalNoEGL", $"Failed to set swap interval: {-error}");
         }
     }
 }

@@ -1,25 +1,26 @@
-﻿using System;
+﻿using Android.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ColorMC.Android.Render;
+namespace ColorMC.Android.GLRender;
 
 public class RenderLog
 {
     public static void Error(string tag, string data)
-    { 
-    
+    {
+        Log.Error(tag, data);
     }
 
     public static void Info(string tag, string data)
     {
-        
+        Log.Info(tag, data);
     }
 
-    internal static void Wran(string v1, string v2)
+    public static void Warn(string tag, string data)
     {
-        throw new NotImplementedException();
+        Log.Warn(tag, data);
     }
 }

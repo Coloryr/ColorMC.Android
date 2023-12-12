@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ColorMC.Android.Render;
+namespace ColorMC.Android.GLRender;
 
 public struct ANativeWindowBuffer
 {
@@ -78,6 +78,6 @@ public partial class NativeWindow
     [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_getBuffersDataSpace")]
     internal static unsafe partial int getBuffersDataSpace(IntPtr window);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_fromSurface")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_fromSurface")]
     internal static unsafe partial IntPtr FromSurface(IntPtr env, IntPtr suface);
 }

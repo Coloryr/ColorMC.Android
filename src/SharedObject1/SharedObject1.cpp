@@ -3,6 +3,23 @@
 #include <android/native_window_jni.h>
 #include <stdatomic.h>
 
+#include <GLES3/gl32.h>
+
+#include <dlfcn.h>
+#include <android/dlext.h>
+#include <android/log.h>
+#include <sys/mman.h>
+#include <sys/user.h>
+#include <string.h>
+#include <stdio.h>
+#include <linux/limits.h>
+#include <errno.h>
+#include <unistd.h>
+#include <asm/unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <elf.h>
+
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "SharedObject1", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "SharedObject1", __VA_ARGS__))
 
@@ -33,6 +50,6 @@ extern "C" {
 
 	void release()
 	{
-		glGetString
+		
 	}
 }

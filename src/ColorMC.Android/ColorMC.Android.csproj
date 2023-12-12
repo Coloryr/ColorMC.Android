@@ -63,7 +63,7 @@
     <Debugger>Xamarin</Debugger>
     <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
-    <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>
@@ -111,6 +111,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ColorMC.Android.Lib\ColorMC.Android.Lib.csproj" />
+    <ProjectReference Include="..\ColorMC.Android.Render\ColorMC.Android.GLRender.csproj" />
     <ProjectReference Include="..\ColorMC\src\ColorMC.Gui\ColorMC.Gui.csproj" />
   </ItemGroup>	
 

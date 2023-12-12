@@ -2,7 +2,7 @@
 global using EGLConfig = nint;
 global using EGLSurface = nint;
 global using EGLContext = nint;
-global using EGLBoolean = uint;
+global using EGLBoolean = bool;
 global using EGLint = int;
 global using EGLenum = uint;
 
@@ -18,3 +18,4 @@ global using GLint = int;
 global using GLubyte = sbyte;
 global using GLclampf = float;
 global using GLbitfield = uint;
+global using GLfloat = float;

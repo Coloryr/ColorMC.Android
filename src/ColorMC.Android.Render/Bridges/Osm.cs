@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace ColorMC.Android.Render.Bridges;
+namespace ColorMC.Android.GLRender.Bridges;
 
 public class Osm
 {

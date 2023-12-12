@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Live2DCSharpSDK.Framework",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Android.Lib", "ColorMC.Android.Lib\ColorMC.Android.Lib.csproj", "{6C2501CD-758C-463E-9201-4B41C178C6BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorMC.Android.Render", "ColorMC.Android.Render\ColorMC.Android.Render.csproj", "{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorMC.Android.GLRender", "ColorMC.Android.Render\ColorMC.Android.GLRender.csproj", "{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedObject1", "SharedObject1\SharedObject1.vcxproj", "{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}"
 EndProject

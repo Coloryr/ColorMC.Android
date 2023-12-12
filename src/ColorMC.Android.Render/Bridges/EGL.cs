@@ -1,7 +1,7 @@
 ﻿using ColorMC.Core.Utils;
 using System.Runtime.InteropServices;
 
-namespace ColorMC.Android.Render.Bridges;
+namespace ColorMC.Android.GLRender.Bridges;
 
 public static class EGL
 {
@@ -30,7 +30,7 @@ public static class EGL
     //EGLSurface (*eglCreatePbufferSurface_p) (EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list);
     public unsafe delegate EGLSurface eglCreatePbufferSurface(EGLDisplay display, EGLConfig config, EGLint* attrib_list);
     //EGLSurface (*eglCreateWindowSurface_p) (EGLDisplay dpy, EGLConfig config, NativeWindowType window, const EGLint *attrib_list);
-    public unsafe delegate EGLSurface eglCreateWindowSurface(EGLDisplay display, EGLConfig config, NativeWindowType window, EGLint* attrib_list);
+    public unsafe delegate EGLSurface eglCreateWindowSurface(EGLDisplay display, EGLConfig config, IntPtr window, EGLint* attrib_list);
     //EGLBoolean (*eglSwapBuffers_p) (EGLDisplay dpy, EGLSurface draw);
     public delegate EGLSurface eglSwapBuffers(EGLDisplay display, EGLSurface draw);
     //EGLint (*eglGetError_p) (void);
@@ -42,51 +42,63 @@ public static class EGL
     //EGLSurface (*eglGetCurrentSurface_p) (EGLint readdraw);
     public delegate EGLSurface eglGetCurrentSurface(EGLint readdraw);
 
-    public static eglMakeCurrent eglMakeCurrent_p;
-    public static eglDestroyContext eglDestroyContext_p;
-    public static eglDestroySurface eglDestroySurface_p;
-    public static eglTerminate eglTerminate_p;
-    public static eglReleaseThread eglReleaseThread_p;
-    public static eglGetCurrentContext eglGetCurrentContext_p ;
-    public static eglGetDisplay eglGetDisplay_p;
-    public static eglInitialize eglInitialize_p;
-    public static eglChooseConfig eglChooseConfig_p;
-    public static eglGetConfigAttrib eglGetConfigAttrib_p;
-    public static eglBindAPI eglBindAPI_p;
-    public static eglCreatePbufferSurface eglCreatePbufferSurface_p;
-    public static eglCreateWindowSurface eglCreateWindowSurface_p;
-    public static eglSwapBuffers eglSwapBuffers_p;
-    public static eglGetError eglGetError_p;
-    public static eglCreateContext eglCreateContext_p;
-    public static eglSwapInterval eglSwapInterval_p;
-    public static eglGetCurrentSurface eglGetCurrentSurface_p;
+    public static eglMakeCurrent MakeCurrent;
+    public static eglDestroyContext DestroyContext;
+    public static eglDestroySurface DestroySurface;
+    public static eglTerminate Terminate;
+    public static eglReleaseThread ReleaseThread;
+    public static eglGetCurrentContext GetCurrentContext;
+    public static eglGetDisplay GetDisplay;
+    public static eglInitialize Initialize;
+    public static eglChooseConfig ChooseConfig;
+    public static eglGetConfigAttrib GetConfigAttrib;
+    public static eglBindAPI BindAPI;
+    public static eglCreatePbufferSurface CreatePbufferSurface;
+    public static eglCreateWindowSurface CreateWindowSurface;
+    public static eglSwapBuffers SwapBuffers;
+    public static eglGetError GetError;
+    public static eglCreateContext CreateContext;
+    public static eglSwapInterval SwapInterval;
+    public static eglGetCurrentSurface GetCurrentSurface;
 
-    public static void Load()
+    public const int EGL_DEFAULT_DISPLAY = 0;
+    public const int EGL_NO_CONTEXT = 0;
+    public const int EGL_NO_DISPLAY    = 0;
+    public const int EGL_NO_SURFACE = 0;
+    public const int EGL_OPENGL_ES2_BIT = 0x0004;
+    public const int EGL_ALPHA_SIZE = 0x3021;
+    public const int EGL_BLUE_SIZE = 0x3022;
+    public const int EGL_GREEN_SIZE = 0x3023;
+    public const int EGL_RED_SIZE = 0x3024;
+    public const int EGL_DEPTH_SIZE = 0x3025;
+    public const int EGL_STENCIL_SIZE = 0x3026;
+    public const int EGL_NONE = 0x3038;
+    public const int EGL_RENDERABLE_TYPE = 0x3040;
+    public const int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
+    public const int EGL_OPENGL_ES_API = 0x30A0;
+    public const int EGL_OPENGL_API = 0x30A2;
+
+    public static void Load(string egl)
     {
-        var file = Environment.GetEnvironmentVariable("EGL_FILE");
-        if (!File.Exists(file))
-        {
-            throw new FileNotFoundException("EGL Lib not found");
-        }
-        IntPtr dl_handle =NativeLoader.LoadLibrary(file);
+        IntPtr dl_handle = NativeLoader.LoadLibrary(egl);
 
-        eglBindAPI_p = Marshal.GetDelegateForFunctionPointer<eglBindAPI>(NativeLoader.GetProcAddress(dl_handle, "eglBindAPI"));
-        eglChooseConfig_p = Marshal.GetDelegateForFunctionPointer<eglChooseConfig>(NativeLoader.GetProcAddress(dl_handle, "eglChooseConfig"));
-        eglCreateContext_p = Marshal.GetDelegateForFunctionPointer<eglCreateContext>(NativeLoader.GetProcAddress(dl_handle, "eglCreateContext"));
-        eglCreatePbufferSurface_p = Marshal.GetDelegateForFunctionPointer<eglCreatePbufferSurface>(NativeLoader.GetProcAddress(dl_handle, "eglCreatePbufferSurface"));
-        eglCreateWindowSurface_p = Marshal.GetDelegateForFunctionPointer<eglCreateWindowSurface>(NativeLoader.GetProcAddress(dl_handle, "eglCreateWindowSurface"));
-        eglDestroyContext_p = Marshal.GetDelegateForFunctionPointer<eglDestroyContext>(NativeLoader.GetProcAddress(dl_handle, "eglDestroyContext"));
-        eglDestroySurface_p = Marshal.GetDelegateForFunctionPointer<eglDestroySurface>(NativeLoader.GetProcAddress(dl_handle, "eglDestroySurface"));
-        eglGetConfigAttrib_p = Marshal.GetDelegateForFunctionPointer<eglGetConfigAttrib>(NativeLoader.GetProcAddress(dl_handle, "eglGetConfigAttrib"));
-        eglGetCurrentContext_p = Marshal.GetDelegateForFunctionPointer<eglGetCurrentContext>(NativeLoader.GetProcAddress(dl_handle, "eglGetCurrentContext"));
-        eglGetDisplay_p = Marshal.GetDelegateForFunctionPointer<eglGetDisplay>(NativeLoader.GetProcAddress(dl_handle, "eglGetDisplay"));
-        eglGetError_p = Marshal.GetDelegateForFunctionPointer<eglGetError>(NativeLoader.GetProcAddress(dl_handle, "eglGetError"));
-        eglInitialize_p = Marshal.GetDelegateForFunctionPointer<eglInitialize>(NativeLoader.GetProcAddress(dl_handle, "eglInitialize"));
-        eglMakeCurrent_p = Marshal.GetDelegateForFunctionPointer<eglMakeCurrent>(NativeLoader.GetProcAddress(dl_handle, "eglMakeCurrent"));
-        eglSwapBuffers_p = Marshal.GetDelegateForFunctionPointer<eglSwapBuffers>(NativeLoader.GetProcAddress(dl_handle, "eglSwapBuffers"));
-        eglReleaseThread_p = Marshal.GetDelegateForFunctionPointer<eglReleaseThread>(NativeLoader.GetProcAddress(dl_handle, "eglReleaseThread"));
-        eglSwapInterval_p = Marshal.GetDelegateForFunctionPointer<eglSwapInterval>(NativeLoader.GetProcAddress(dl_handle, "eglSwapInterval"));
-        eglTerminate_p = Marshal.GetDelegateForFunctionPointer<eglTerminate>(NativeLoader.GetProcAddress(dl_handle, "eglTerminate"));
-        eglGetCurrentSurface_p = Marshal.GetDelegateForFunctionPointer<eglGetCurrentSurface>(NativeLoader.GetProcAddress(dl_handle, "eglGetCurrentSurface"));
+        BindAPI = Marshal.GetDelegateForFunctionPointer<eglBindAPI>(NativeLoader.GetProcAddress(dl_handle, "eglBindAPI"));
+        ChooseConfig = Marshal.GetDelegateForFunctionPointer<eglChooseConfig>(NativeLoader.GetProcAddress(dl_handle, "eglChooseConfig"));
+        CreateContext = Marshal.GetDelegateForFunctionPointer<eglCreateContext>(NativeLoader.GetProcAddress(dl_handle, "eglCreateContext"));
+        CreatePbufferSurface = Marshal.GetDelegateForFunctionPointer<eglCreatePbufferSurface>(NativeLoader.GetProcAddress(dl_handle, "eglCreatePbufferSurface"));
+        CreateWindowSurface = Marshal.GetDelegateForFunctionPointer<eglCreateWindowSurface>(NativeLoader.GetProcAddress(dl_handle, "eglCreateWindowSurface"));
+        DestroyContext = Marshal.GetDelegateForFunctionPointer<eglDestroyContext>(NativeLoader.GetProcAddress(dl_handle, "eglDestroyContext"));
+        DestroySurface = Marshal.GetDelegateForFunctionPointer<eglDestroySurface>(NativeLoader.GetProcAddress(dl_handle, "eglDestroySurface"));
+        GetConfigAttrib = Marshal.GetDelegateForFunctionPointer<eglGetConfigAttrib>(NativeLoader.GetProcAddress(dl_handle, "eglGetConfigAttrib"));
+        GetCurrentContext = Marshal.GetDelegateForFunctionPointer<eglGetCurrentContext>(NativeLoader.GetProcAddress(dl_handle, "eglGetCurrentContext"));
+        GetDisplay = Marshal.GetDelegateForFunctionPointer<eglGetDisplay>(NativeLoader.GetProcAddress(dl_handle, "eglGetDisplay"));
+        GetError = Marshal.GetDelegateForFunctionPointer<eglGetError>(NativeLoader.GetProcAddress(dl_handle, "eglGetError"));
+        Initialize = Marshal.GetDelegateForFunctionPointer<eglInitialize>(NativeLoader.GetProcAddress(dl_handle, "eglInitialize"));
+        MakeCurrent = Marshal.GetDelegateForFunctionPointer<eglMakeCurrent>(NativeLoader.GetProcAddress(dl_handle, "eglMakeCurrent"));
+        SwapBuffers = Marshal.GetDelegateForFunctionPointer<eglSwapBuffers>(NativeLoader.GetProcAddress(dl_handle, "eglSwapBuffers"));
+        ReleaseThread = Marshal.GetDelegateForFunctionPointer<eglReleaseThread>(NativeLoader.GetProcAddress(dl_handle, "eglReleaseThread"));
+        SwapInterval = Marshal.GetDelegateForFunctionPointer<eglSwapInterval>(NativeLoader.GetProcAddress(dl_handle, "eglSwapInterval"));
+        Terminate = Marshal.GetDelegateForFunctionPointer<eglTerminate>(NativeLoader.GetProcAddress(dl_handle, "eglTerminate"));
+        GetCurrentSurface = Marshal.GetDelegateForFunctionPointer<eglGetCurrentSurface>(NativeLoader.GetProcAddress(dl_handle, "eglGetCurrentSurface"));
     }
 }

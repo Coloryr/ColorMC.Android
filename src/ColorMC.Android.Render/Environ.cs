@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ColorMC.Android.Render;
+namespace ColorMC.Android.GLRender;
 
 public struct GLFWInputEvent
 {
@@ -28,11 +28,12 @@ public enum STATE_RENDERER
     NEW_WINDOW = 1
 }
 
-public enum RENDERER
+public enum RenderType
 {
-    GL4ES = 1,
-    VK_ZINK = 2,
-    VULKAN = 4
+    GL4ES,
+    ZINK,
+    VIRGL,
+    ANGEL
 }
 
 public record GameEnviron
@@ -41,7 +42,7 @@ public record GameEnviron
 
     public IntPtr Window;
     public BasicRenderWindow? MainWindowBundle;
-    public RENDERER config_renderer;
+    public RenderType config_renderer;
     public bool force_vsync;
     public List<long> eventCounter; // Count the number of events to be pumped out
     public GLFWInputEvent[] events = new GLFWInputEvent[8000];
