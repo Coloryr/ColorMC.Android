@@ -43,10 +43,7 @@ public class GLSurface : View, ISurfaceHolderCallback
         IntPtr nativeWindow = NativeWindow.FromSurface(
             JniEnvironment.EnvironmentPointer, holder.Surface?.Handle ?? default);
 
-        RenderType type = RenderType.ANGEL;
-
-        GLBase.Init(type);
-        EGLBase.EglInit(nativeWindow, type);
+        RenderTest.Init(nativeWindow);
     }
 
     public void SurfaceDestroyed(ISurfaceHolder holder)

@@ -44,38 +44,42 @@ public struct ARect
 
 public partial class NativeWindow
 {
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_acquire")]
+    public const int WINDOW_FORMAT_RGBA_8888 = 1;
+    public const int WINDOW_FORMAT_RGBX_8888 = 2;
+    public const int WINDOW_FORMAT_RGB_565 = 4;
+
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_acquire")]
     internal static unsafe partial void Acquire(IntPtr window);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_release")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_release")]
     internal static unsafe partial void Release(IntPtr window);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_getWidth")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_getWidth")]
     internal static unsafe partial int GetWidth(IntPtr window);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_getHeight")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_getHeight")]
     internal static unsafe partial int GetHeight(IntPtr window);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_getFormat")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_getFormat")]
     internal static unsafe partial int GetFormat(IntPtr window);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_setBuffersGeometry")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_setBuffersGeometry")]
     internal static unsafe partial int SetBuffersGeometry(IntPtr window, int width, int height, int format);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_lock")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_lock")]
     //ANativeWindowBuffer* ARect*
     internal static unsafe partial int Lock(IntPtr window, IntPtr outBuffer, IntPtr inOutDirtyBounds);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_unlockAndPost")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_unlockAndPost")]
     internal static unsafe partial int UnlockAndPost(IntPtr window);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_setBuffersTransform")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_setBuffersTransform")]
     internal static unsafe partial int setBuffersTransform(IntPtr window, int transform);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_setBuffersDataSpace")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_setBuffersDataSpace")]
     internal static unsafe partial int setBuffersDataSpace(IntPtr window, int dataSpace);
 
-    [LibraryImport("nativewindow", EntryPoint = "ANativeWindow_getBuffersDataSpace")]
+    [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_getBuffersDataSpace")]
     internal static unsafe partial int getBuffersDataSpace(IntPtr window);
 
     [LibraryImport("libandroid.so", EntryPoint = "ANativeWindow_fromSurface")]

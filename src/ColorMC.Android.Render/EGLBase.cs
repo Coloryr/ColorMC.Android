@@ -104,12 +104,15 @@ public static class EGLBase
             return false;
         }
 
-        //6、创建渲染的Surface
-        EglSurface = EGL.CreateWindowSurface(EglDisplay, EglConfig, window, (EGLint*)0);
-        if (EglSurface == EGL.EGL_NO_SURFACE)
+        if (window != IntPtr.Zero)
         {
-            RenderLog.Error("EGL", "eglCreateWindowSurface  error");
-            return false;
+            //6、创建渲染的Surface
+            EglSurface = EGL.CreateWindowSurface(EglDisplay, EglConfig, window, (EGLint*)0);
+            if (EglSurface == EGL.EGL_NO_SURFACE)
+            {
+                RenderLog.Error("EGL", "eglCreateWindowSurface  error");
+                return false;
+            }
         }
 
         // 7、使用

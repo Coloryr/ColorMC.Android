@@ -12,11 +12,14 @@ public static class GL
     public delegate void glClear(GLbitfield mask);
     //GL_APICALL const GLubyte *GL_APIENTRY glGetString (GLenum name);
     public unsafe delegate IntPtr glGetString(GLenum name);
+    //GL_APICALL void GL_APIENTRY glFinish (void);
+    public delegate void glFinish();
 
     public static glViewport Viewport;
     public static glClearColor ClearColor;
     public static glClear Clear;
     public static glGetString GetString;
+    public static glFinish Finish;
 
     public const int GL_FALSE = 0;
     public const int GL_ZERO = 0;
@@ -79,13 +82,12 @@ public static class GL
     public const int GL_COLOR_ATTACHMENT0 = 0x8CE0;
     public const int GL_FRAMEBUFFER = 0x8D40;
 
-    public static void Load(string file)
+    public static void Load(IntPtr dl_handle)
     {
-        IntPtr dl_handle = NativeLoader.LoadLibrary(file);
-
         Viewport = Marshal.GetDelegateForFunctionPointer<glViewport>(NativeLoader.GetProcAddress(dl_handle, "glViewport"));
         ClearColor = Marshal.GetDelegateForFunctionPointer<glClearColor>(NativeLoader.GetProcAddress(dl_handle, "glClearColor"));
         Clear = Marshal.GetDelegateForFunctionPointer<glClear>(NativeLoader.GetProcAddress(dl_handle, "glClear"));
         GetString = Marshal.GetDelegateForFunctionPointer<glGetString>(NativeLoader.GetProcAddress(dl_handle, "glGetString"));
+        Finish = Marshal.GetDelegateForFunctionPointer<glFinish>(NativeLoader.GetProcAddress(dl_handle, "glFinish"));
     }
 }
