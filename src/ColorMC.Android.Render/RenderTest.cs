@@ -1,4 +1,5 @@
-﻿using Android.Graphics.Drawables;
+﻿using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Hardware.Lights;
 using Android.Health.Connect.DataTypes.Units;
 using Android.Views;
@@ -68,13 +69,13 @@ public class Utf8Buffer : SafeHandle
 
 public static class RenderTest
 {
-    public static void Init(IntPtr window)
+    public static void Init(Context context, IntPtr window)
     {
         RenderType type = RenderType.ZINK;
 
         if (type == RenderType.ZINK)
         {
-            OSMBase.Init(window, type);
+            OSMBase.Init(context, window, type);
         }
         else
         {

@@ -1,5 +1,8 @@
-﻿using Android.OS;
+﻿using Android.Content;
+using Android.OS;
+using Android.Systems;
 using ColorMC.Android.GLRender.Bridges;
+using Java.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +10,7 @@ using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Tomlyn;
 
 namespace ColorMC.Android.GLRender;
 
@@ -132,12 +136,24 @@ public static class OSMBase
         newNativeSurface = window;
     }
 
-    public static bool Init(IntPtr ptr, RenderType type)
+    public static bool Init(Context context, IntPtr ptr, RenderType type)
     {
         window = ptr;
 
         no_render_buffer = Marshal.AllocHGlobal(4);
         Marshal.WriteInt64(no_render_buffer, 0, 0);
+
+        StringBuilder ldLibraryPath = new StringBuilder();
+
+        string temp = "/system/lib64:/vendor/lib64:/vendor/lib64/hw:" + context.ApplicationInfo!.NativeLibraryDir;
+
+        Os.Setenv("NATIVE_DIR", temp, true);
+        Os.Setenv("MESA_GLSL_CACHE_DIR", context.CacheDir!.AbsolutePath, true);
+        Os.Setenv("force_glsl_extensions_warn", "true", true);
+        Os.Setenv("allow_higher_compat_version", "true", true);
+        Os.Setenv("allow_glsl_extension_directive_midshader", "true", true);
+        Os.Setenv("MESA_LOADER_DRIVER_OVERRIDE", "zink", true);
+        Os.Setenv("TMPDIR", context.CacheDir!.AbsolutePath, true);
 
         IntPtr dl_handle = NativeLoader.LoadLibrary("libColorMCNative.so");
         ColorMCNative.Load(dl_handle);

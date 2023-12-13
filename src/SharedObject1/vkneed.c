@@ -34,26 +34,32 @@
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "ColorMC", __VA_ARGS__))
 
 void* load_turnip_vulkan() {
-    const char* native_dir = getenv("POJAV_NATIVEDIR");
+    const char* native_dir = getenv("NATIVE_DIR");
     const char* cache_dir = getenv("TMPDIR");
     if (!linker_ns_load(native_dir)) return NULL;
+    void* linkerhook = linker_ns_dlopen("liblinkerhook.so", RTLD_LOCAL | RTLD_NOW);
+    if (linkerhook == NULL) return NULL;
     void* turnip_driver_handle = linker_ns_dlopen("libvulkan_freedreno.so", RTLD_LOCAL | RTLD_NOW);
     if (turnip_driver_handle == NULL) {
-        LOGW("AdrenoSupp: Failed to load Turnip!\n%s\n", dlerror());
+        printf("AdrenoSupp: Failed to load Turnip!\n%s\n", dlerror());
+        dlclose(linkerhook);
         return NULL;
     }
     void* dl_android = linker_ns_dlopen("libdl_android.so", RTLD_LOCAL | RTLD_LAZY);
     if (dl_android == NULL) {
+        dlclose(linkerhook);
         dlclose(turnip_driver_handle);
         return NULL;
     }
     void* android_get_exported_namespace = dlsym(dl_android, "android_get_exported_namespace");
-    if (android_get_exported_namespace == NULL) {
+    void (*linkerhook_pass_handles)(void*, void*, void*) = dlsym(linkerhook, "app__pojav_linkerhook_pass_handles");
+    if (linkerhook_pass_handles == NULL || android_get_exported_namespace == NULL) {
         dlclose(dl_android);
+        dlclose(linkerhook);
         dlclose(turnip_driver_handle);
         return NULL;
     }
-    app__pojav_linkerhook_pass_handles(turnip_driver_handle, android_dlopen_ext, android_get_exported_namespace);
+    linkerhook_pass_handles(turnip_driver_handle, android_dlopen_ext, android_get_exported_namespace);
     void* libvulkan = linker_ns_dlopen_unique(cache_dir, "libvulkan.so", RTLD_LOCAL | RTLD_NOW);
     return libvulkan;
 }
@@ -65,6 +71,7 @@ static void set_vulkan_ptr(void* ptr) {
 }
 
 EXTERNAL_API void load_vulkan() {
+    LOGI("OSMDroid: Loaded Vulkan\n");
     if (android_get_device_api_level() >= 28) { // the loader does not support below that
         void* result = load_turnip_vulkan();
         if (result != NULL) {
