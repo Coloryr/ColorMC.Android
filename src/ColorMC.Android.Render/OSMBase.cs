@@ -155,7 +155,7 @@ public static class OSMBase
         Os.Setenv("MESA_LOADER_DRIVER_OVERRIDE", "zink", true);
         Os.Setenv("TMPDIR", context.CacheDir!.AbsolutePath, true);
 
-        IntPtr dl_handle = NativeLoader.LoadLibrary("libColorMCNative.so");
+        IntPtr dl_handle = NativeLoader.LoadLibrary("libcolormcnative.so");
         ColorMCNative.Load(dl_handle);
         ColorMCNative.LoadVulkan();
 
