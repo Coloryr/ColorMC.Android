@@ -30,7 +30,7 @@ namespace ColorMC.Android;
 [Activity(Label = "ColorMC",
     Theme = "@style/MyTheme.NoActionBar",
     Icon = "@drawable/icon",
-   // MainLauncher = true,
+    MainLauncher = true,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode,
     ScreenOrientation = ScreenOrientation.FullUser)]
 public class MainActivity : AvaloniaMainActivity<App>
