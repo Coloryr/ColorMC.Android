@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Android.Lib", "Colo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMC.Android.GLRender", "ColorMC.Android.Render\ColorMC.Android.GLRender.csproj", "{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ColorMCNative", "ColorMCNative\ColorMCNative.vcxproj", "{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{CD48B1C6-4318-4E67-A311-FB96CA0E7504}"
 	ProjectSection(SolutionItems) = preProject
 		ColorMC\src\Directory.Build.props = ColorMC\src\Directory.Build.props
@@ -188,26 +186,6 @@ Global
 		{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}.Release|x64.Build.0 = Release|Any CPU
 		{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}.Release|x86.ActiveCfg = Release|Any CPU
 		{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}.Release|x86.Build.0 = Release|Any CPU
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|Any CPU.ActiveCfg = Debug|ARM64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|Any CPU.Build.0 = Debug|ARM64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|ARM.ActiveCfg = Debug|ARM
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|ARM.Build.0 = Debug|ARM
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|ARM64.Build.0 = Debug|ARM64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|x64.ActiveCfg = Debug|x64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|x64.Build.0 = Debug|x64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|x86.ActiveCfg = Debug|x86
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Debug|x86.Build.0 = Debug|x86
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|Any CPU.ActiveCfg = Release|x64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|Any CPU.Build.0 = Release|x64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|ARM.ActiveCfg = Release|ARM
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|ARM.Build.0 = Release|ARM
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|ARM64.ActiveCfg = Release|ARM64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|ARM64.Build.0 = Release|ARM64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|x64.ActiveCfg = Release|x64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|x64.Build.0 = Release|x64
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|x86.ActiveCfg = Release|x86
-		{C52A41A1-DC07-40E7-8893-CB5CA29D1F54}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

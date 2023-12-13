@@ -36,25 +36,26 @@ void* load_turnip_vulkan() {
     const char* native_dir = getenv("NATIVE_DIR");
     const char* cache_dir = getenv("TMPDIR");
     if (!linker_ns_load(native_dir)) return NULL;
-    void* linkerhook = linker_ns_dlopen("liblinkerhook.so", RTLD_LOCAL | RTLD_NOW);
-    if (linkerhook == NULL) return NULL;
+//    void* linkerhook = linker_ns_dlopen("liblinkerhook.so", RTLD_LOCAL | RTLD_NOW);
+//    if (linkerhook == NULL) return NULL;
     void* turnip_driver_handle = linker_ns_dlopen("libvulkan_freedreno.so", RTLD_LOCAL | RTLD_NOW);
     if (turnip_driver_handle == NULL) {
         printf("AdrenoSupp: Failed to load Turnip!\n%s\n", dlerror());
-        dlclose(linkerhook);
+//        dlclose(linkerhook);
         return NULL;
     }
     void* dl_android = linker_ns_dlopen("libdl_android.so", RTLD_LOCAL | RTLD_LAZY);
     if (dl_android == NULL) {
-        dlclose(linkerhook);
+//        dlclose(linkerhook);
         dlclose(turnip_driver_handle);
         return NULL;
     }
     void* android_get_exported_namespace = dlsym(dl_android, "android_get_exported_namespace");
-    void (*linkerhook_pass_handles)(void*, void*, void*) = dlsym(linkerhook, "app__pojav_linkerhook_pass_handles");
+//    void (*linkerhook_pass_handles)(void*, void*, void*) = dlsym(linkerhook, "app__pojav_linkerhook_pass_handles");
+    void (*linkerhook_pass_handles)(void*, void*, void*) = app__pojav_linkerhook_pass_handles;
     if (linkerhook_pass_handles == NULL || android_get_exported_namespace == NULL) {
         dlclose(dl_android);
-        dlclose(linkerhook);
+//        dlclose(linkerhook);
         dlclose(turnip_driver_handle);
         return NULL;
     }
@@ -63,7 +64,7 @@ void* load_turnip_vulkan() {
     return libvulkan;
 }
 
-EXTERNAL_API void set_vulkan_ptr(void* ptr) {
+void set_vulkan_ptr(void* ptr) {
     char envval[64];
     sprintf(envval, "%"PRIxPTR, (uintptr_t)ptr);
     setenv("VULKAN_PTR", envval, 1);
