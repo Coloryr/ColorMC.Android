@@ -44,7 +44,7 @@ public static class PhoneConfigUtils
             }
             catch (Exception e)
             {
-                
+
             }
 
             if (Config == null)
@@ -138,7 +138,7 @@ public static class PhoneConfigUtils
     {
         return new()
         {
-            
+
         };
     }
 }

@@ -15,16 +15,16 @@ public partial class PhoneControl : UserControl
         {
             Width = 140,
             Height = 25,
-            Content = "打开手机渲染设置",
-            Margin = new(0, 0, 5 ,0)
+            Content = "鎵撳紑鎵嬫満娓叉煋璁剧疆",
+            Margin = new(0, 0, 5, 0)
         };
         button.Click += Button_Click;
         panel.Children.Add(button);
 
         ToggleSwitch check = new()
         {
-            OffContent = "加载lwjgl-vulkan",
-            OnContent = "加载lwjgl-vulkan",
+            OffContent = "鍔犺浇lwjgl-vulkan",
+            OnContent = "鍔犺浇lwjgl-vulkan",
             IsChecked = PhoneConfigUtils.Config.LwjglVk
         };
         check.IsCheckedChanged += Check_IsCheckedChanged;

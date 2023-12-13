@@ -4,7 +4,7 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>34</ApplicationVersion>
+    <ApplicationVersion>35</ApplicationVersion>
     <ApplicationDisplayVersion>23.2023.1211</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
@@ -115,9 +115,6 @@
   </ItemGroup>	
 
   <ItemGroup>
-    <Compile Update="PhoneControl.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
     <Compile Update="Resources\Resource1.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
