@@ -13,7 +13,6 @@
 #include <GLES2/gl2.h>
 
 #include <android/log.h>
-
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include <android/rect.h>
@@ -64,7 +63,7 @@ void* load_turnip_vulkan() {
     return libvulkan;
 }
 
-static void set_vulkan_ptr(void* ptr) {
+EXTERNAL_API void set_vulkan_ptr(void* ptr) {
     char envval[64];
     sprintf(envval, "%"PRIxPTR, (uintptr_t)ptr);
     setenv("VULKAN_PTR", envval, 1);
@@ -80,6 +79,7 @@ EXTERNAL_API void load_vulkan() {
             return;
         }
     }
+
     LOGI("OSMDroid: loading vulkan regularly...\n");
     void* vulkan_ptr = dlopen("libvulkan.so", RTLD_LAZY | RTLD_LOCAL);
     LOGI("OSMDroid: loaded vulkan, ptr=%p\n", vulkan_ptr);
