@@ -143,8 +143,6 @@ public static class OSMBase
         no_render_buffer = Marshal.AllocHGlobal(4);
         Marshal.WriteInt64(no_render_buffer, 0, 0);
 
-        StringBuilder ldLibraryPath = new StringBuilder();
-
         string temp = "/system/lib64:/vendor/lib64:/vendor/lib64/hw:" + context.ApplicationInfo!.NativeLibraryDir;
 
         Os.Setenv("NATIVE_DIR", temp, true);

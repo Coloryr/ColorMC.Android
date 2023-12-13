@@ -24,15 +24,11 @@ project("colormcnative")
 # System.loadLibrary() and pass the name of the library defined here;
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
-add_library("colormcnative" SHARED
-    hook.c nsbypass.c vkneed.c)
+add_library(${CMAKE_PROJECT_NAME} SHARED hook.c nsbypass.c vkneed.c)
 
-add_library("hook" SHARED
-    hook.c)
+# add_library("hook" SHARED hook.c)
 
-set_target_properties("hook" PROPERTIES LINK_FLAGS "-z global")
-
-# target_link_options("hook" PRIVATE -z global)
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "-z global")
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
