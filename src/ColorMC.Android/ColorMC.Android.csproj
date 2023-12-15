@@ -4,8 +4,8 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>35</ApplicationVersion>
-    <ApplicationDisplayVersion>23.2023.1211</ApplicationDisplayVersion>
+    <ApplicationVersion>36</ApplicationVersion>
+    <ApplicationDisplayVersion>23.2023.1215</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
@@ -35,6 +35,7 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <None Remove="app_pojavlauncher-release.aar" />
     <None Remove="components\caciocavallo17\version" />
     <None Remove="components\caciocavallo\version" />
     <None Remove="components\lwjgl3\lwjgl-glfw-classes.jar" />
@@ -102,11 +103,14 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.0.6" />
-    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.6.1.6" />
+	  <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1.3" />
+	  <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.5" />
+	  <PackageReference Include="Xamarin.Google.Android.Material" Version="1.10.0.2" />
+    <!--<PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.6.1.6" />
     <PackageReference Include="Xamarin.AndroidX.Core" Version="1.12.0.3" />
-	<PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.5" />
-	<PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1.3" />
-	<PackageReference Include="Xamarin.Google.Android.Material" Version="1.10.0.2" />
+	
+	
+	-->
   </ItemGroup>	
 
   <ItemGroup>

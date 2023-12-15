@@ -1,35 +1,10 @@
 ﻿<metadata>
-  <!--
-  This sample removes the class: android.support.v4.content.AsyncTaskLoader.LoadTask:
-  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='AsyncTaskLoader.LoadTask']" />
-  
-  This sample removes the method: android.support.v4.content.CursorLoader.loadInBackground:
-  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='CursorLoader']/method[@name='loadInBackground']" />
-  -->
-	<remove-node path="/api/package[@name='org.apache.commons.io']" />
-	<remove-node path="/api/package[@name='org.apache.commons.io.input']" />
-	<remove-node path="/api/package[@name='org.apache.commons.io.output']" />
-	<remove-node path="/api/package[@name='com.google.gson']" />
-	<remove-node path="/api/package[@name='com.google.gson.internal']" />
-	<remove-node path="/api/package[@name='com.ipaulpro.afilechooser']" />
-	<remove-node path="/api/package[@name='com.kdt.pickafile']" />
-	<remove-node path="/api/package[@name='net.kdt.pojavlaunch.progresskeeper']" />
-	<remove-node path="/api/package[@name='net.kdt.pojavlaunch.profiles']" />
-	<remove-node path="/api/package[@name='org.apache.commons.collections4.iterators']" />
-	<remove-node path="/api/package[@name='org.apache.commons.compress.archivers']" />
-	<remove-node path="/api/package[@name='org.apache.commons.io.comparator']" />
-
-	<remove-node path="/api/package[@name='io.netty.bootstrap']" />
-	<remove-node path="/api/package[@name='io.netty.buffer']" />
-	<remove-node path="/api/package[@name='io.netty.buffer.search']" />
-	<remove-node path="/api/package[@name='io.netty.channel']" />
-	<remove-node path="/api/package[@name='io.netty.util.collection']" />
-	<remove-node path="/api/package[@name='io.netty.channel.local']" />
-	<remove-node path="/api/package[@name='io.netty.handler.codec']" />
-	<remove-node path="/api/package[@name='io.netty.util']" />
-	<remove-node path="/api/package[@name='io.netty.util.concurrent']" />
-	<remove-node path="/api/package[@name='io.netty.util.internal']" />
-	<remove-node path="/api/package[@name='io.netty.util.internal.logging']" />
-	<remove-node path="/api/package[@name='io.netty.util.internal.shaded.org.jctools.queues']" />
-	<remove-node path="/api/package[@name='io.netty.util.internal.shaded.org.jctools.queues.atomic']" />
+	<remove-node path="/api/package[contains(@name, 'com.google')]" />
+	<remove-node path="/api/package[contains(@name, 'org.apache')]" />
+	<remove-node path="/api/package[contains(@name, 'io.netty')]" />
+	<remove-node path="/api/package[contains(@name, 'org.tukaani')]" />
+	<remove-node path="/api/package[contains(@name, 'com.ipaulpro')]" />
+	<remove-node path="/api/package[contains(@name, 'dalvik.annotation')]" />
+	<remove-node path="/api/package[contains(@name, 'net.kdt.pojavlaunch.customcontrols')]" />
+	<remove-node path="/api/package[contains(@name, 'com.kdt.pickafile')]" />
 </metadata>
