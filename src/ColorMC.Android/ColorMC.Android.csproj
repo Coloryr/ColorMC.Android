@@ -8,19 +8,13 @@
     <ApplicationDisplayVersion>23.2023.1215</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
-    <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
-    <IsPublishable>True</IsPublishable>
-    <Platforms>anycpu</Platforms>
+    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
 	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
   </PropertyGroup>
 
 	<ItemGroup>
 		<AndroidManifestOverlay Include="RemoveNode.xml" />
 	</ItemGroup>
-
-	<PropertyGroup Condition="'$(RunAOTCompilation)'=='' and '$(Configuration)'=='Release' and '$(TF_BUILD)'==''">
-	<RunAOTCompilation>True</RunAOTCompilation>
-  </PropertyGroup>
 
   <ItemGroup>    
 	<AndroidLibrary Remove="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
@@ -54,29 +48,9 @@
     <None Remove="Resources\values-v31\styles.xml" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(AndroidEnableProfiler)'=='True'">
-	<IsEmulator Condition="'$(IsEmulator)' == ''">True</IsEmulator>
-	<DebugSymbols>True</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|anycpu'">
-    <AndroidUseAapt2>True</AndroidUseAapt2>
-    <Debugger>Xamarin</Debugger>
-    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-    <AndroidPackageFormat>apk</AndroidPackageFormat>
-    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-    <IsTrimmable>True</IsTrimmable>
-    <IsAotCompatible>True</IsAotCompatible>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|anycpu'">
-    <AndroidUseAapt2>True</AndroidUseAapt2>
-    <Debugger>Xamarin</Debugger>
-    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-    <AndroidPackageFormat>apk</AndroidPackageFormat>
-    <IsTrimmable>True</IsTrimmable>
-    <IsAotCompatible>True</IsAotCompatible>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    </PropertyGroup>
 
   <PropertyGroup Label="Avalonia">
     <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
@@ -106,11 +80,6 @@
 	  <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1.3" />
 	  <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.5" />
 	  <PackageReference Include="Xamarin.Google.Android.Material" Version="1.10.0.2" />
-    <!--<PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.6.1.6" />
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.12.0.3" />
-	
-	
-	-->
   </ItemGroup>	
 
   <ItemGroup>

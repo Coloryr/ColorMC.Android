@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using Avalonia;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -38,6 +39,11 @@ public class MainActivity : AvaloniaMainActivity<App>
     private readonly Semaphore _semaphore = new(0, 2);
     private bool _runData;
     private GameSettingObj _obj;
+
+    protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
+    {
+        return base.CustomizeAppBuilder(builder);
+    }
 
     protected override void OnDestroy()
     {
