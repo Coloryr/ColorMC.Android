@@ -4,7 +4,7 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>36</ApplicationVersion>
+    <ApplicationVersion>37</ApplicationVersion>
     <ApplicationDisplayVersion>23.2023.1215</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
@@ -50,10 +50,15 @@
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
     </PropertyGroup>
 
   <PropertyGroup Label="Avalonia">
     <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
   </PropertyGroup>
 
 	<ItemGroup>
