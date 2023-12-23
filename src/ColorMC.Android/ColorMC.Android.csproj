@@ -8,7 +8,7 @@
     <ApplicationDisplayVersion>23.2023.1211</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
-    <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>28.0</SupportedOSPlatformVersion>
     <IsPublishable>True</IsPublishable>
     <Platforms>anycpu</Platforms>
 	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
@@ -42,8 +42,6 @@
     <None Remove="components\lwjgl3\lwjgl-vulkan.jar" />
     <None Remove="components\lwjgl3\version" />
     <None Remove="components\security\version" />
-    <None Remove="Frp\arm64-v8a\libfrpc.so" />
-    <None Remove="Frp\arm64-v8a\libfrpc_openfrp.so" />
     <None Remove="Icon.png" />
     <None Remove="components\security\java_sandbox.policy" />
     <None Remove="components\security\log4j-rce-patch-1.12.xml" />
@@ -61,7 +59,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|anycpu'">
     <AndroidUseAapt2>True</AndroidUseAapt2>
     <Debugger>Xamarin</Debugger>
-    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <IsTrimmable>True</IsTrimmable>
@@ -71,7 +69,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|anycpu'">
     <AndroidUseAapt2>True</AndroidUseAapt2>
     <Debugger>Xamarin</Debugger>
-    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
@@ -130,6 +128,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>	
+
+  <ItemGroup>
+    <Folder Include="Frp\arm64-v8a\" />
   </ItemGroup>
 </Project>
  

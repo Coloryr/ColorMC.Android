@@ -71,7 +71,7 @@ public static class RenderTest
 {
     public static void Init(Context context, IntPtr window)
     {
-        RenderType type = RenderType.ZINK;
+        RenderType type = RenderType.ANDROID;
 
         if (type == RenderType.ZINK)
         {
@@ -80,7 +80,7 @@ public static class RenderTest
         else
         {
             GLBase.Init(type);
-            EGLBase.EglInit(window, type);
+            EGLBase.EglInit(context, window, type);
         }
     }
 

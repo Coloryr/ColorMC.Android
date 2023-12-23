@@ -90,7 +90,7 @@ public static class Env
     {
         try
         {
-            EGLBase.EglInit(IntPtr.Zero, RenderType.ANDROID);
+            //EGLBase.EglInit(IntPtr.Zero, RenderType.ANDROID);
             GLBase.Init(RenderType.ANDROID);
 
             return GLBase.IsAdrenoGraphics();

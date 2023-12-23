@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决�
 		ColorMC\src\Directory.Build.props = ColorMC\src\Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ColorMC.Android.RenderNative", "ColorMC.Android.RenderNative\ColorMC.Android.RenderNative.vcxproj", "{3D56F584-35BB-41BE-9A7B-F0819C17F013}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -186,6 +188,26 @@ Global
 		{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}.Release|x64.Build.0 = Release|Any CPU
 		{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}.Release|x86.ActiveCfg = Release|Any CPU
 		{8E8AF212-958B-40DA-8A29-84EBB6EFBF40}.Release|x86.Build.0 = Release|Any CPU
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|Any CPU.ActiveCfg = Debug|ARM64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|Any CPU.Build.0 = Debug|ARM64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|ARM.Build.0 = Debug|ARM
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|ARM64.Build.0 = Debug|ARM64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|x64.ActiveCfg = Debug|x64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|x64.Build.0 = Debug|x64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|x86.ActiveCfg = Debug|x86
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Debug|x86.Build.0 = Debug|x86
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|Any CPU.ActiveCfg = Release|x64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|Any CPU.Build.0 = Release|x64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|ARM.ActiveCfg = Release|ARM
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|ARM.Build.0 = Release|ARM
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|ARM64.ActiveCfg = Release|ARM64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|ARM64.Build.0 = Release|ARM64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|x64.ActiveCfg = Release|x64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|x64.Build.0 = Release|x64
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|x86.ActiveCfg = Release|x86
+		{3D56F584-35BB-41BE-9A7B-F0819C17F013}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
