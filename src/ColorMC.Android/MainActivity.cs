@@ -256,7 +256,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         mainIntent.PutExtra("JAVA_DIR", jvm.Path);
         mainIntent.PutExtra("GAME_VERSION", obj.Version);
         mainIntent.PutExtra("GAME_TIME", version.time);
-        mainIntent.PutExtra("GAME_V2", CheckHelpers.ISGameVersionV2(version));
+        mainIntent.PutExtra("GAME_V2", CheckHelpers.IsGameVersionV2(version));
         mainIntent.PutExtra("ENV_KEY", env.Keys.ToArray());
         mainIntent.PutExtra("ENV_VALUE", env.Values.ToArray());
         var native = ApplicationInfo!.NativeLibraryDir;
