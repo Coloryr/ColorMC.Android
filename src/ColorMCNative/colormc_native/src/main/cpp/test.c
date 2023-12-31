@@ -21,52 +21,44 @@ int main(int argc, char** args)
 
     printf("get fd: %s\n", arg);
 
-    int sock;
-    if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    int sockfd;
+    struct sockaddr_un addr;
+    char buffer[1024] = "Hello from C client!";
+    char recvBuffer[1024];
+
+    // 创建socket
+    if ((sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
-        perror("client socket error");
-        return 1;
+        perror("socket error");
+        exit(EXIT_FAILURE);
     }
 
-    // 指定服务器套接字的名称
-    struct sockaddr_un remote;
-    memset(&remote, 0, sizeof(struct sockaddr_un));
-    remote.sun_family = AF_UNIX;
-    remote.sun_path[0] = 0;
-    int len = strlen(arg);
-    for (int a = 0; a < len; a++)
-    {
-        remote.sun_path[a + 1] = arg[a];
-    }
+    // 设置地址结构
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, arg, sizeof(addr.sun_path) - 1);
 
     // 连接到服务器
-    if (connect(sock, (struct sockaddr*)&remote, sizeof(struct sockaddr_un)) < 0)
+    if (connect(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
     {
         perror("connect error");
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
-    printf("sock connected\n");
+    // 发送数据
+    write(sockfd, buffer, strlen(buffer));
+    printf("Message sent: %s\n", buffer);
 
-    const char* message = "test\n";
-    int length = strlen(message);
-    ssize_t bytes_sent = write(sock, message, length);
-
-    if (bytes_sent < 0) {
-        // 发送失败，处理错误
-        perror("send failed");
-        return 1;
-    }
-    else
+    // 接收数据
+    ssize_t receivedBytes;
+    if ((receivedBytes = read(sockfd, recvBuffer, sizeof(recvBuffer) - 1)) > 0)
     {
-        printf("sock write:%d\n", bytes_sent);
+        recvBuffer[receivedBytes] = '\0'; // 确保字符串结束
+        printf("Received: %s\n", recvBuffer);
     }
 
-    printf("release sock\n");
-    // 关闭套接字
-    close(sock);
-
-    printf("exit\n");
+    // 关闭socket
+    close(sockfd);
 
     return 0;
 }
