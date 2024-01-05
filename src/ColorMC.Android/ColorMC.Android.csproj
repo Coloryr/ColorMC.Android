@@ -4,10 +4,11 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>coloryr.colormc.android</ApplicationId>
-    <ApplicationVersion>39</ApplicationVersion>
+    <ApplicationVersion>41</ApplicationVersion>
     <ApplicationDisplayVersion>23.2023.1229</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
-    <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
+    <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>
+	<AndroidStripILAfterAOT>true</AndroidStripILAfterAOT>
     <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
 	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
   </PropertyGroup>
