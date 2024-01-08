@@ -1,18 +1,7 @@
 ﻿using Android.Content;
-using Android.Graphics.Drawables;
-using Android.Hardware.Lights;
-using Android.Health.Connect.DataTypes.Units;
-using Android.Views;
-using ColorMC.Android.GLRender.Bridges;
-using ColorMC.Core.Helpers;
-using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Android.Icu.Text.ListFormatter;
 
 namespace ColorMC.Android.GLRender;
 
@@ -69,29 +58,13 @@ public class Utf8Buffer : SafeHandle
 
 public static class RenderTest
 {
-    public static void Init(Context context, IntPtr window)
+    public static void Init(Context context)
     {
-        RenderType type = RenderType.ANDROID;
-
-        if (type == RenderType.ZINK)
-        {
-            OSMBase.Init(context, window, type);
-        }
-        else
-        {
-            GLBase.Init(type);
-            EGLBase.EglInit(context, window, type);
-        }
+        GameLauncher.Start(context);
     }
 
     public static void ChangeSize(int width, int height)
     {
-        GLBase.GetVersion();
-
-        //设置视口大小
-        GL.Viewport(0, 0, width, height);
-        GL.ClearColor(1.0f, 1.0f, 0, 1.0f);
-        GL.Clear(GL.GL_COLOR_BUFFER_BIT);
-        EGLBase.SwapBuffers();
+        
     }
 }

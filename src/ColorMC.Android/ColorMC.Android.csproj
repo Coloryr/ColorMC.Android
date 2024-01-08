@@ -13,6 +13,18 @@
     <Platforms>anycpu</Platforms>
 	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
   </PropertyGroup>
+  <ItemGroup>
+    <AndroidJavaSource Remove="Frp\**" />
+    <AndroidLibrary Remove="Frp\**" />
+    <AndroidNativeLibrary Remove="Frp\**" />
+    <AvaloniaXaml Remove="Frp\**" />
+    <Compile Remove="Frp\**" />
+    <EmbeddedResource Remove="Frp\**" />
+    <JavaSourceJar Remove="Frp\**" />
+    <None Remove="Frp\**" />
+    <ProguardConfiguration Remove="Frp\**" />
+    <TransformFile Remove="Frp\**" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<AndroidManifestOverlay Include="RemoveNode.xml" />
@@ -61,7 +73,7 @@
     <Debugger>Xamarin</Debugger>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
-    <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>
@@ -100,6 +112,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.0.6" />
+    <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.8.1.1" />
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.6.1.6" />
     <PackageReference Include="Xamarin.AndroidX.Core" Version="1.12.0.3" />
 	<PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.5" />
@@ -109,7 +122,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ColorMC.Android.Render\ColorMC.Android.GLRender.csproj" />
-    <ProjectReference Include="..\ColorMC\src\ColorMC.Gui\ColorMC.Gui.csproj" />
   </ItemGroup>	
 
   <ItemGroup>
@@ -128,10 +140,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>	
-
-  <ItemGroup>
-    <Folder Include="Frp\arm64-v8a\" />
   </ItemGroup>
 </Project>
  

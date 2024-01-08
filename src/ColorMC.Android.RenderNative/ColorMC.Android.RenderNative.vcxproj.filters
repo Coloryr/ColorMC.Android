@@ -1,6 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\ColorMCNative\colormc_native\src\main\cpp\test.c" />
+    <ClCompile Include="run.c" />
+    <ClCompile Include="gl_loader\gl_bridge.c">
+      <Filter>gl_loader</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_loader\egl_loader.c">
+      <Filter>gl_loader</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="gl_loader">
+      <UniqueIdentifier>{16e2d59c-1987-4a23-95bd-1c8943e2d946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GL">
+      <UniqueIdentifier>{e6589369-3878-47c8-91ba-85cdf5e5b7dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gl_loader\egl_loader.h">
+      <Filter>gl_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_loader\gl_bridge.h">
+      <Filter>gl_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="GL\gl.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GL\glext.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GL\osmesa.h">
+      <Filter>GL</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

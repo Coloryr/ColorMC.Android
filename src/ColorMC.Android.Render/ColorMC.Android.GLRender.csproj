@@ -8,19 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libcolormcnative.so" />
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libEGL_angle.so" />
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libgl4es_114.so" />
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libGLESv2_angle.so" />
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libjnidispatch.so" />
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libOSMesa.so" />
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libVkLayer_khronos_timeline_semaphore.so" />
-    <AndroidNativeLibrary Remove="NativeLib\arm64-v8a\libvulkan_freedreno.so" />
-    <AndroidNativeLibrary Remove="NativeLib\x86_64\libcolormcnative.so" />
+    <None Remove="NativeLib\arm64-v8a\libColorMC_Android_RenderNative.so.recipe" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ColorMC\src\ColorMC.Core\ColorMC.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NativeLib\x86_64\" />
   </ItemGroup>
 
 </Project>

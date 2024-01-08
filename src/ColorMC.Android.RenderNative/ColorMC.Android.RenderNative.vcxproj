@@ -35,7 +35,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ColorMCNative\colormc_native\src\main\cpp\test.c" />
+    <ClCompile Include="gl_loader\egl_loader.c" />
+    <ClCompile Include="gl_loader\gl_bridge.c" />
+    <ClCompile Include="run.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GL\gl.h" />
+    <ClInclude Include="GL\glext.h" />
+    <ClInclude Include="GL\osmesa.h" />
+    <ClInclude Include="gl_loader\egl_loader.h" />
+    <ClInclude Include="gl_loader\gl_bridge.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3d56f584-35bb-41be-9a7b-f0819c17f013}</ProjectGuid>
@@ -98,14 +107,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)ColorMC.Android.Render\NativeLib\x86_64\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <OutDir>$(SolutionDir)ColorMC.Android.Render\NativeLib\arm64-v8a\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <OutDir>$(SolutionDir)ColorMC.Android.Render\NativeLib\arm64-v8a\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
   </PropertyGroup>
@@ -119,7 +131,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemDefinitionGroup>

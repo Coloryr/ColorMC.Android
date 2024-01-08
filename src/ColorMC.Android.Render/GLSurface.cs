@@ -3,7 +3,6 @@ using Android.Graphics;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
-using ColorMC.Android.GLRender.Bridges;
 using Java.Interop;
 using System;
 using System.Collections.Generic;
@@ -40,15 +39,12 @@ public class GLSurface : View, ISurfaceHolderCallback
 
     public void SurfaceCreated(ISurfaceHolder holder)
     {
-        IntPtr nativeWindow = NativeWindow.FromSurface(
-            JniEnvironment.EnvironmentPointer, holder.Surface?.Handle ?? default);
-
-        RenderTest.Init(Context!, nativeWindow);
+        RenderTest.Init(Context!);
     }
 
     public void SurfaceDestroyed(ISurfaceHolder holder)
     {
-        EGLBase.DestroyEgl();
+        
     }
 
     public void Init()
