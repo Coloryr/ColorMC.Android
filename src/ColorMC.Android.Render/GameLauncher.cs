@@ -1,14 +1,7 @@
 ﻿using Android.Content;
-using Android.Opengl;
-using Android.Speech.Tts;
 using Android.Systems;
-using Java.IO;
-using Java.Lang;
+using System.Diagnostics;
 using System.Net.Sockets;
-using static Android.Icu.Text.ListFormatter;
-using static System.Net.Mime.MediaTypeNames;
-using Exception = System.Exception;
-using Thread = System.Threading.Thread;
 
 namespace ColorMC.Android.GLRender;
 
@@ -157,52 +150,48 @@ public class GameLauncher
         };
         var temp1 = Os.Getenv("PATH");
 
+        var LD_LIBRARY_PATH = context.ApplicationInfo.NativeLibraryDir + ":" + temp1
+            + ":" + "/system/lib64";
+        
+
         // 获取文件描述符的整数值
-        ProcessBuilder process = new(context.ApplicationInfo.NativeLibraryDir + "/" + "libcolormcnative.so");
-        process.Environment().Add("GAME_SOCK", game);
-        process.Environment().Add("RENDER_SOCK", render);
-        process.Environment().Add("RUN_SO", "libcolormcnative_run.so");
-        process.Environment().Add("GL_SO", "libgl4es_114.so");
-        process.Environment().Add("EGL_SO", "libEGL.so");
-        {
-            var LD_LIBRARY_PATH = context.ApplicationInfo.NativeLibraryDir + ":" + temp1
-                +":" + "/system/lib64";
-            process.Environment().Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
-        }
-        process.Environment().Add("LIBGL_MIPMAP", "3");
+        var info = new ProcessStartInfo(context.ApplicationInfo.NativeLibraryDir + "/" + "libcolormcnative.so")
+        { 
+            WorkingDirectory = context.FilesDir.AbsolutePath
+        };
+        info.Environment.Add("GAME_SOCK", game);
+        info.Environment.Add("RENDER_SOCK", render);
+        info.Environment.Add("RUN_SO", "libcolormcnative_run.so");
+        info.Environment.Add("GL_SO", "libgl4es_114.so");
+        info.Environment.Add("EGL_SO", "libEGL.so");
+        info.Environment.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
+        info.Environment.Add("LIBGL_MIPMAP", "3");
+        info.Environment.Add("LIBGL_NOERROR", "1");
+        info.Environment.Add("LIBGL_NOINTOVLHACK", "1");
+        info.Environment.Add("LIBGL_NORMALIZE", "1");
+        info.Environment.Add("LIBGL_ES", "3");
 
-        // Prevent OptiFine (and other error-reporting stuff in Minecraft) from balooning the log
-        process.Environment().Add("LIBGL_NOERROR", "1");
+        info.RedirectStandardError = true;
+        info.RedirectStandardInput = true;
+        info.RedirectStandardOutput = true;
 
-        // On certain GLES drivers, overloading default functions shader hack fails, so disable it
-        process.Environment().Add("LIBGL_NOINTOVLHACK", "1");
-
-        // Fix white color on banner and sheep, since GL4ES 1.1.5
-        process.Environment().Add("LIBGL_NORMALIZE", "1");
-
-        // The OPEN GL version is changed according
-        process.Environment().Add("LIBGL_ES", "3");
-        var fileDir = context.FilesDir;
-        process.Directory(fileDir);
-        process.RedirectErrorStream(true);
         RenderLog.Info("Pipe", "Start Pipe");
-        var p = process.Start();
-        new Thread(() =>
+        var p = new Process
         {
-            try
-            {
-                string? str;
-                using var inputReader = new BufferedReader(new InputStreamReader(p.InputStream));
-                while ((str = inputReader.ReadLine()) != null)
-                {
-                    RenderLog.Info("Pipe", str);
-                }
-            }
-            catch(Exception e)
-            { 
-                
-            }
-        }).Start();
+            StartInfo = info
+        };
+        p.OutputDataReceived += (sender, message) =>
+        {
+            RenderLog.Info("Pipe", message.Data ?? "");
+        };
+        p.ErrorDataReceived += (sender, message) =>
+        {
+            RenderLog.Info("Pipe", message.Data ?? "");
+        };
+        p.Start();
+        p.BeginErrorReadLine();
+        p.BeginOutputReadLine();
+
         if (!Sock.Connect())
         {
             return;

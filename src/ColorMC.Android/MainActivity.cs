@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using Android.Systems;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -21,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Process = System.Diagnostics.Process;
 using Uri = Android.Net.Uri;
 
 namespace ColorMC.Android;
@@ -50,7 +52,7 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         ColorMCCore.PhoneGameLaunch = PhoneGameLaunch;
         ColorMCCore.PhoneJvmInstall = PhoneJvmInstall;
-        ColorMCCore.PhoneReadJvm = PhoneReadJvm;
+        ColorMCCore.PhoneStartJvm = PhoneStartJvm;
         ColorMCCore.PhoneReadFile = PhoneReadFile;
         ColorMCCore.PhoneGetDataDir = PhoneGetDataDir;
         ColorMCCore.PhoneJvmRun = PhoneJvmRun;
@@ -94,30 +96,35 @@ public class MainActivity : AvaloniaMainActivity<App>
         return new PhoneControl(this);
     }
 
-    public async Task<bool> PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg, Dictionary<string, string> env)
+    public Process PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg, Dictionary<string, string> env)
     {
+        var p = PhoneStartJvm(jvm.Path);
         string dir1 = obj.GetLogPath();
         if (!Directory.Exists(dir1))
         {
             Directory.CreateDirectory(dir1);
         }
 
-        string log = Path.GetFullPath(obj.GetLogPath() + "/" + "run.log");
-        var mainIntent = new Intent();
-        mainIntent.SetAction("ColorMC.Minecraft.JvmRun");
-        mainIntent.PutExtra("JAVA_DIR", jvm.Path);
-        mainIntent.PutExtra("JAVA_ARG", arg.ToArray());
-        mainIntent.PutExtra("GAME_DIR", dir);
-        mainIntent.PutExtra("LOG_FILE", log);
-        mainIntent.PutExtra("ENV_KEY", env.Keys.ToArray());
-        mainIntent.PutExtra("ENV_VALUE", env.Values.ToArray());
-        StartActivityForResult(mainIntent, 400);
-        await Task.Run(() =>
+        foreach (var item in env)
         {
-            _semaphore.WaitOne();
-        });
+            p.StartInfo.Environment.Add(item.Key, item.Value);
+        }
 
-        return _runData;
+        var file = new FileInfo(jvm.Path);
+        var path = Path.GetFullPath(file.Directory.Parent.FullName);
+
+        p.StartInfo.WorkingDirectory = dir;
+        p.StartInfo.ArgumentList.Add("-Djava.home=" + path);
+        p.StartInfo.ArgumentList.Add("-Djava.io.tmpdir=" + ApplicationContext.CacheDir.AbsolutePath);
+        p.StartInfo.ArgumentList.Add("-Djna.boot.library.path=" + ApplicationInfo.NativeLibraryDir);
+        p.StartInfo.ArgumentList.Add("-Duser.home=" + ApplicationContext.GetExternalFilesDir(null).AbsolutePath);
+        p.StartInfo.ArgumentList.Add("-Duser.language=" + Java.Lang.JavaSystem.GetProperty("user.language"));
+        p.StartInfo.ArgumentList.Add("-Dos.name=Linux");
+        p.StartInfo.ArgumentList.Add("-Dos.version=Android-" + ColorMCCore.Version);
+        p.StartInfo.ArgumentList.Add("-Duser.timezone=" + Java.Util.TimeZone.Default.ID);
+        arg.ForEach(p.StartInfo.ArgumentList.Add);
+
+        return p;
     }
 
     public void PhoneJvmInstall(Stream stream, string file, Action<string, int, int>? zip)
@@ -160,33 +167,57 @@ public class MainActivity : AvaloniaMainActivity<App>
         }
     }
 
-    public JavaInfo? PhoneReadJvm(string path)
+    public Process PhoneStartJvm(string path)
     {
-        return null;
-
         var file = new FileInfo(path);
-        path = file.Directory.Parent.FullName;
-        //var info = MultiRTUtils.Read(path);
-        //if (info == null)
-        //{
-        //    return null;
-        //}
+        path = Path.GetFullPath(file.Directory.Parent.FullName + "/lib");
 
-        //return new()
-        //{
-        //    Path = path,
-        //    MajorVersion = info.JavaVersion,
-        //    Type = "openjdk",
-        //    Version = info.VersionString!,
-        //    Arch = info.Arch switch
-        //    {
-        //        "aarch64" => ArchEnum.aarch64,
-        //        "arm" => ArchEnum.arm,
-        //        "x86" => ArchEnum.x86,
-        //        "x86_64" => ArchEnum.x86_64,
-        //        _ => ArchEnum.unknow
-        //    }
-        //};
+        string arch = "";
+
+        if (Directory.Exists(path + "/amd64"))
+        {
+            arch = "amd64";
+        }
+        else if (Directory.Exists(path + "/aarch64"))
+        {
+            arch = "aarch64";
+        }
+        else if (Directory.Exists(path + "/aarch32"))
+        {
+            arch = "aarch32";
+        }
+        else if (Directory.Exists(path + "/i386"))
+        {
+            arch = "i386";
+        }
+        else if (Directory.Exists(path + "/i486"))
+        {
+            arch = "i486";
+        }
+        else if (Directory.Exists(path + "/i586"))
+        {
+            arch = "i586";
+        }
+
+        path += "/" + arch;
+
+        var LD_LIBRARY_PATH =
+            $"{path}/jli:" +
+            $"{path}:" +
+            $"/system/lib64:" +
+            $"/vendor/lib64:" +
+            $"/vendor/lib64/hw:" +
+           ApplicationContext.ApplicationInfo.NativeLibraryDir;
+
+        LD_LIBRARY_PATH += ":" + path + "/" + (File.Exists(path + $"/server/libjvm.so") ? "server" : "client");
+
+        var info = new ProcessStartInfo(file.FullName);
+        info.EnvironmentVariables.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
+        var p = new Process
+        {
+            StartInfo = info
+        };
+        return p;
     }
 
     public void PhoneOpenUrl(string? url)
@@ -222,7 +253,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         StartActivity(mainIntent);
     }
 
-    public void PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list, Dictionary<string, string> env)
+    public Process PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list, Dictionary<string, string> env)
     {
         _obj = obj;
 
@@ -230,7 +261,6 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         var version = VersionPath.GetVersion(obj.Version)!;
         string dir = obj.GetLogPath();
-
         if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
@@ -242,15 +272,6 @@ public class MainActivity : AvaloniaMainActivity<App>
             File.WriteAllBytes(file, Resource1.options);
         }
 
-        var mainIntent = new Intent();
-        mainIntent.SetAction("ColorMC.Minecraft.Launch");
-        mainIntent.PutExtra("GAME_DIR", obj.GetGamePath());
-        mainIntent.PutExtra("JAVA_DIR", jvm.Path);
-        mainIntent.PutExtra("GAME_VERSION", obj.Version);
-        mainIntent.PutExtra("GAME_TIME", version.time);
-        mainIntent.PutExtra("GAME_V2", CheckHelpers.IsGameVersionV2(version));
-        mainIntent.PutExtra("ENV_KEY", env.Keys.ToArray());
-        mainIntent.PutExtra("ENV_VALUE", env.Values.ToArray());
         var native = ApplicationInfo!.NativeLibraryDir;
         var classpath = false;
         for (int a = 0; a < list.Count; a++)
@@ -265,25 +286,22 @@ public class MainActivity : AvaloniaMainActivity<App>
             {
                 classpath = false;
 
-                //string lwjgl = Tools.ComponentsDir + "/lwjgl3/lwjgl-glfw-classes.jar";
+                string lwjgl = ResourceUnPack.ComponentsDir + "/lwjgl3/lwjgl-glfw-classes.jar";
 
-                //if (PhoneConfigUtils.Config.LwjglVk)
-                //{
-                //    lwjgl += ":" + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan.jar" + ":"
-                //        + Tools.ComponentsDir + "/lwjgl3/lwjgl-vulkan-native.jar";
-                //}
+                if (PhoneConfigUtils.Config.LwjglVk)
+                {
+                    lwjgl += ":" + ResourceUnPack.ComponentsDir + "/lwjgl3/lwjgl-vulkan.jar" + ":"
+                        + ResourceUnPack.ComponentsDir + "/lwjgl3/lwjgl-vulkan-native.jar";
+                }
 
-                //list[a] = lwjgl + ":" + list[a];
+                list[a] = lwjgl + ":" + list[a];
             }
         }
-        mainIntent.PutExtra("ARGS", list.ToArray());
 
-        string log = Path.GetFullPath(dir + "/" + "phone.log");
-        mainIntent.PutExtra("LOG_FILE", log);
+        var p = PhoneJvmRun(obj, jvm, obj.GetGamePath(), list, env);
 
-        mainIntent.SetFlags(ActivityFlags.NewTask);
 
-        StartActivityForResult(mainIntent, 200);
-        GameCount.LaunchDone(obj);
+
+        return p;
     }
 }
