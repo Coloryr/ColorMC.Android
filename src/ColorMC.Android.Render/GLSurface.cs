@@ -1,54 +1,84 @@
 ﻿using Android.Content;
 using Android.Graphics;
+using Android.Opengl;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
-using Java.Interop;
+using Javax.Microedition.Khronos.Opengles;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ColorMC.Android.GLRender;
 
-public class GLSurface : View, ISurfaceHolderCallback
+public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IRenderer
 {
-    private SurfaceView view;
+    private static QuadRenderer render;
+
+    private int width, height;
+    private GameLauncher NowGame;
+
     public GLSurface(Context? context) : this(context, null)
     {
+
     }
 
     public GLSurface(Context? context, IAttributeSet? attributeSet) : base(context, attributeSet)
     {
-        view = new SurfaceView(Context);
-        view.Holder?.AddCallback(this);
+        SetEGLContextClientVersion(3);
+        SetRenderer(this);
     }
 
-    protected override void OnAttachedToWindow()
+    public void OnDrawFrame(IGL10? gl)
     {
-        base.OnAttachedToWindow();
+        GLES20.GlViewport(0, 0, width, height);
+        GLES20.GlClearColor(0, 0, 0, 0);
+        GLES20.GlClear(GLES20.GlColorBufferBit);
 
-        (Parent as ViewGroup)!.AddView(view);
+        if (NowGame.HaveBuffer)
+        {
+            if (NowGame.TexId == 0)
+            {
+                NowGame.BindTexture();
+            }
+            else
+            {
+                render.DrawTexture(NowGame.TexId, width, height, NowGame.RenderWidth, NowGame.RenderHeight, false);
+            }
+        }
     }
 
-    public void SurfaceChanged(ISurfaceHolder holder, [GeneratedEnum] Format format, int width, int height)
+    public void OnSurfaceChanged(IGL10? gl, int width, int height)
     {
-        RenderTest.ChangeSize(width, height);
+        this.width = width;
+        this.height = height;
+       
+        RenderTest.Available();
+
+        render = new();
+        NowGame = new GameLauncher()
+        {
+            Width = 640,
+            Height = 480
+        };
+        NowGame.Start(Context!);
     }
 
-    public void SurfaceCreated(ISurfaceHolder holder)
-    {
-        RenderTest.Init(Context!);
-    }
-
-    public void SurfaceDestroyed(ISurfaceHolder holder)
+    public void OnSurfaceCreated(IGL10? gl, Javax.Microedition.Khronos.Egl.EGLConfig? config)
     {
         
     }
 
-    public void Init()
-    { 
-        
+    public void SetSize(string? text1, string? text2)
+    {
+        if (ushort.TryParse(text1, out var width)
+            && ushort.TryParse(text2, out var height))
+        {
+            NowGame.Width = width;
+            NowGame.Height = height;
+            NowGame.SetSize();
+        }
+        else
+        {
+            Toast.MakeText(Context!, "错误的输入", ToastLength.Short).Show();
+        }
     }
 }

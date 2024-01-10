@@ -10,21 +10,9 @@
     <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
     <SupportedOSPlatformVersion>28.0</SupportedOSPlatformVersion>
     <IsPublishable>True</IsPublishable>
-    <Platforms>anycpu</Platforms>
+    <Platforms>anycpu;x64</Platforms>
 	<AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
   </PropertyGroup>
-  <ItemGroup>
-    <AndroidJavaSource Remove="Frp\**" />
-    <AndroidLibrary Remove="Frp\**" />
-    <AndroidNativeLibrary Remove="Frp\**" />
-    <AvaloniaXaml Remove="Frp\**" />
-    <Compile Remove="Frp\**" />
-    <EmbeddedResource Remove="Frp\**" />
-    <JavaSourceJar Remove="Frp\**" />
-    <None Remove="Frp\**" />
-    <ProguardConfiguration Remove="Frp\**" />
-    <TransformFile Remove="Frp\**" />
-  </ItemGroup>
 
 	<ItemGroup>
 		<AndroidManifestOverlay Include="RemoveNode.xml" />
@@ -47,17 +35,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <None Remove="components\caciocavallo17\version" />
-    <None Remove="components\caciocavallo\version" />
-    <None Remove="components\lwjgl3\lwjgl-glfw-classes.jar" />
-    <None Remove="components\lwjgl3\lwjgl-vulkan-native.jar" />
-    <None Remove="components\lwjgl3\lwjgl-vulkan.jar" />
-    <None Remove="components\lwjgl3\version" />
-    <None Remove="components\security\version" />
     <None Remove="Icon.png" />
-    <None Remove="components\security\java_sandbox.policy" />
-    <None Remove="components\security\log4j-rce-patch-1.12.xml" />
-    <None Remove="components\security\log4j-rce-patch-1.7.xml" />
     <None Remove="RemoveNode.xml" />
     <None Remove="Resources\drawable\icon.png" />
     <None Remove="Resources\values-v31\styles.xml" />
@@ -91,27 +69,9 @@
     <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
-	<ItemGroup>
-	  <AndroidAsset Include="components\caciocavallo17\cacio-shared-1.18-SNAPSHOT.jar" />
-	  <AndroidAsset Include="components\caciocavallo17\cacio-tta-1.18-SNAPSHOT.jar" />
-	  <AndroidAsset Include="components\caciocavallo17\version" />
-	  <AndroidAsset Include="components\caciocavallo\cacio-androidnw-1.10-SNAPSHOT.jar" />
-	  <AndroidAsset Include="components\caciocavallo\cacio-shared-1.10-SNAPSHOT.jar" />
-	  <AndroidAsset Include="components\caciocavallo\ResConfHack.jar" />
-	  <AndroidAsset Include="components\caciocavallo\version" />
-	  <AndroidAsset Include="components\lwjgl3\lwjgl-glfw-classes.jar" />
-	  <AndroidAsset Include="components\lwjgl3\lwjgl-vulkan-native.jar" />
-	  <AndroidAsset Include="components\lwjgl3\lwjgl-vulkan.jar" />
-	  <AndroidAsset Include="components\lwjgl3\version" />
-	  <AndroidAsset Include="components\security\java_sandbox.policy" />
-	  <AndroidAsset Include="components\security\log4j-rce-patch-1.12.xml" />
-	  <AndroidAsset Include="components\security\log4j-rce-patch-1.7.xml" />
-	  <AndroidAsset Include="components\security\pro-grade.jar" />
-	  <AndroidAsset Include="components\security\version" />
-	</ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.0.6" />
+    <PackageReference Include="SharpCompress" Version="0.35.0" />
     <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.8.1.1" />
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.6.1.6" />
     <PackageReference Include="Xamarin.AndroidX.Core" Version="1.12.0.3" />
@@ -122,13 +82,34 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ColorMC.Android.Render\ColorMC.Android.GLRender.csproj" />
+    <ProjectReference Include="..\ColorMC\Live2DCSharpSDK\Live2DCSharpSDK.App\Live2DCSharpSDK.App.csproj" />
+    <ProjectReference Include="..\ColorMC\Live2DCSharpSDK\Live2DCSharpSDK.Framework\Live2DCSharpSDK.Framework.csproj" />
+    <ProjectReference Include="..\ColorMC\src\ColorMC.Core\ColorMC.Core.csproj" />
+    <ProjectReference Include="..\ColorMC\src\ColorMC.Gui\ColorMC.Gui.csproj" />
   </ItemGroup>	
 
   <ItemGroup>
-    <Compile Update="PhoneControl.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
+    <Compile Update="components\caciocavallo17\ResourceDir2.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResourceDir2.resx</DependentUpon>
     </Compile>
-    <Compile Update="Resources\Resource1.Designer.cs">
+    <Compile Update="components\caciocavallo\ResourceDir1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResourceDir1.resx</DependentUpon>
+    </Compile>
+    <Compile Update="components\lwjgl3\ResourceDir3.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResourceDir3.resx</DependentUpon>
+    </Compile>
+    <Compile Update="components\security\ResourceDir4.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResourceDir4.resx</DependentUpon>
+    </Compile>
+    <Compile Update="components\Resource1.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resource1.resx</DependentUpon>
@@ -136,7 +117,23 @@
   </ItemGroup>	
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources\Resource1.resx">
+    <EmbeddedResource Update="components\caciocavallo17\ResourceDir2.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourceDir2.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="components\caciocavallo\ResourceDir1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourceDir1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="components\lwjgl3\ResourceDir3.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourceDir3.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="components\security\ResourceDir4.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourceDir4.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="components\Resource1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
     </EmbeddedResource>

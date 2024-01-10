@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         //applicationId "net.kdt.pojavview"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 33
         multiDexEnabled true //important
     }
