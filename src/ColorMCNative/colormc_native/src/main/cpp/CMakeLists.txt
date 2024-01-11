@@ -23,6 +23,8 @@ target_link_libraries("colormcnative_display"
 add_library("colormcnative_run" SHARED
         run/run.c
         run/bmp.c
+        run/events.c
+        run/lwjgl_use.c
         run/game_command.c
         run/render_sock.c
         run/render_test.c

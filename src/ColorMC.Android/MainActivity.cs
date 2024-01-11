@@ -1,27 +1,25 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
 using Android.Systems;
+using Android.Util;
 using Avalonia.Android;
 using Avalonia.Controls;
-using Avalonia.Threading;
 using ColorMC.Android.components;
+using ColorMC.Android.GLRender;
 using ColorMC.Core;
 using ColorMC.Core.Helpers;
 using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
-using ColorMC.Core.Utils;
 using ColorMC.Gui;
 using ColorMC.Gui.Objs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Process = System.Diagnostics.Process;
 using Uri = Android.Net.Uri;
 
@@ -31,13 +29,12 @@ namespace ColorMC.Android;
     Theme = "@style/MyTheme.NoActionBar",
     Icon = "@drawable/icon",
     MainLauncher = true,
+    TaskAffinity = "colormc.android.game.main",
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode,
     ScreenOrientation = ScreenOrientation.FullUser)]
 public class MainActivity : AvaloniaMainActivity<App>
 {
-    private readonly Semaphore _semaphore = new(0, 2);
-    private bool _runData;
-    private GameSettingObj _obj;
+    public static readonly Dictionary<string, GameRender> Games = [];
 
     public static string NativeLibDir;
 
@@ -146,25 +143,6 @@ public class MainActivity : AvaloniaMainActivity<App>
     protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
     {
         base.OnActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 400)
-        {
-            _runData = data?.GetBooleanExtra("res", false) ?? false;
-            _semaphore.Release();
-        }
-        else if (requestCode == 200)
-        {
-            GameCount.GameClose(_obj);
-            var res = data?.GetIntExtra("res", -1) ?? -1;
-            if (res != 0)
-            {
-                //App.AllWindow!.Model.Show("游戏退出，代码：" + res);
-            }
-            Dispatcher.UIThread.Post(() =>
-            {
-                App.MainWindow?.GameClose(_obj.UUID);
-            });
-        }
     }
 
     public Process PhoneStartJvm(string path)
@@ -201,21 +179,21 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         path += "/" + arch;
 
-        var LD_LIBRARY_PATH =
-            $"{path}/jli:" +
-            $"{path}:" +
-            $"/system/lib64:" +
-            $"/vendor/lib64:" +
-            $"/vendor/lib64/hw:" +
-           ApplicationContext.ApplicationInfo.NativeLibraryDir;
+        var temp1 = Os.Getenv("PATH");
 
-        LD_LIBRARY_PATH += ":" + path + "/" + (File.Exists(path + $"/server/libjvm.so") ? "server" : "client");
+        var LD_LIBRARY_PATH = "/system/lib64:/vendor/lib64:/vendor/lib64/hw:"
+            + ApplicationContext.ApplicationInfo.NativeLibraryDir
+            + $":{path}:{path}/jli:"
+            + temp1;
+
+        LD_LIBRARY_PATH += $":{path}/{(File.Exists($"{path}/server/libjvm.so") ? "server" : "client")}";
 
         var info = new ProcessStartInfo(file.FullName);
         info.EnvironmentVariables.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
         var p = new Process
         {
-            StartInfo = info
+            StartInfo = info,
+            EnableRaisingEvents = true
         };
         return p;
     }
@@ -253,10 +231,32 @@ public class MainActivity : AvaloniaMainActivity<App>
         StartActivity(mainIntent);
     }
 
+    public DisplayMetrics GetDisplayMetrics()
+    {
+        var displayMetrics = new DisplayMetrics();
+
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.N
+            && (IsInMultiWindowMode || IsInPictureInPictureMode))
+        {
+            //For devices with free form/split screen, we need window size, not screen size.
+            displayMetrics = Resources.DisplayMetrics;
+        }
+        else
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
+            {
+                Display.GetRealMetrics(displayMetrics);
+            }
+            else
+            { // Removed the clause for devices with unofficial notch support, since it also ruins all devices with virtual nav bars before P
+                WindowManager.DefaultDisplay.GetRealMetrics(displayMetrics);
+            }
+        }
+        return displayMetrics;
+    }
+
     public Process PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list, Dictionary<string, string> env)
     {
-        _obj = obj;
-
         ConfigSet(obj);
 
         var version = VersionPath.GetVersion(obj.Version)!;
@@ -298,10 +298,43 @@ public class MainActivity : AvaloniaMainActivity<App>
             }
         }
 
-        var p = PhoneJvmRun(obj, jvm, obj.GetGamePath(), list, env);
+        var list1 = new List<string>();
+        var display = GetDisplayMetrics();
+        list1.Add("-Dorg.lwjgl.vulkan.libname=libvulkan.so");
+        list1.Add("-Dglfwstub.initEgl=false");
+        list1.Add("-Dlog4j2.formatMsgNoLookups=true");
+        list1.Add("-Dfml.earlyprogresswindow=false");
+        list1.Add("-Dloader.disable_forked_guis=true");
+        list1.Add($"-Dorg.lwjgl.opengl.libname={GameRenderType.gl4es.GetFileName()}");
+        list1.AddRange(list);
 
+        var p = PhoneJvmRun(obj, jvm, obj.GetGamePath(), list1, env);
 
+        p.StartInfo.Environment.Add("glfwstub.windowWidth", $"{display.WidthPixels}");
+        p.StartInfo.Environment.Add("glfwstub.windowHeight", $"{display.HeightPixels}");
+        p.StartInfo.Environment.Add("ANDROID_VERSION", $"{(int)Build.VERSION.SdkInt}");
+
+        var game = new GameRender(ApplicationContext!.FilesDir!.AbsolutePath, obj.UUID, p, GameRenderType.gl4es);
+        game.GameReady += Game_GameReady;
+
+        Games.Remove(obj.UUID);
+        Games.Add(obj.UUID, game);
+
+        game.Start();
 
         return p;
+    }
+
+    private readonly Handler Main = new Handler(Looper.MainLooper);
+
+    private void Game_GameReady(string uuid)
+    {
+        Main.Post(() =>
+        {
+            var intent = new Intent(this, typeof(GameActivity));
+            intent.PutExtra("GAME_UUID", uuid);
+            intent.AddFlags(ActivityFlags.SingleTop);
+            StartActivity(intent);
+        });
     }
 }

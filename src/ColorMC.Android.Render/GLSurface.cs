@@ -1,30 +1,33 @@
 ﻿using Android.Content;
-using Android.Graphics;
 using Android.Opengl;
-using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Javax.Microedition.Khronos.Opengles;
-using System;
 
 namespace ColorMC.Android.GLRender;
 
 public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IRenderer
 {
-    private static QuadRenderer render;
+    private static QuadRenderer qrender;
 
     private int width, height;
-    private GameLauncher NowGame;
 
-    public GLSurface(Context? context) : this(context, null)
+    private GameRender NowGame;
+
+    public GLSurface(Context? context, GameRender game) : this(context, attributeSet: null)
     {
-
+        NowGame = game;
     }
 
     public GLSurface(Context? context, IAttributeSet? attributeSet) : base(context, attributeSet)
     {
         SetEGLContextClientVersion(3);
         SetRenderer(this);
+    }
+
+    public void SetGame(GameRender game)
+    {
+        NowGame = game;
     }
 
     public void OnDrawFrame(IGL10? gl)
@@ -41,7 +44,8 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
             }
             else
             {
-                render.DrawTexture(NowGame.TexId, width, height, NowGame.RenderWidth, NowGame.RenderHeight, false);
+                qrender.DrawTexture(NowGame.TexId, width, height, 
+                    NowGame.RenderWidth, NowGame.RenderHeight, false);
             }
         }
     }
@@ -50,21 +54,15 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
     {
         this.width = width;
         this.height = height;
-       
+
         RenderTest.Available();
 
-        render = new();
-        NowGame = new GameLauncher()
-        {
-            Width = 640,
-            Height = 480
-        };
-        NowGame.Start(Context!);
+        qrender = new();
     }
 
     public void OnSurfaceCreated(IGL10? gl, Javax.Microedition.Khronos.Egl.EGLConfig? config)
     {
-        
+
     }
 
     public void SetSize(string? text1, string? text2)

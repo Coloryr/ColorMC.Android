@@ -37,7 +37,7 @@ public class GameSock
         }
         catch (Exception e)
         {
-            RenderLog.Info("Game Sock", "Exception: " + e.Message);
+            RenderLog.Info("Game Sock", "connect fail wait...");
         }
 
         return false;
@@ -94,10 +94,16 @@ public class GameSock
     }
 }
 
-public class GameLauncher
+public enum GameRenderType
+{ 
+    gl4es = 0,
+    angle = 1
+}
+
+public class GameRender
 {
-    public const string Render = "render.sock";
-    public const string Game = "game.sock";
+    private const string Render = "render.sock";
+    private const string Game = "game.sock";
 
     private IntPtr buffer;
     private IntPtr texture;
@@ -113,7 +119,32 @@ public class GameLauncher
     public bool HaveBuffer;
     public bool HaveTexture;
 
-    private string render, game;
+    public event Action<string>? GameReady;
+
+    private string _render, _game;
+    private string _uuid;
+
+    public GameRender(string dir, string uuid, Process process, GameRenderType gameRender)
+    {
+        _uuid = uuid;
+
+        _render = $"{dir}/{uuid}.{Render}";
+        _game = $"{dir}/{uuid}.{Game}";
+        Sock = new(_game)
+        {
+            CommandRead = Command
+        };
+        process.StartInfo.Environment.Add("GAME_SOCK", _game);
+        process.StartInfo.Environment.Add("RENDER_SOCK", _render);
+        process.StartInfo.Environment.Add("GL_SO", gameRender.GetFileName());
+        process.StartInfo.Environment.Add("EGL_SO", "libEGL.so");
+        process.StartInfo.Environment.Add("LIBGL_MIPMAP", "3");
+        process.StartInfo.Environment.Add("LIBGL_NOERROR", "1");
+        process.StartInfo.Environment.Add("LIBGL_NOINTOVLHACK", "1");
+        process.StartInfo.Environment.Add("LIBGL_NORMALIZE", "1");
+        process.StartInfo.Environment.Add("GL_ES_VERSION", "3");
+        process.StartInfo.Environment.Add("GAME_RENDER", $"{(int)gameRender}");
+    }
 
     public void BindTexture()
     {
@@ -123,7 +154,7 @@ public class GameLauncher
         }
         if (TexId == 0)
         {
-            TexId = EGLCore.CreateTexture();
+            TexId = GLHelper.CreateTexture();
         }
         HaveTexture = RenderTest.BindTexture(TexId, buffer, out var width, out var height, out texture);
         RenderWidth = width;
@@ -137,68 +168,28 @@ public class GameLauncher
             case 3:
                 ReadBuffer();
                 break;
+            case 4:
+                ReadBuffer();
+                GameReady?.Invoke(_uuid);
+                break;
         }
     }
 
-    public void Start(Context context)
+    public void Start()
     {
-        render = context.FilesDir.AbsolutePath + "/" + Render;
-        game = context.FilesDir.AbsolutePath + "/" + Game;
-        Sock = new(game)
-        { 
-            CommandRead = Command
-        };
-        var temp1 = Os.Getenv("PATH");
-
-        var LD_LIBRARY_PATH = context.ApplicationInfo.NativeLibraryDir + ":" + temp1
-            + ":" + "/system/lib64";
-        
-
-        // 获取文件描述符的整数值
-        var info = new ProcessStartInfo(context.ApplicationInfo.NativeLibraryDir + "/" + "libcolormcnative.so")
-        { 
-            WorkingDirectory = context.FilesDir.AbsolutePath
-        };
-        info.Environment.Add("GAME_SOCK", game);
-        info.Environment.Add("RENDER_SOCK", render);
-        info.Environment.Add("RUN_SO", "libcolormcnative_run.so");
-        info.Environment.Add("GL_SO", "libgl4es_114.so");
-        info.Environment.Add("EGL_SO", "libEGL.so");
-        info.Environment.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
-        info.Environment.Add("LIBGL_MIPMAP", "3");
-        info.Environment.Add("LIBGL_NOERROR", "1");
-        info.Environment.Add("LIBGL_NOINTOVLHACK", "1");
-        info.Environment.Add("LIBGL_NORMALIZE", "1");
-        info.Environment.Add("LIBGL_ES", "3");
-
-        info.RedirectStandardError = true;
-        info.RedirectStandardInput = true;
-        info.RedirectStandardOutput = true;
-
-        RenderLog.Info("Pipe", "Start Pipe");
-        var p = new Process
+        Task.Run(() =>
         {
-            StartInfo = info
-        };
-        p.OutputDataReceived += (sender, message) =>
-        {
-            RenderLog.Info("Pipe", message.Data ?? "");
-        };
-        p.ErrorDataReceived += (sender, message) =>
-        {
-            RenderLog.Info("Pipe", message.Data ?? "");
-        };
-        p.Start();
-        p.BeginErrorReadLine();
-        p.BeginOutputReadLine();
-
-        if (!Sock.Connect())
-        {
-            return;
-        }
-        Sock.SetWindowSize(Width, Height);
-        Sock.Start();
-        ReadBuffer();
+            Thread.Sleep(10000);
+            while (true)
+            {
+                Thread.Sleep(2000);
+                if (Sock.Connect())
+                {
+                    break;
+                }
+            }
+            Sock.Start();
+        });
     }
 
     internal void SetSize()
@@ -206,7 +197,7 @@ public class GameLauncher
         HaveBuffer = false;
         HaveTexture = false;
         RenderTest.DeleteBuffer(buffer, texture);
-        EGLCore.DeleteTexture(TexId);
+        GLHelper.DeleteTexture(TexId);
         TexId = 0;
         Sock.SetWindowSize(Width, Height);
         Sock.ChangeSize();
@@ -216,10 +207,9 @@ public class GameLauncher
     {
         Task.Run(() =>
         {
-            string name1 = render;
             while (true)
             {
-                buffer = RenderTest.GetBuffer(name1);
+                buffer = RenderTest.GetBuffer(_render);
                 if (buffer != IntPtr.Zero)
                 {
                     HaveBuffer = true;

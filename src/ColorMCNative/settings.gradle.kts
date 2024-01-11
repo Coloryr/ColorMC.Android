@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "ColorMCNative"
 include(":colormc_native")
+include(":jre_lwjgl3glfw")
  
