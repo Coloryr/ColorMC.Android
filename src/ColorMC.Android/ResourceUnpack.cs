@@ -5,9 +5,9 @@ using ColorMC.Android.components.caciocavallo17;
 using ColorMC.Android.components.lwjgl3;
 using ColorMC.Android.components.security;
 using ColorMC.Core.Helpers;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ColorMC.Android;
 
@@ -34,7 +34,7 @@ public static class ResourceUnPack
         {
             WriteCaciocavallo();
         }
-        else 
+        else
         {
             var version = PathHelper.ReadText(file);
             var version1 = Encoding.UTF8.GetString(ResourceDir1.version);
@@ -133,5 +133,60 @@ public static class ResourceUnPack
         PathHelper.WriteBytes(file, ResourceDir4.pro_grade);
         file = Path.GetFullPath($"{ComponentsDir}/security/version");
         PathHelper.WriteBytes(file, ResourceDir4.version);
+    }
+
+    public static void GetCacioJavaArgs(List<string> args, int width, int height, bool java8)
+    {
+        // Caciocavallo config AWT-enabled version
+        args.Add("-Djava.awt.headless=false");
+        args.Add("-Dcacio.managed.screensize=" + width + "x" + height);
+        args.Add("-Dcacio.font.fontmanager=sun.awt.X11FontManager");
+        args.Add("-Dcacio.font.fontscaler=sun.font.FreetypeFontScaler");
+        args.Add("-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel");
+        if (java8)
+        {
+            args.Add("-Dawt.toolkit=net.java.openjdk.cacio.ctc.CTCToolkit");
+            args.Add("-Djava.awt.graphicsenv=net.java.openjdk.cacio.ctc.CTCGraphicsEnvironment");
+        }
+        else
+        {
+            args.Add("-Dawt.toolkit=com.github.caciocavallosilano.cacio.ctc.CTCToolkit");
+            args.Add("-Djava.awt.graphicsenv=com.github.caciocavallosilano.cacio.ctc.CTCGraphicsEnvironment");
+            args.Add("-Djava.system.class.loader=com.github.caciocavallosilano.cacio.ctc.CTCPreloadClassLoader");
+
+            args.Add("--add-exports=java.desktop/java.awt=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/sun.java2d=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/java.awt.dnd.peer=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/sun.awt=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/sun.awt.event=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/sun.awt.datatransfer=ALL-UNNAMED");
+            args.Add("--add-exports=java.desktop/sun.font=ALL-UNNAMED");
+            args.Add("--add-exports=java.base/sun.security.action=ALL-UNNAMED");
+            args.Add("--add-opens=java.base/java.util=ALL-UNNAMED");
+            args.Add("--add-opens=java.desktop/java.awt=ALL-UNNAMED");
+            args.Add("--add-opens=java.desktop/sun.font=ALL-UNNAMED");
+            args.Add("--add-opens=java.desktop/sun.java2d=ALL-UNNAMED");
+            args.Add("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED");
+
+            // Opens the java.net package to Arc DNS injector on Java 9+
+            args.Add("--add-opens=java.base/java.net=ALL-UNNAMED");
+        }
+
+        var cacioClasspath = new StringBuilder();
+        cacioClasspath.Append("-Xbootclasspath/").Append(java8 ? "p" : "a");
+        var cacioFiles = Directory.GetFiles(ComponentsDir + "/caciocavallo" + (java8 ? "" : "17"));
+        if (cacioFiles != null)
+        {
+            foreach (var file in cacioFiles)
+            {
+                if (file.EndsWith(".jar"))
+                {
+                    cacioClasspath.Append(':').Append(file);
+                }
+            }
+        }
+        args.Add(cacioClasspath.ToString());
     }
 }

@@ -4,7 +4,7 @@ project("colormcnative")
 
 set(ANDROID_PLATFORM android-26)
 
-add_executable(${CMAKE_PROJECT_NAME} "test.cpp")
+#add_executable(${CMAKE_PROJECT_NAME} "test.cpp")
 
 find_library(android-lib
         egl)
@@ -25,7 +25,7 @@ add_library("colormcnative_run" SHARED
         run/bmp.c
         run/events.c
         run/lwjgl_use.c
-        run/game_command.c
+        run/game_sock.c
         run/render_sock.c
         run/render_test.c
         run/dl_loader/egl_loader.c

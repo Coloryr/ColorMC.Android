@@ -30,9 +30,12 @@ public class GameActivity : Activity, View.IOnClickListener
         
         button.SetOnClickListener(this);
 
+        var display = AndroidHelper.GetDisplayMetrics(this);
+
         string uuid = Intent.GetStringExtra("GAME_UUID");
         var game = MainActivity.Games[uuid];
-        view = new GLSurface(ApplicationContext, game);
+        view = new GLSurface(ApplicationContext, display);
+        view.SetGame(game);
         panel.AddView(view);
 
         //panel.AddView(new TestSurface(ApplicationContext));

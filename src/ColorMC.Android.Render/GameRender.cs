@@ -1,33 +1,49 @@
 ﻿using Android.Content;
+using Android.Hardware.Lights;
 using Android.Systems;
+using Android.Widget;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Threading;
+using static Android.Icu.Text.ListFormatter;
 
 namespace ColorMC.Android.GLRender;
 
 public class GameSock
 {
-    private static readonly byte[] MagicHead = [0x0E, 0x3A, 0x1E, 0x06, 0x14, 0xC5];
+    public enum CommandType : byte
+    {
+        Run = 0,
+        SetSize,
+        DisplayReady,
+        SendChar,
+        SendCharMods,
+        SendCursorPos,
+        SendKey,
+        SendMouseButton,
+        SendScroll
+    }
 
-    private readonly string _socketPath;
-    private Socket socket;
+    private static readonly byte[] MagicHead = [(byte)'c', (byte)'o', (byte)'l', (byte)'o', (byte)'r', (byte)'y'];
 
-    public Action<byte>? CommandRead;
+    private readonly UnixDomainSocketEndPoint _socketPath;
+    private readonly Socket _socket;
+
+    public Action<CommandType>? CommandRead;
 
     public GameSock(string socketPath)
     {
-        _socketPath = socketPath;
+        _socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+
+        _socketPath = new UnixDomainSocketEndPoint(socketPath);
+
     }
 
     public bool Connect()
     {
-        socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
-
-        var unixEp = new UnixDomainSocketEndPoint(_socketPath);
-
         try
         {
-            socket.Connect(unixEp);
+            _socket.Connect(_socketPath);
 
             RenderLog.Info("Game Sock", "Connected to the server.");
 
@@ -46,9 +62,13 @@ public class GameSock
     private async void Read()
     {
         var buffer = new byte[1024];
-        while (true)
+        while (_socket.Connected)
         {
-            var size = await socket.ReceiveAsync(buffer);
+            var size = await _socket.ReceiveAsync(buffer);
+            if (size <= 0)
+            {
+                return;
+            }
             for (int a = 0; a < size - 6; a++)
             {
                 if (buffer[a] == MagicHead[0]
@@ -58,73 +78,107 @@ public class GameSock
                     && buffer[a + 4] == MagicHead[4]
                     && buffer[a + 5] == MagicHead[5])
                 {
-                    CommandRead?.Invoke(buffer[a + 6]);
+                    CommandRead?.Invoke((CommandType)buffer[a + 6]);
                 }
             }
         }
     }
 
-    private void SendPack(byte command, ushort data)
+    public void ChangeSize(ushort width, ushort height)
     {
         var list = new List<byte>(MagicHead)
         {
-            command,
-            (byte)((data) & 0xff),
-            (byte)((data >> 8) & 0xff),
-            command
+            (byte)CommandType.SetSize,
         };
+        list.AddRange(BitConverter.GetBytes(width));
+        list.AddRange(BitConverter.GetBytes(height));
 
-        socket.Send(list.ToArray());
-    }
-
-    public void SetWindowSize(ushort width, ushort height)
-    {
-        SendPack(0x01, width);
-        SendPack(0x02, height);
-    }
-
-    public void ChangeSize()
-    {
-        SendPack(0x03, 0);
+        _socket.Send(list.ToArray());
     }
 
     public void Start()
     {
-        SendPack(0x00, 0x00);
+        var list = new List<byte>(MagicHead)
+        {
+            (byte)CommandType.Run
+        };
+        _socket.Send(list.ToArray());
     }
-}
 
-public enum GameRenderType
-{ 
-    gl4es = 0,
-    angle = 1
+    public void MouseKeyCode(int key, int mode, bool value)
+    {
+        var list = new List<byte>(MagicHead)
+        {
+            (byte)CommandType.SendMouseButton,
+        };
+
+        list.AddRange(BitConverter.GetBytes(key));
+        list.AddRange(BitConverter.GetBytes(mode));
+        list.Add(value ? (byte)1 : (byte)0);
+
+        _socket.Send(list.ToArray());
+    }
+
+    public void CursorPos(float x, float y)
+    {
+        var list = new List<byte>(MagicHead)
+        {
+            (byte)CommandType.SendCursorPos,
+        };
+
+        list.AddRange(BitConverter.GetBytes(x));
+        list.AddRange(BitConverter.GetBytes(y));
+
+        _socket.Send(list.ToArray());
+    }
+
+    public void Close()
+    {
+        _socket?.Close();
+        _socket?.Dispose();
+    }
 }
 
 public class GameRender
 {
+    public enum RenderType
+    {
+        gl4es = 0,
+        angle = 1
+    }
+
     private const string Render = "render.sock";
     private const string Game = "game.sock";
 
     private IntPtr buffer;
     private IntPtr texture;
 
-    private GameSock Sock;
+    private readonly GameSock Sock;
 
-    public int TexId;
+    private readonly string _render, _game;
+    private readonly string _uuid;
 
-    public ushort Width, Height;
+    public int TexId { get; private set; }
+
     public int RenderWidth { get; private set; }
     public int RenderHeight{ get; private set; }
+    public bool IsGrabbing { get; set; }
 
-    public bool HaveBuffer;
-    public bool HaveTexture;
+    public bool HaveBuffer { get; private set; }
+    public bool HaveTexture { get; private set; }
 
     public event Action<string>? GameReady;
+    public event Action? SizeChange;
+    public event Action? GameClose;
 
-    private string _render, _game;
-    private string _uuid;
+    public bool holdingAlt, holdingCapslock, holdingCtrl,
+            holdingNumlock, holdingShift;
 
-    public GameRender(string dir, string uuid, Process process, GameRenderType gameRender)
+    public float MouseX, MouseY;
+
+    public bool IsGameClose { get; private set; }
+
+    public GameRender(string dir, string uuid, Process process, RenderType gameRender)
     {
         _uuid = uuid;
 
@@ -156,19 +210,20 @@ public class GameRender
         {
             TexId = GLHelper.CreateTexture();
         }
-        HaveTexture = RenderTest.BindTexture(TexId, buffer, out var width, out var height, out texture);
+        HaveTexture = RenderNative.BindTexture(TexId, buffer, out var width, out var height, out texture);
         RenderWidth = width;
-        RenderHeight = height; 
+        RenderHeight = height;
+        SizeChange?.Invoke();
     }
 
-    private void Command(byte data)
+    private void Command(GameSock.CommandType data)
     {
         switch (data)
         {
-            case 3:
+            case GameSock.CommandType.SetSize:
                 ReadBuffer();
                 break;
-            case 4:
+            case GameSock.CommandType.DisplayReady:
                 ReadBuffer();
                 GameReady?.Invoke(_uuid);
                 break;
@@ -179,10 +234,10 @@ public class GameRender
     {
         Task.Run(() =>
         {
-            Thread.Sleep(10000);
+            Thread.Sleep(3000);
             while (true)
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
                 if (Sock.Connect())
                 {
                     break;
@@ -192,15 +247,30 @@ public class GameRender
         });
     }
 
-    internal void SetSize()
+    public void SetSize(ushort width, ushort height)
     {
-        HaveBuffer = false;
-        HaveTexture = false;
-        RenderTest.DeleteBuffer(buffer, texture);
-        GLHelper.DeleteTexture(TexId);
-        TexId = 0;
-        Sock.SetWindowSize(Width, Height);
-        Sock.ChangeSize();
+        if (IsGameClose)
+        {
+            return;
+        }
+        RenderClose();
+        Sock.ChangeSize(width, height);
+    }
+
+    public void SendCursorPos(float x, float y)
+    {
+        if (IsGameClose)
+        {
+            return;
+        }
+        MouseX = x;
+        MouseY = y;
+        Sock.CursorPos(x, y);
+    }
+
+    public void SendCursorPos()
+    {
+        SendCursorPos(MouseX, MouseY);
     }
 
     private void ReadBuffer()
@@ -209,7 +279,7 @@ public class GameRender
         {
             while (true)
             {
-                buffer = RenderTest.GetBuffer(_render);
+                buffer = RenderNative.GetBuffer(_render);
                 if (buffer != IntPtr.Zero)
                 {
                     HaveBuffer = true;
@@ -221,5 +291,57 @@ public class GameRender
                 }
             }
         });
+    }
+
+    public void MouseEvent(int key, bool value)
+    {
+        if (IsGameClose)
+        {
+            return;
+        }
+        Sock.MouseKeyCode(key, GetCurrentMods(), value);
+    }
+
+    private int GetCurrentMods()
+    {
+        int currMods = 0;
+        if (holdingAlt)
+        {
+            currMods |= Keycode.GLFW_MOD_ALT;
+        }
+        if (holdingCapslock)
+        {
+            currMods |= Keycode.GLFW_MOD_CAPS_LOCK;
+        }
+        if (holdingCtrl)
+        {
+            currMods |= Keycode.GLFW_MOD_CONTROL;
+        }
+        if (holdingNumlock)
+        {
+            currMods |= Keycode.GLFW_MOD_NUM_LOCK;
+        }
+        if (holdingShift)
+        {
+            currMods |= Keycode.GLFW_MOD_SHIFT;
+        }
+        return currMods;
+    }
+
+    private void RenderClose()
+    {
+        HaveBuffer = false;
+        HaveTexture = false;
+        RenderNative.DeleteBuffer(buffer, texture);
+        GLHelper.DeleteTexture(TexId);
+        TexId = 0;
+    }
+
+    public void Close()
+    {
+        IsGameClose = true;
+        Sock.Close();
+        GameClose?.Invoke();
+        AndroidHelper.Main.Post(RenderClose);
     }
 }

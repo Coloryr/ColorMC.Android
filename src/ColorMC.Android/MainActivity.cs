@@ -35,7 +35,6 @@ namespace ColorMC.Android;
 public class MainActivity : AvaloniaMainActivity<App>
 {
     public static readonly Dictionary<string, GameRender> Games = [];
-
     public static string NativeLibDir;
 
     protected override void OnDestroy()
@@ -140,7 +139,8 @@ public class MainActivity : AvaloniaMainActivity<App>
         return ContentResolver?.OpenInputStream(uri);
     }
 
-    protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+    protected override void OnActivityResult(int requestCode, 
+        [GeneratedEnum] Result resultCode, Intent data)
     {
         base.OnActivityResult(requestCode, resultCode, data);
     }
@@ -231,31 +231,8 @@ public class MainActivity : AvaloniaMainActivity<App>
         StartActivity(mainIntent);
     }
 
-    public DisplayMetrics GetDisplayMetrics()
-    {
-        var displayMetrics = new DisplayMetrics();
-
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.N
-            && (IsInMultiWindowMode || IsInPictureInPictureMode))
-        {
-            //For devices with free form/split screen, we need window size, not screen size.
-            displayMetrics = Resources.DisplayMetrics;
-        }
-        else
-        {
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
-            {
-                Display.GetRealMetrics(displayMetrics);
-            }
-            else
-            { // Removed the clause for devices with unofficial notch support, since it also ruins all devices with virtual nav bars before P
-                WindowManager.DefaultDisplay.GetRealMetrics(displayMetrics);
-            }
-        }
-        return displayMetrics;
-    }
-
-    public Process PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list, Dictionary<string, string> env)
+    public Process PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list,
+        Dictionary<string, string> env)
     {
         ConfigSet(obj);
 
@@ -298,23 +275,31 @@ public class MainActivity : AvaloniaMainActivity<App>
             }
         }
 
+        var render = GameRender.RenderType.gl4es;
+
         var list1 = new List<string>();
-        var display = GetDisplayMetrics();
+        var display = AndroidHelper.GetDisplayMetrics(this);
         list1.Add("-Dorg.lwjgl.vulkan.libname=libvulkan.so");
         list1.Add("-Dglfwstub.initEgl=false");
         list1.Add("-Dlog4j2.formatMsgNoLookups=true");
         list1.Add("-Dfml.earlyprogresswindow=false");
         list1.Add("-Dloader.disable_forked_guis=true");
-        list1.Add($"-Dorg.lwjgl.opengl.libname={GameRenderType.gl4es.GetFileName()}");
-        list1.AddRange(list);
+        list1.Add($"-Dorg.lwjgl.opengl.libname={render.GetFileName()}");
+        ResourceUnPack.GetCacioJavaArgs(list1, display.WidthPixels, display.HeightPixels, jvm.MajorVersion == 8);
 
+        list1.AddRange(list);
+        
         var p = PhoneJvmRun(obj, jvm, obj.GetGamePath(), list1, env);
 
         p.StartInfo.Environment.Add("glfwstub.windowWidth", $"{display.WidthPixels}");
         p.StartInfo.Environment.Add("glfwstub.windowHeight", $"{display.HeightPixels}");
         p.StartInfo.Environment.Add("ANDROID_VERSION", $"{(int)Build.VERSION.SdkInt}");
+        if (CheckHelpers.IsGameVersionV2(version))
+        {
+            p.StartInfo.Environment.Add("GAME_V2", "1");
+        }
 
-        var game = new GameRender(ApplicationContext!.FilesDir!.AbsolutePath, obj.UUID, p, GameRenderType.gl4es);
+        var game = new GameRender(ApplicationContext!.FilesDir!.AbsolutePath, obj.UUID, p, render);
         game.GameReady += Game_GameReady;
 
         Games.Remove(obj.UUID);
@@ -322,14 +307,31 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         game.Start();
 
+        p.OutputDataReceived += P_OutputDataReceived;
+        p.ErrorDataReceived += P_ErrorDataReceived;
+
+        p.Exited += (a, b) =>
+        {
+            game.Close();
+            Games.Remove(obj.UUID);
+        };
+
         return p;
     }
 
-    private readonly Handler Main = new Handler(Looper.MainLooper);
+    private void P_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        RenderLog.Error("Pipe", e.Data ?? "null");
+    }
+
+    private void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        RenderLog.Info("Pipe", e.Data ?? "null");
+    }
 
     private void Game_GameReady(string uuid)
     {
-        Main.Post(() =>
+        AndroidHelper.Main.Post(() =>
         {
             var intent = new Intent(this, typeof(GameActivity));
             intent.PutExtra("GAME_UUID", uuid);
