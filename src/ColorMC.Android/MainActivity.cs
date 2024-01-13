@@ -148,36 +148,9 @@ public class MainActivity : AvaloniaMainActivity<App>
     public Process PhoneStartJvm(string path)
     {
         var file = new FileInfo(path);
-        path = Path.GetFullPath(file.Directory.Parent.FullName + "/lib");
+        path = Path.GetFullPath(file.Directory.Parent.FullName);
 
-        string arch = "";
-
-        if (Directory.Exists(path + "/amd64"))
-        {
-            arch = "amd64";
-        }
-        else if (Directory.Exists(path + "/aarch64"))
-        {
-            arch = "aarch64";
-        }
-        else if (Directory.Exists(path + "/aarch32"))
-        {
-            arch = "aarch32";
-        }
-        else if (Directory.Exists(path + "/i386"))
-        {
-            arch = "i386";
-        }
-        else if (Directory.Exists(path + "/i486"))
-        {
-            arch = "i486";
-        }
-        else if (Directory.Exists(path + "/i586"))
-        {
-            arch = "i586";
-        }
-
-        path += "/" + arch;
+        path = JavaUnpack.GetLibPath(path);
 
         var temp1 = Os.Getenv("PATH");
 
@@ -214,14 +187,14 @@ public class MainActivity : AvaloniaMainActivity<App>
     /// <param name="obj">游戏实例</param>
     private void ConfigSet(GameSettingObj obj)
     {
-        var dir = obj.GetConfigPath();
-        Directory.CreateDirectory(dir);
-        var file = dir + "splash.properties";
-        string data = PathHelper.ReadText(file) ?? "enabled=true";
-        if (data.Contains("enabled=true"))
-        {
-            PathHelper.WriteText(file, data.Replace("enabled=true", "enabled=false"));
-        }
+        //var dir = obj.GetConfigPath();
+        //Directory.CreateDirectory(dir);
+        //var file = dir + "splash.properties";
+        //string data = PathHelper.ReadText(file) ?? "enabled=true";
+        //if (data.Contains("enabled=true"))
+        //{
+        //    PathHelper.WriteText(file, data.Replace("enabled=true", "enabled=false"));
+        //}
     }
 
     public void Setting()

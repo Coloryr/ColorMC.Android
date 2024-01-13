@@ -61,26 +61,33 @@ public class GameSock
 
     private async void Read()
     {
-        var buffer = new byte[1024];
-        while (_socket.Connected)
+        try
         {
-            var size = await _socket.ReceiveAsync(buffer);
-            if (size <= 0)
+            var buffer = new byte[1024];
+            while (_socket.Connected)
             {
-                return;
-            }
-            for (int a = 0; a < size - 6; a++)
-            {
-                if (buffer[a] == MagicHead[0]
-                    && buffer[a + 1] == MagicHead[1]
-                    && buffer[a + 2] == MagicHead[2]
-                    && buffer[a + 3] == MagicHead[3]
-                    && buffer[a + 4] == MagicHead[4]
-                    && buffer[a + 5] == MagicHead[5])
+                var size = await _socket.ReceiveAsync(buffer);
+                if (size <= 0)
                 {
-                    CommandRead?.Invoke((CommandType)buffer[a + 6]);
+                    return;
+                }
+                for (int a = 0; a < size - 6; a++)
+                {
+                    if (buffer[a] == MagicHead[0]
+                        && buffer[a + 1] == MagicHead[1]
+                        && buffer[a + 2] == MagicHead[2]
+                        && buffer[a + 3] == MagicHead[3]
+                        && buffer[a + 4] == MagicHead[4]
+                        && buffer[a + 5] == MagicHead[5])
+                    {
+                        CommandRead?.Invoke((CommandType)buffer[a + 6]);
+                    }
                 }
             }
+        }
+        catch
+        { 
+            
         }
     }
 

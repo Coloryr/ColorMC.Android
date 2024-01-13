@@ -87,6 +87,52 @@ public class JavaUnpack
         }
 
         Unpack(path + "/");
+        Rename(path);
+    }
+
+    public static string GetLibPath(string path)
+    {
+        string arch = "";
+
+        path += "/lib";
+
+        if (Directory.Exists(path + "/amd64"))
+        {
+            arch = "amd64";
+        }
+        else if (Directory.Exists(path + "/aarch64"))
+        {
+            arch = "aarch64";
+        }
+        else if (Directory.Exists(path + "/aarch32"))
+        {
+            arch = "aarch32";
+        }
+        else if (Directory.Exists(path + "/i386"))
+        {
+            arch = "i386";
+        }
+        else if (Directory.Exists(path + "/i486"))
+        {
+            arch = "i486";
+        }
+        else if (Directory.Exists(path + "/i586"))
+        {
+            arch = "i586";
+        }
+
+        path += "/" + arch;
+
+        return path;
+    }
+
+    private static void Rename(string path)
+    {
+        path = GetLibPath(path);
+        if (File.Exists($"{path}/libfreetype.so.6"))
+        {
+            File.Move($"{path}/libfreetype.so.6", $"{path}/libfreetype.so");
+        }
     }
 
     private static void EnsureDirectoryExists(string directoryName)
@@ -147,7 +193,7 @@ public class JavaUnpack
         }
     }
 
-    private void Unpack(string runtimePath)
+    private static void Unpack(string runtimePath)
     {
         var list = PathHelper.GetAllFile(runtimePath);
         foreach (var item in list)

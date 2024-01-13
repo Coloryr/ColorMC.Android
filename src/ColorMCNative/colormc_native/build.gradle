@@ -47,6 +47,23 @@ android {
             version = "3.22.1"
         }
     }
+
+//    applicationVariants.all { variant ->
+//        variant.outputs.all {
+//            assembleProvider.configure {
+//                finalizedBy copyFiles
+//            }
+//        }
+//    }
+}
+
+task copyFiles(type: Copy) {
+    // 定义源目录
+    from './build/intermediates/cmake/release/obj/x86_64'
+    // 定义目标目录
+    into '../../ColorMC.Android.Render/NativeLib/x86_64'
+    // 如果需要，可以添加文件过滤器
+    include '**/{libcolormcnative_}*.so'
 }
 
 dependencies {
