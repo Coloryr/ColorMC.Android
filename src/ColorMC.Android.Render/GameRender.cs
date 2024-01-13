@@ -204,7 +204,7 @@ public class GameRender
         process.StartInfo.Environment.Add("LIBGL_NOINTOVLHACK", "1");
         process.StartInfo.Environment.Add("LIBGL_NORMALIZE", "1");
         process.StartInfo.Environment.Add("GL_ES_VERSION", "3");
-        process.StartInfo.Environment.Add("GAME_RENDER", $"{(int)gameRender}");
+        process.StartInfo.Environment.Add("GAME_RENDER", gameRender.GetName());
     }
 
     public void BindTexture()

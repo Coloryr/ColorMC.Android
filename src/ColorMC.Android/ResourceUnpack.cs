@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Util;
 using ColorMC.Android.components;
 using ColorMC.Android.components.caciocavallo;
 using ColorMC.Android.components.caciocavallo17;
@@ -89,6 +90,7 @@ public static class ResourceUnPack
 
     private static void WriteCaciocavallo()
     {
+        Log.Info("Unpack", "Unpack Caciocavallo");
         var file = Path.GetFullPath($"{ComponentsDir}/caciocavallo/cacio-androidnw-1.10-SNAPSHOT.jar");
         PathHelper.WriteBytes(file, ResourceDir1.cacio_androidnw_1_10_SNAPSHOT);
         file = Path.GetFullPath($"{ComponentsDir}/caciocavallo/cacio-shared-1.10-SNAPSHOT.jar");
@@ -101,6 +103,7 @@ public static class ResourceUnPack
 
     private static void WriteCaciocavallo17()
     {
+        Log.Info("Unpack", "Unpack Caciocavallo17");
         var file = Path.GetFullPath($"{ComponentsDir}/caciocavallo17/cacio-shared-1.18-SNAPSHOT.jar");
         PathHelper.WriteBytes(file, ResourceDir2.cacio_shared_1_18_SNAPSHOT);
         file = Path.GetFullPath($"{ComponentsDir}/caciocavallo17/cacio-tta-1.18-SNAPSHOT.jar");
@@ -111,6 +114,7 @@ public static class ResourceUnPack
 
     private static void WriteLwjgl3()
     {
+        Log.Info("Unpack", "Unpack Lwjgl3");
         var file = Path.GetFullPath($"{ComponentsDir}/lwjgl3/lwjgl-glfw-classes.jar");
         PathHelper.WriteBytes(file, ResourceDir3.lwjgl_glfw_classes);
         file = Path.GetFullPath($"{ComponentsDir}/lwjgl3/lwjgl-vulkan.jar");
@@ -123,6 +127,7 @@ public static class ResourceUnPack
 
     private static void WriteSecurity()
     {
+        Log.Info("Unpack", "Unpack Security");
         var file = Path.GetFullPath($"{ComponentsDir}/security/java_sandbox.policy");
         PathHelper.WriteBytes(file, ResourceDir4.java_sandbox);
         file = Path.GetFullPath($"{ComponentsDir}/security/log4j-rce-patch-1.12.xml");

@@ -13,7 +13,7 @@ void (*glGenFramebuffers_p)(GLsizei, GLuint*);
 void (*glBindFramebuffer_p)(GLenum, GLuint);
 void (*glFramebufferTexture2D_p)(GLenum, GLenum, GLenum, GLuint, GLint);
 GLenum(*glCheckFramebufferStatus_p)(GLenum);
-//void (*glDeleteFramebuffers_p)(GLsizei, const GLuint*);
+void (*glDeleteFramebuffers_p)(GLsizei, const GLuint*);
 void (*glBindTexture_p)(GLenum, GLuint);
 void (*glDeleteTextures_p)(GLsizei n, const GLuint* textures);
 void (*glGenTextures_p)(GLsizei, GLuint*);
@@ -75,7 +75,7 @@ bool gl_load() {
     glBindFramebuffer_p = dlsym(libGLESv2, "glBindFramebuffer");
     glFramebufferTexture2D_p = dlsym(libGLESv2, "glFramebufferTexture2D");
     glCheckFramebufferStatus_p = dlsym(libGLESv2, "glCheckFramebufferStatus");
-//    glDeleteFramebuffers_p = dlsym(libGLESv2, "glDeleteFramebuffers");
+    glDeleteFramebuffers_p = dlsym(libGLESv2, "glDeleteFramebuffers");
     glBindTexture_p = dlsym(libGLESv2, "glBindTexture");
     glDeleteTextures_p = dlsym(libGLESv2, "glDeleteTextures");
     glGenTextures_p = dlsym(libGLESv2, "glGenTextures");

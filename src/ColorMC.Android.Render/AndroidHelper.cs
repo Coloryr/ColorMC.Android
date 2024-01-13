@@ -32,6 +32,14 @@ public static class GLHelper
             _ => "libgl4es_114.so"
         };
     }
+
+    public static string GetName(this GameRender.RenderType type)
+    {
+        return type switch
+        {
+            _ => "gl4es"
+        };
+    }
 }
 
 public static class AndroidHelper

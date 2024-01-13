@@ -11,7 +11,7 @@ bool egl_create();
 bool egl_init();
 void* egl_create_context(void* context);
 void* egl_get_context();
-void egl_make_current(void* input);
+void egl_make_current(void* context);
 void egl_swap_interval(int swapInterval);
 void egl_close();
 void egl_swap_buffers();

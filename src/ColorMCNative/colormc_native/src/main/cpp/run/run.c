@@ -25,20 +25,35 @@
 
 #define EXTERNAL_API __attribute__((used))
 
+#define ENV_COUNT 20
+
 EGLDisplay display = EGL_NO_DISPLAY;
 EGLSurface surface = EGL_NO_SURFACE;
-EGLContext context = EGL_NO_CONTEXT;
 EGLConfig config;
 EGLint format;
 
-GLuint texture;
+pthread_mutex_t mutex;
+
+typedef struct {
+    EGLContext context;
+    GLuint fbo;
+    GLuint texture;
+    bool init;
+} context_env;
 
 int width = 640;
 int height = 480;
 
-GLuint fbo;
+int gles_version = 3;
+
+bool v2 = false;
+
+context_env env_list[ENV_COUNT] = {0};
+context_env *now_env;
 
 bool can_run = false;
+
+extern void* showingWindow;
 
 enum RENDER_STATE {
     RENDER_RUN,
@@ -114,8 +129,55 @@ void egl_swap_interval(int swapInterval) {
     eglSwapInterval_p(display, swapInterval);
 }
 
+void egl_create_surface() {
+    printf("[ColorMC Info] egl create surface\n");
+    // 创建Pbuffer表面
+    EGLint pbufferAttribs[] = {
+            EGL_WIDTH, width,
+            EGL_HEIGHT, height,
+            EGL_NONE
+    };
+    surface = eglCreatePbufferSurface_p(display, config, pbufferAttribs);
+    if (surface == NULL) {
+        printf("[ColorMC Error] createPbufferSurface failed: %s\n", getEGLError());
+    }
+    printf("[ColorMC Info] egl surface size %d x %d\n", width, height);
+    fflush(stdout);
+}
+
+void egl_create_image() {
+    printf("[ColorMC Info] egl_create_image\n");
+    EGLClientBuffer clientBuffer = eglGetNativeClientBufferANDROID_p(a_buffer);
+    if (!clientBuffer) {
+        printf("[ColorMC Error] bindTexture failed: clientBuffer null\n");
+        fflush(stdout);
+        return;
+    }
+
+    EGLint eglImageAttributes[] =
+            {
+                    EGL_IMAGE_PRESERVED_KHR, EGL_TRUE,
+                    EGL_NONE
+            };
+    eglImage = eglCreateImageKHR_p(display, EGL_NO_CONTEXT,
+                                   EGL_NATIVE_BUFFER_ANDROID,
+                                   clientBuffer, eglImageAttributes);
+    if (eglImage == EGL_NO_IMAGE_KHR) {
+        printf("[ColorMC Error] bindTexture failed: eglCreateImageKHR null: %s\n", getEGLError());
+        fflush(stdout);
+        return;
+    }
+}
+
 bool egl_create() {
     printf("[ColorMC Info] egl create\n");
+
+    char *temp1 = getenv("GL_ES_VERSION");
+    if (temp1 != NULL) {
+        gles_version = strtol(temp1, NULL, 0);
+        if (gles_version < 0 || gles_version > INT16_MAX) gles_version = 2;
+    }
+
     display = eglGetDisplay_p(EGL_DEFAULT_DISPLAY);
     if (display == EGL_NO_DISPLAY) {
         printf("[ColorMC Error] eglGetDisplay_p() returned EGL_NO_DISPLAY: %s\n", getEGLError());
@@ -127,11 +189,6 @@ bool egl_create() {
         fflush(stdout);
         return false;
     }
-    return true;
-}
-
-void* egl_create_context(void * share) {
-    printf("[ColorMC Info] egl_create_context input: %p\n", share);
 
     // 配置EGL属性
     EGLint configAttribs[] = {
@@ -161,8 +218,8 @@ void* egl_create_context(void * share) {
     }
 
     EGLBoolean bindResult;
-    char *temp = getenv("GAME_RENDERER");
-    if (temp != NULL && strcmp(temp, "1") == 0) {
+    char *temp = getenv("GAME_RENDER");
+    if (temp != NULL && strcmp(temp, "gl4es") == 0) {
         printf("[ColorMC Info] EGL Binding to desktop OpenGL\n");
         bindResult = eglBindAPI_p(EGL_OPENGL_API);
     } else {
@@ -174,91 +231,69 @@ void* egl_create_context(void * share) {
     }
     fflush(stdout);
 
-    int gles_version = 3;
-    char* temp1 = getenv("GL_ES_VERSION");
-    if(temp1 != NULL) {
-        gles_version = strtol(temp1, NULL, 0);
-        if (gles_version < 0 || gles_version > INT16_MAX) gles_version = 2;
-    }
-    // 创建EGL上下文
-    EGLint contextAttribs[] = {
-            EGL_CONTEXT_CLIENT_VERSION, gles_version,
-            EGL_NONE
-    };
-    context = eglCreateContext_p(display, config, NULL, contextAttribs);
+    make_buffer();
+    egl_create_surface();
+    egl_create_image();
 
-    if (context == EGL_NO_CONTEXT) {
-        printf("[ColorMC Error] eglCreateContext_p() finished with error: %s", getEGLError());
-        fflush(stdout);
-        return NULL;
-    }
-
-    printf("[ColorMC Info] egl_create_context output: %p\n", context);
-    fflush(stdout);
-
-    return context;
+    return true;
 }
 
-void* egl_get_context() {
-    printf("[ColorMC Info] egl_get_context output: %p\n", context);
-    fflush(stdout);
-    return context;
-}
-
-void egl_create_surface() {
-    printf("[ColorMC Info] egl create surface\n");
-    // 创建Pbuffer表面
-    EGLint pbufferAttribs[] = {
-            EGL_WIDTH, width,
-            EGL_HEIGHT, height,
-            EGL_NONE
-    };
-    surface = eglCreatePbufferSurface_p(display, config, pbufferAttribs);
-    if (surface == NULL) {
-        printf("[ColorMC Error] createPbufferSurface failed: %s\n", getEGLError());
+context_env * find_empty() {
+    pthread_mutex_lock(&mutex);
+    for (int a = 0; a < ENV_COUNT; a++) {
+        if (env_list[a].context == EGL_NO_CONTEXT) {
+            pthread_mutex_unlock(&mutex);
+            return &env_list[a];
+        }
     }
-    printf("[ColorMC Info] egl surface size %d x %d\n", width, height);
-    fflush(stdout);
+
+    pthread_mutex_unlock(&mutex);
+    return NULL;
 }
 
-void gl_create() {
+context_env * find_match(EGLContext context) {
+    pthread_mutex_lock(&mutex);
+    for (int a = 0; a < ENV_COUNT; a++) {
+        if (env_list[a].context == context) {
+            pthread_mutex_unlock(&mutex);
+            return &env_list[a];
+        }
+    }
+
+    pthread_mutex_unlock(&mutex);
+    return NULL;
+}
+
+void remove_context(EGLContext context){
+    pthread_mutex_lock(&mutex);
+    for (int a = 0; a < ENV_COUNT; a++) {
+        if (env_list[a].context == context) {
+            env_list[a].context = EGL_NO_CONTEXT;
+            env_list[a].fbo = 0;
+            env_list[a].texture = 0;
+            env_list[a].init = false;
+        }
+    }
+    pthread_mutex_unlock(&mutex);
+}
+
+void gl_create(context_env * env) {
     printf("[ColorMC Info] gl create\n");
 
-    glGenTextures_p(1, &texture);
-    glBindTexture_p(GL_TEXTURE_2D, texture);
+    glGenTextures_p(1, &env->texture);
+    glBindTexture_p(GL_TEXTURE_2D, env->texture);
 
     glTexParameteri_p(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri_p(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri_p(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri_p(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    EGLClientBuffer clientBuffer = eglGetNativeClientBufferANDROID_p(a_buffer);
-    if (!clientBuffer) {
-        printf("[ColorMC Error] bindTexture failed: clientBuffer null\n");
-        fflush(stdout);
-        return;
-    }
-
-    EGLint eglImageAttributes[] =
-            {
-                    EGL_IMAGE_PRESERVED_KHR, EGL_TRUE,
-                    EGL_NONE
-            };
-    eglImage = eglCreateImageKHR_p(display, EGL_NO_CONTEXT,
-                                   EGL_NATIVE_BUFFER_ANDROID,
-                                   clientBuffer, eglImageAttributes);
-    if (eglImage == EGL_NO_IMAGE_KHR) {
-        printf("[ColorMC Error] bindTexture failed: eglCreateImageKHR null: %s\n", getEGLError());
-        fflush(stdout);
-        return;
-    }
-
     glEGLImageTargetTexture2DOES_p(GL_TEXTURE_2D, (GLeglImageOES) eglImage);
     glBindTexture_p(GL_TEXTURE_2D, 0);
 
-    glGenFramebuffers_p(1, &fbo);
-    glBindFramebuffer_p(GL_FRAMEBUFFER, fbo);
-    glFramebufferTexture2D_p(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    glGenFramebuffers_p(1, &env->fbo);
+    glBindFramebuffer_p(GL_FRAMEBUFFER, env->fbo);
+    glFramebufferTexture2D_p(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, env->texture, 0);
     GLenum fboStatus = glCheckFramebufferStatus_p(GL_FRAMEBUFFER);
     if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
         printf("[ColorMC Error] Failed to set up framebuffer: 0x%x\n", fboStatus);
@@ -269,62 +304,127 @@ void gl_create() {
     glBindTexture_p(GL_TEXTURE_2D, 0);
     glBindFramebuffer_p(GL_FRAMEBUFFER, 0);
 
-    send_data(COMMAND_DISPLAY_READY);
+    fflush(stdout);
 
+    env->init = true;
+
+    send_data(COMMAND_DISPLAY_READY);
+}
+
+void* egl_create_context(void * share) {
+    printf("[ColorMC Info] egl_create_context input: %p\n", share);
+
+    context_env *env = find_empty();
+    if (env == NULL) {
+        printf("[ColorMC Error] gl context is full\n");
+        fflush(stdout);
+        exit(1);
+    }
+
+    // 创建EGL上下文
+    EGLint contextAttribs[] = {
+            EGL_CONTEXT_CLIENT_VERSION, gles_version,
+            EGL_NONE
+    };
+    env->context = eglCreateContext_p(display, config, share, contextAttribs);
+
+    if (env->context == EGL_NO_CONTEXT) {
+        printf("[ColorMC Error] eglCreateContext_p() finished with error: %s", getEGLError());
+        fflush(stdout);
+        return NULL;
+    }
+
+    printf("[ColorMC Info] egl_create_context output: %p\n", env->context);
+    fflush(stdout);
+
+    return env->context;
+}
+
+void* egl_get_context() {
+    if (now_env == NULL) {
+        printf("[ColorMC Info] egl_get_context no now env\n");
+        return NULL;
+    }
+    printf("[ColorMC Info] egl_get_context output: %p\n", now_env->context);
+    fflush(stdout);
+    return now_env->context;
+}
+
+void egl_make_current(void* context) {
+    printf("[ColorMC Info] egl_make_current context: %p\n", context);
+    if (context == NULL) {
+        printf("[ColorMC Info] unbind egl context\n");
+        fflush(stdout);
+        eglMakeCurrent_p(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        now_env = NULL;
+        return;
+    }
+
+    context_env *env = find_match(context);
+    if (env == NULL) {
+        printf("[ColorMC Error] egl context not find in list\n");
+        fflush(stdout);
+        exit(1);
+    }
+
+    if (eglMakeCurrent_p(display, surface, surface, context) != EGL_TRUE) {
+        printf("[ColorMC Error] eglMakeCurrent returned with error: %s\n", getEGLError());
+    } else {
+        now_env = env;
+        showingWindow = env->context;
+        if(env->init == false) {
+            gl_create(env);
+        }
+        printf("[ColorMC Info] bind egl context to :%p\n", context);
+    }
     fflush(stdout);
 }
 
 void egl_destroy_context(void * input) {
     printf("[ColorMC Info] egl_destroy_context input: %p\n", input);
-    eglDestroyContext_p(display, input);
-}
 
-void egl_make_current(void* input) {
-    printf("[ColorMC Info] egl_make_current input: %p\n", input);
-    if (input == NULL) {
-        printf("[ColorMC Info] unbind egl context\n");
+    context_env *env = find_match(input);
+    if (env == NULL) {
+        printf("[ColorMC Error] gl context can't find\n");
         fflush(stdout);
-        eglMakeCurrent_p(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-        return;
+        exit(1);
     }
-    if (surface == EGL_NO_SURFACE) {
-        make_buffer();
-        egl_create_surface();
-        if (eglMakeCurrent_p(display, surface, surface, input) != EGL_TRUE) {
-            printf("[ColorMC Error] eglMakeCurrent returned with error: %s\n", getEGLError());
-        }
-        printf("[ColorMC Info] bind egl context to :%p\n", input);
-        gl_create();
-    } else {
-        if (eglMakeCurrent_p(display, surface, surface, input) != EGL_TRUE) {
-            printf("[ColorMC Error] eglMakeCurrent returned with error: %s\n", getEGLError());
-        }
-        printf("[ColorMC Info] bind egl context to :%p\n", input);
+
+    glBindFramebuffer_p(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer_p(GL_READ_FRAMEBUFFER, 0);
+    glBindFramebuffer_p(GL_DRAW_FRAMEBUFFER, 0);
+    glDeleteFramebuffers_p(1, &env->fbo);
+    glDeleteTextures_p(1, &env->texture);
+    eglDestroyContext_p(display, input);
+    if (now_env == env) {
+        egl_make_current(NULL);
+        now_env = NULL;
     }
-    fflush(stdout);
+
+    remove_context(env->context);
 }
 
 void egl_change_size() {
     printf("[ColorMC Info] egl reload\n");
     fflush(stdout);
 
-    glDeleteTextures_p(1, &texture);
-    if (eglImage != EGL_NO_IMAGE_KHR) {
-        eglDestroyImageKHR_p(display, eglImage);
-        eglImage = EGL_NO_IMAGE_KHR;
-    }
-    if (a_buffer) {
-        AHardwareBuffer_release_p(a_buffer);
-        a_buffer = NULL;
-    }
-
-    eglMakeCurrent_p(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-    eglDestroySurface_p(display, surface);
-    surface = EGL_NO_SURFACE;
-
-    egl_make_current(context);
-
-    send_data(COMMAND_SET_SIZE);
+//    glDeleteTextures_p(1, &texture);
+//    if (eglImage != EGL_NO_IMAGE_KHR) {
+//        eglDestroyImageKHR_p(display, eglImage);
+//        eglImage = EGL_NO_IMAGE_KHR;
+//    }
+//    if (a_buffer) {
+//        AHardwareBuffer_release_p(a_buffer);
+//        a_buffer = NULL;
+//    }
+//
+//    eglMakeCurrent_p(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+//    eglDestroySurface_p(display, surface);
+//    surface = EGL_NO_SURFACE;
+//
+//    egl_make_current(context);
+//
+//    send_data(COMMAND_SET_SIZE);
 }
 
 void egl_start_change_size() {
@@ -332,9 +432,13 @@ void egl_start_change_size() {
 }
 
 void egl_close() {
+    if (now_env != NULL) {
+        egl_destroy_context(now_env->context);
+        now_env = NULL;
+    }
+
     eglMakeCurrent_p(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroySurface_p(display, surface);
-    eglDestroyContext_p(display, context);
     eglTerminate_p(display);
     eglReleaseThread_p();
 }
@@ -412,20 +516,25 @@ bool egl_init() {
         return false;
     }
 
+    pthread_mutex_init(&mutex, NULL);
+
     fflush(stdout);
 
     return true;
 }
 
 void egl_swap_buffers() {
+    if (now_env == NULL) {
+        return;
+    }
     glBindFramebuffer_p(GL_READ_FRAMEBUFFER, 0);
-    glBindFramebuffer_p(GL_DRAW_FRAMEBUFFER, fbo);
+    glBindFramebuffer_p(GL_DRAW_FRAMEBUFFER, now_env->fbo);
     glBlitFramebuffer_p(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer_p(GL_READ_FRAMEBUFFER, 0);
     glBindFramebuffer_p(GL_DRAW_FRAMEBUFFER, 0);
 
-    if(render_state == RENDER_CHANGE_SIZE) {
+    if (render_state == RENDER_CHANGE_SIZE) {
         render_state = RENDER_RUN;
         send_screen_size(width, height);
         egl_change_size();
