@@ -47,16 +47,30 @@ android {
             version = "3.22.1"
         }
     }
+    ndkVersion '25.2.9519653'
+}
 
-    libraryVariants.configureEach { variant ->
-        variant.outputs.configureEach {
-            // 例如，对于Debug构建
-            if (variant.buildType.name == 'release') {
-                variant.assembleProvider.configure {
-                    finalizedBy copyFiles
-                }
-            }
+tasks.register('renameFiles') {
+    doLast {
+        var file1 = file("build/intermediates/cmake/release/obj/arm64-v8a/colormcnative")
+        var file2 = file("build/intermediates/cmake/release/obj/arm64-v8a/libcolormcnative.so")
+        if (file2.exists()) {
+            file2.delete()
         }
+        if (!file1.exists()) {
+            println("file colormcnative no exit")
+        }
+        file1.renameTo(file2)
+
+        file1 = file("build/intermediates/cmake/release/obj/x86_64/colormcnative")
+        file2 = file("build/intermediates/cmake/release/obj/x86_64/libcolormcnative.so")
+        if (file2.exists()) {
+            file2.delete()
+        }
+        if (!file1.exists()) {
+            println("file colormcnative no exit")
+        }
+        file1.renameTo(file2)
     }
 }
 
@@ -66,7 +80,30 @@ tasks.register('copyFiles', Copy) {
     // 定义目标目录
     into '../../ColorMC.Android.Render/NativeLib/x86_64'
     // 如果需要，可以添加文件过滤器
-    include '**/libcolormcnative_*.so'
+    include '**/libcolormcnative*.so'
+}
+
+tasks.register('copyFiles1', Copy) {
+    // 定义源目录
+    from 'build/intermediates/cmake/release/obj/arm64-v8a'
+    // 定义目标目录
+    into '../../ColorMC.Android.Render/NativeLib/arm64-v8a'
+    // 如果需要，可以添加文件过滤器
+    include '**/libcolormcnative*.so'
+}
+
+renameFiles.finalizedBy(copyFiles, copyFiles1)
+
+build.finalizedBy(renameFiles)
+
+tasks.named("copyFiles").configure {
+    dependsOn("renameFiles")
+}
+tasks.named("copyFiles1").configure {
+    dependsOn("renameFiles")
+}
+tasks.named("renameFiles").configure {
+    dependsOn("build")
 }
 
 dependencies {

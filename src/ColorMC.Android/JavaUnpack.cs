@@ -1,6 +1,7 @@
 ﻿using Android.Runtime;
 using Android.Systems;
 using Android.Util;
+using ColorMC.Core;
 using ColorMC.Core.Helpers;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Tar;
@@ -16,7 +17,7 @@ public class JavaUnpack
     private int Size = 0;
     private int Now = 0;
 
-    public Action<string, int, int>? ZipUpdate;
+    public ColorMCCore.ZipUpdate? ZipUpdate;
 
     private void TarArchive_ProgressMessageEvent(TarArchive archive, TarEntry entry, string message)
     {
@@ -33,8 +34,6 @@ public class JavaUnpack
         {
             Directory.Delete(path, true);
         }
-
-        //var gzipStream = new XZCompressorInputStream(stream);
 
         IntPtr classHandle = JNIEnv.FindClass("org/tukaani/xz/XZInputStream");
         IntPtr constructorId = JNIEnv.GetMethodID(classHandle, "<init>", "(Ljava/io/InputStream;)V");

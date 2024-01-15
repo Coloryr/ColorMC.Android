@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using static ColorMC.Core.ColorMCCore;
 using Process = System.Diagnostics.Process;
 using Uri = Android.Net.Uri;
 
@@ -92,6 +93,36 @@ public class MainActivity : AvaloniaMainActivity<App>
         return new PhoneControl(this);
     }
 
+    public Process PhoneStartJvm(string path)
+    {
+        var info = new ProcessStartInfo(NativeLibDir + "/libcolormcnative.so");
+        var file = new FileInfo(path);
+
+        path = Path.GetFullPath(file.Directory.Parent.FullName);
+        info.Environment.Add("JAVA_HOME", path);
+        info.ArgumentList.Add("-Djava.home=" + path);
+
+        path = JavaUnpack.GetLibPath(path);
+
+        var temp1 = Os.Getenv("PATH");
+
+        var LD_LIBRARY_PATH = $"{path}:{path}/jli:" 
+            + "/system/lib64:/vendor/lib64:/vendor/lib64/hw:"
+            + ApplicationContext.ApplicationInfo.NativeLibraryDir + ":"
+            + temp1;
+
+        LD_LIBRARY_PATH += $":{path}/{(File.Exists($"{path}/server/libjvm.so") ? "server" : "client")}";
+
+        info.Environment.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
+        
+        var p = new Process
+        {
+            StartInfo = info,
+            EnableRaisingEvents = true
+        };
+        return p;
+    }
+
     public Process PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg, Dictionary<string, string> env)
     {
         var p = PhoneStartJvm(jvm.Path);
@@ -110,7 +141,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         var path = Path.GetFullPath(file.Directory.Parent.FullName);
 
         p.StartInfo.WorkingDirectory = dir;
-        p.StartInfo.ArgumentList.Add("-Djava.home=" + path);
         p.StartInfo.ArgumentList.Add("-Djava.io.tmpdir=" + ApplicationContext.CacheDir.AbsolutePath);
         p.StartInfo.ArgumentList.Add("-Djna.boot.library.path=" + ApplicationInfo.NativeLibraryDir);
         p.StartInfo.ArgumentList.Add("-Duser.home=" + ApplicationContext.GetExternalFilesDir(null).AbsolutePath);
@@ -123,7 +153,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         return p;
     }
 
-    public void PhoneJvmInstall(Stream stream, string file, Action<string, int, int>? zip)
+    public void PhoneJvmInstall(Stream stream, string file, ZipUpdate? zip)
     {
         new JavaUnpack() { ZipUpdate = zip }.Unpack(stream, file);
     }
@@ -143,32 +173,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         [GeneratedEnum] Result resultCode, Intent data)
     {
         base.OnActivityResult(requestCode, resultCode, data);
-    }
-
-    public Process PhoneStartJvm(string path)
-    {
-        var file = new FileInfo(path);
-        path = Path.GetFullPath(file.Directory.Parent.FullName);
-
-        path = JavaUnpack.GetLibPath(path);
-
-        var temp1 = Os.Getenv("PATH");
-
-        var LD_LIBRARY_PATH = "/system/lib64:/vendor/lib64:/vendor/lib64/hw:"
-            + ApplicationContext.ApplicationInfo.NativeLibraryDir
-            + $":{path}:{path}/jli:"
-            + temp1;
-
-        LD_LIBRARY_PATH += $":{path}/{(File.Exists($"{path}/server/libjvm.so") ? "server" : "client")}";
-
-        var info = new ProcessStartInfo(file.FullName);
-        info.EnvironmentVariables.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
-        var p = new Process
-        {
-            StartInfo = info,
-            EnableRaisingEvents = true
-        };
-        return p;
     }
 
     public void PhoneOpenUrl(string? url)
@@ -199,9 +203,9 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public void Setting()
     {
-        var mainIntent = new Intent();
-        mainIntent.SetAction("ColorMC.Minecraft.Setting");
-        StartActivity(mainIntent);
+        //var mainIntent = new Intent();
+        //mainIntent.SetAction("ColorMC.Minecraft.Setting");
+        //StartActivity(mainIntent);
     }
 
     public Process PhoneGameLaunch(GameSettingObj obj, JavaInfo jvm, List<string> list,

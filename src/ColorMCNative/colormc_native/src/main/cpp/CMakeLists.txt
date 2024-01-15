@@ -4,7 +4,7 @@ project("colormcnative")
 
 set(ANDROID_PLATFORM android-26)
 
-#add_executable(${CMAKE_PROJECT_NAME} "test.cpp")
+add_executable(${CMAKE_PROJECT_NAME} "test.cpp")
 
 find_library(android-lib
         egl)
