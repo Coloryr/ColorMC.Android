@@ -9,15 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="NativeLib\arm64-v8a\libColorMC_Android_RenderNative.so.recipe" />
-    <None Remove="NativeLib\x86_64\libcolormcnative.so" />
-    <None Remove="NativeLib\x86_64\libColorMC_Android_Display.so.recipe" />
-    <None Remove="NativeLib\x86_64\libColorMC_Android_RenderNative.so.recipe" />
-    <None Remove="NativeLib\x86_64\libEGL_angle.so" />
-    <None Remove="NativeLib\x86_64\libgl4es_114.so" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ColorMC\src\ColorMC.Core\ColorMC.Core.csproj" />
   </ItemGroup>
 

@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using static ColorMC.Core.ColorMCCore;
+using static Android.Icu.Text.IDNA;
 using Process = System.Diagnostics.Process;
 using Uri = Android.Net.Uri;
 
@@ -93,28 +93,27 @@ public class MainActivity : AvaloniaMainActivity<App>
         return new PhoneControl(this);
     }
 
-    public Process PhoneStartJvm(string path)
+    public Process PhoneStartJvm(string file)
     {
         var info = new ProcessStartInfo(NativeLibDir + "/libcolormcnative.so");
-        var file = new FileInfo(path);
+        var path = Path.GetFullPath(new FileInfo(file).Directory.Parent.FullName);
 
-        path = Path.GetFullPath(file.Directory.Parent.FullName);
-        info.Environment.Add("JAVA_HOME", path);
-        info.ArgumentList.Add("-Djava.home=" + path);
-
-        path = JavaUnpack.GetLibPath(path);
+        var path1 = JavaUnpack.GetLibPath(path);
 
         var temp1 = Os.Getenv("PATH");
 
-        var LD_LIBRARY_PATH = $"{path}:{path}/jli:" 
+        var LD_LIBRARY_PATH = $"{path1}/{(File.Exists($"{path1}/server/libjvm.so") ? "server" : "client")}"
+            + $":{path}:{path1}/jli:{path1}:" 
             + "/system/lib64:/vendor/lib64:/vendor/lib64/hw:"
-            + ApplicationContext.ApplicationInfo.NativeLibraryDir + ":"
-            + temp1;
-
-        LD_LIBRARY_PATH += $":{path}/{(File.Exists($"{path}/server/libjvm.so") ? "server" : "client")}";
+            + ApplicationContext.ApplicationInfo.NativeLibraryDir;
 
         info.Environment.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
-        
+        info.Environment.Add("PATH", path1 + "/bin:" + temp1);
+        info.Environment.Add("JAVA_HOME", path);
+        info.Environment.Add("HOME", ColorMCCore.BaseDir);
+        info.Environment.Add("TMPDIR", ApplicationContext.CacheDir.AbsolutePath);
+        info.ArgumentList.Add("-Djava.home=" + path);
+
         var p = new Process
         {
             StartInfo = info,
@@ -126,19 +125,11 @@ public class MainActivity : AvaloniaMainActivity<App>
     public Process PhoneJvmRun(GameSettingObj obj, JavaInfo jvm, string dir, List<string> arg, Dictionary<string, string> env)
     {
         var p = PhoneStartJvm(jvm.Path);
-        string dir1 = obj.GetLogPath();
-        if (!Directory.Exists(dir1))
-        {
-            Directory.CreateDirectory(dir1);
-        }
 
         foreach (var item in env)
         {
             p.StartInfo.Environment.Add(item.Key, item.Value);
         }
-
-        var file = new FileInfo(jvm.Path);
-        var path = Path.GetFullPath(file.Directory.Parent.FullName);
 
         p.StartInfo.WorkingDirectory = dir;
         p.StartInfo.ArgumentList.Add("-Djava.io.tmpdir=" + ApplicationContext.CacheDir.AbsolutePath);
@@ -153,7 +144,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         return p;
     }
 
-    public void PhoneJvmInstall(Stream stream, string file, ZipUpdate? zip)
+    public void PhoneJvmInstall(Stream stream, string file, ColorMCCore.ZipUpdate? zip)
     {
         new JavaUnpack() { ZipUpdate = zip }.Unpack(stream, file);
     }

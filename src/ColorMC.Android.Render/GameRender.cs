@@ -1,11 +1,5 @@
-﻿using Android.Content;
-using Android.Hardware.Lights;
-using Android.Systems;
-using Android.Widget;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net.Sockets;
-using System.Threading;
-using static Android.Icu.Text.ListFormatter;
 
 namespace ColorMC.Android.GLRender;
 
@@ -14,14 +8,15 @@ public class GameSock
     public enum CommandType : byte
     {
         Run = 0,
-        SetSize,
-        DisplayReady,
-        SendChar,
-        SendCharMods,
-        SendCursorPos,
-        SendKey,
-        SendMouseButton,
-        SendScroll
+        SetSize = 1,
+        DisplayReady = 2,
+        SendChar = 3,
+        SendCharMods = 4,
+        SendCursorPos = 5,
+        SendKey = 6,
+        SendMouseButton = 7,
+        SendScroll = 8,
+        SetGrabbing = 9
     }
 
     private static readonly byte[] MagicHead = [(byte)'c', (byte)'o', (byte)'l', (byte)'o', (byte)'r', (byte)'y'];
@@ -29,7 +24,7 @@ public class GameSock
     private readonly UnixDomainSocketEndPoint _socketPath;
     private readonly Socket _socket;
 
-    public Action<CommandType>? CommandRead;
+    public Action<CommandType, byte[], int>? CommandRead;
 
     public GameSock(string socketPath)
     {
@@ -80,7 +75,7 @@ public class GameSock
                         && buffer[a + 4] == MagicHead[4]
                         && buffer[a + 5] == MagicHead[5])
                     {
-                        CommandRead?.Invoke((CommandType)buffer[a + 6]);
+                        CommandRead?.Invoke((CommandType)buffer[a + 6], buffer, a + 7);
                     }
                 }
             }
@@ -144,6 +139,33 @@ public class GameSock
         _socket?.Close();
         _socket?.Dispose();
     }
+
+    public void SendScroll(float hScroll, float vScroll)
+    {
+        var list = new List<byte>(MagicHead)
+        {
+            (byte)CommandType.SendScroll,
+        };
+
+        list.AddRange(BitConverter.GetBytes(hScroll));
+        list.AddRange(BitConverter.GetBytes(vScroll));
+
+        _socket.Send(list.ToArray());
+    }
+
+    public void SendKeyPress(int key, int mode, bool value)
+    {
+        var list = new List<byte>(MagicHead)
+        {
+            (byte)CommandType.SendKey,
+        };
+
+        list.AddRange(BitConverter.GetBytes(key));
+        list.AddRange(BitConverter.GetBytes(mode));
+        list.Add(value ? (byte)1 : (byte)0);
+
+        _socket.Send(list.ToArray());
+    }
 }
 
 public class GameRender
@@ -151,7 +173,8 @@ public class GameRender
     public enum RenderType
     {
         gl4es = 0,
-        angle = 1
+        angle = 1,
+        zink = 2
     }
 
     private const string Render = "render.sock";
@@ -169,13 +192,25 @@ public class GameRender
 
     public int RenderWidth { get; private set; }
     public int RenderHeight{ get; private set; }
-    public bool IsGrabbing { get; set; }
+
+    private bool _isGrabbing;
+
+    public bool IsGrabbing 
+    {
+        get { return _isGrabbing; }
+        set
+        { 
+            _isGrabbing = value;
+            IsGrabbingChange?.Invoke();
+        }
+    }
 
     public bool HaveBuffer { get; private set; }
     public bool HaveTexture { get; private set; }
 
     public event Action<string>? GameReady;
     public event Action? SizeChange;
+    public event Action? IsGrabbingChange;
     public event Action? GameClose;
 
     public bool holdingAlt, holdingCapslock, holdingCtrl,
@@ -223,7 +258,7 @@ public class GameRender
         SizeChange?.Invoke();
     }
 
-    private void Command(GameSock.CommandType data)
+    private void Command(GameSock.CommandType data, byte[] buffer, int index)
     {
         switch (data)
         {
@@ -233,6 +268,9 @@ public class GameRender
             case GameSock.CommandType.DisplayReady:
                 ReadBuffer();
                 GameReady?.Invoke(_uuid);
+                break;
+            case GameSock.CommandType.SetGrabbing:
+                IsGrabbing = buffer[index] == 1;
                 break;
         }
     }
@@ -286,6 +324,10 @@ public class GameRender
         {
             while (true)
             {
+                if (IsGameClose)
+                {
+                    return;
+                }
                 buffer = RenderNative.GetBuffer(_render);
                 if (buffer != IntPtr.Zero)
                 {
@@ -314,23 +356,23 @@ public class GameRender
         int currMods = 0;
         if (holdingAlt)
         {
-            currMods |= Keycode.GLFW_MOD_ALT;
+            currMods |= LwjglKeycode.GLFW_MOD_ALT;
         }
         if (holdingCapslock)
         {
-            currMods |= Keycode.GLFW_MOD_CAPS_LOCK;
+            currMods |= LwjglKeycode.GLFW_MOD_CAPS_LOCK;
         }
         if (holdingCtrl)
         {
-            currMods |= Keycode.GLFW_MOD_CONTROL;
+            currMods |= LwjglKeycode.GLFW_MOD_CONTROL;
         }
         if (holdingNumlock)
         {
-            currMods |= Keycode.GLFW_MOD_NUM_LOCK;
+            currMods |= LwjglKeycode.GLFW_MOD_NUM_LOCK;
         }
         if (holdingShift)
         {
-            currMods |= Keycode.GLFW_MOD_SHIFT;
+            currMods |= LwjglKeycode.GLFW_MOD_SHIFT;
         }
         return currMods;
     }
@@ -350,5 +392,25 @@ public class GameRender
         Sock.Close();
         GameClose?.Invoke();
         AndroidHelper.Main.Post(RenderClose);
+    }
+
+    public void SendScroll(float hScroll, float vScroll)
+    {
+        if (IsGameClose)
+        {
+            return;
+        }
+        Sock.SendScroll(hScroll, vScroll);
+    }
+
+    public void SendKeyPress(short key)
+    {
+        Sock.SendKeyPress(key, GetCurrentMods(), true);
+        Sock.SendKeyPress(key, GetCurrentMods(), false);
+    }
+
+    public void SendKey(short key, bool value)
+    {
+        Sock.SendKeyPress(key, GetCurrentMods(), value);
     }
 }

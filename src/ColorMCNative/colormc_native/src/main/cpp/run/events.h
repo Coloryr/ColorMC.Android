@@ -22,6 +22,10 @@ typedef struct {
     int i2;
     int i3;
     int i4;
+    float f1;
+    float f2;
+    float f3;
+    float f4;
 } GLFWInputEvent;
 
 __attribute__((unused)) typedef void GLFW_invoke_Char_func(void* window, unsigned int codepoint);
@@ -55,7 +59,8 @@ extern bool isGrabbing;
 void start_event(void* window);
 void get_event();
 void compute_event();
-void sendData(int type, int i1, int i2, int i3, int i4);
+void send_int_data(int type, int i1, int i2, int i3, int i4);
+void send_float_data(int type, float f1, float f2, float f3, float f4);
 void event_init();
 
 void send_char(char codepoint);
@@ -64,6 +69,6 @@ void send_cursor_pos(float x, float y);
 void send_key(int key, int scancode, int action, int mods);
 void send_mouse_button(int button, uint8_t action, int mods);
 void send_screen_size(int width, int height);
-void send_scroll(double xoffset, double yoffset);
+void send_scroll(float xoffset, float yoffset);
 
 #endif //COLORMCNATIVE_EVENTS_H

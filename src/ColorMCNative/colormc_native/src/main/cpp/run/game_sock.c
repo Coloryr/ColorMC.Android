@@ -92,6 +92,28 @@ void game_pack_do(uint8_t* buffer, int size) {
             printf("[ColorMC Info] set cursor pos %f %f\n", f1, f2);
 
             break;
+        case COMMAND_SEND_SCROLL:
+            if (size < 9) {
+                printf("[ColorMC Error] set scroll pack error\n");
+                return;
+            }
+
+            change1.u8[0] = buffer[1];
+            change1.u8[1] = buffer[2];
+            change1.u8[2] = buffer[3];
+            change1.u8[3] = buffer[4];
+            f1 = change1.f;
+            change1.u8[0] = buffer[5];
+            change1.u8[1] = buffer[6];
+            change1.u8[2] = buffer[7];
+            change1.u8[3] = buffer[8];
+            f2 = change1.f;
+
+            send_scroll(f1, f2);
+
+            printf("[ColorMC Info] set scroll %f %f\n", f1, f2);
+
+            break;
         case COMMAND_SEND_MOUSE_BUTTON:
             if (size < 10) {
                 printf("[ColorMC Error] set mouse button pack error\n");
@@ -111,6 +133,28 @@ void game_pack_do(uint8_t* buffer, int size) {
             i3 = buffer[9];
 
             send_mouse_button(i1, i3, i2);
+
+            printf("[ColorMC Info] set mouse button %d %d %d\n", i1, i2, i3);
+            break;
+        case COMMAND_SEND_KEY:
+            if (size < 10) {
+                printf("[ColorMC Error] set mouse button pack error\n");
+                return;
+            }
+
+            change2.u8[0] = buffer[1];
+            change2.u8[1] = buffer[2];
+            change2.u8[2] = buffer[3];
+            change2.u8[3] = buffer[4];
+            i1 = change2.i32;
+            change2.u8[0] = buffer[5];
+            change2.u8[1] = buffer[6];
+            change2.u8[2] = buffer[7];
+            change2.u8[3] = buffer[8];
+            i2 = change2.i32;
+            i3 = buffer[9];
+
+            send_key(i1, 0, i3, i2);
 
             printf("[ColorMC Info] set mouse button %d %d %d\n", i1, i2, i3);
             break;
@@ -173,9 +217,24 @@ void send_data(enum COMMAND_TYPE type) {
         buffer[i] = magic_head[i];
     }
 
-    buffer[6] = buffer[9] = type;
+    buffer[6] = type;
 
     send(game_client_fd, buffer, 10, 0);
+}
+
+void send_grabbing(bool enable) {
+    if (game_client_fd <= 0) {
+        return;
+    }
+    uint8_t buffer[10] = {0};
+    for (int i = 0; i < 6; ++i) {
+        buffer[i] = magic_head[i];
+    }
+
+    buffer[6] = COMMAND_SET_GRABBING;
+    buffer[7] = enable == true ? 1: 0;
+
+    send(game_client_fd, buffer, 8, 0);
 }
 
 bool game_sock_server() {

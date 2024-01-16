@@ -34,7 +34,7 @@
  * These are the API functions:
  *   OSMesaCreateContext - create a new Off-Screen Mesa rendering context
  *   OSMesaMakeCurrent - bind an OSMesaContext to a client's image buffer
- *                       and make_buffer the specified context the current one.
+ *                       and ah_create_buffer the specified context the current one.
  *   OSMesaDestroyContext - destroy an OSMesaContext
  *   OSMesaGetCurrentContext - return thread's current context ID
  *   OSMesaPixelStore - controls how pixels are stored in image buffer

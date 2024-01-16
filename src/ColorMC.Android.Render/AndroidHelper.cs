@@ -5,6 +5,25 @@ using System.Text;
 
 namespace ColorMC.Android.GLRender;
 
+public static class MathUtils
+{
+
+    //Ported from https://www.arduino.cc/reference/en/language/functions/math/map/
+    public static float map(float x, float in_min, float in_max, float out_min, float out_max)
+    {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
+    /** Returns the distance between two points. */
+    public static float dist(float x1, float y1, float x2, float y2)
+    {
+        float x = (x2 - x1);
+        float y = (y2 - y1);
+        return float.Hypot(x, y);
+    }
+
+}
+
 public static class GLHelper
 {
     public static int CreateTexture()
@@ -37,6 +56,8 @@ public static class GLHelper
     {
         return type switch
         {
+            GameRender.RenderType.angle => "angle",
+            GameRender.RenderType.zink => "zink",
             _ => "gl4es"
         };
     }

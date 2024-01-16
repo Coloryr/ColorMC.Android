@@ -28,6 +28,7 @@ add_library("colormcnative_run" SHARED
         run/game_sock.c
         run/render_sock.c
         run/render_test.c
+        run/context_list.c
         run/dl_loader/egl_loader.c
         run/dl_loader/gl_loader.c
         run/dl_loader/ah_loader.c

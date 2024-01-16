@@ -11,7 +11,7 @@
 
 #include "events.h"
 
-#define EVENT_WINDOW_SIZE 8000
+#define EVENT_WINDOW_SIZE 8000 / 2
 
 GLFWInputEvent events[EVENT_WINDOW_SIZE];
 
@@ -90,7 +90,7 @@ void start_event(void* window) {
                 break;
             case EVENT_TYPE_SCROLL:
                 if (GLFW_invoke_Scroll)
-                    GLFW_invoke_Scroll(window, event.i1, event.i2);
+                    GLFW_invoke_Scroll(window, event.f1, event.f2);
                 break;
             case EVENT_TYPE_FRAMEBUFFER_SIZE:
                 handleFramebufferSizeJava(showingWindow, event.i1, event.i2);
@@ -112,8 +112,7 @@ void start_event(void* window) {
          cLastY != cursorY) && GLFW_invoke_CursorPos) {
         cLastX = cursorX;
         cLastY = cursorY;
-        GLFW_invoke_CursorPos(window, floor(cursorX),
-                              floor(cursorY));
+        GLFW_invoke_CursorPos(window, cursorX, cursorY);
     }
 
     isPumpingEvents = false;
@@ -139,7 +138,7 @@ void compute_event() {
     outTargetIndex = targetIndex;
 }
 
-void sendData(int type, int i1, int i2, int i3, int i4) {
+void send_int_data(int type, int i1, int i2, int i3, int i4) {
     GLFWInputEvent *event = &events[inEventIndex];
     event->type = type;
     event->i1 = i1;
@@ -153,10 +152,24 @@ void sendData(int type, int i1, int i2, int i3, int i4) {
     atomic_fetch_add_explicit(&eventCounter, 1, memory_order_acquire);
 }
 
+void send_float_data(int type, float f1, float f2, float f3, float f4) {
+    GLFWInputEvent *event = &events[inEventIndex];
+    event->type = type;
+    event->f1 = f1;
+    event->f2 = f2;
+    event->f3 = f3;
+    event->f4 = f4;
+
+    if (++inEventIndex >= EVENT_WINDOW_SIZE)
+        inEventIndex -= EVENT_WINDOW_SIZE;
+
+    atomic_fetch_add_explicit(&eventCounter, 1, memory_order_acquire);
+}
+
 void send_char(char codepoint) {
     if (GLFW_invoke_Char && isInputReady) {
         if (isUseStackQueueCall) {
-            sendData(EVENT_TYPE_CHAR, codepoint, 0, 0, 0);
+            send_int_data(EVENT_TYPE_CHAR, codepoint, 0, 0, 0);
         } else {
             GLFW_invoke_Char((void*) showingWindow, (unsigned int) codepoint);
         }
@@ -166,7 +179,7 @@ void send_char(char codepoint) {
 void send_char_mods(char codepoint, int mods) {
     if (GLFW_invoke_CharMods && isInputReady) {
         if (isUseStackQueueCall) {
-            sendData(EVENT_TYPE_CHAR_MODS, (int) codepoint, mods, 0, 0);
+            send_int_data(EVENT_TYPE_CHAR_MODS, (int) codepoint, mods, 0, 0);
         } else {
             GLFW_invoke_CharMods((void*) showingWindow, codepoint, mods);
         }
@@ -179,7 +192,7 @@ void send_cursor_pos(float x, float y) {
             if (GLFW_invoke_CursorEnter) {
                 isCursorEntered = true;
                 if (isUseStackQueueCall) {
-                    sendData(EVENT_TYPE_CURSOR_ENTER, 1, 0, 0, 0);
+                    send_int_data(EVENT_TYPE_CURSOR_ENTER, 1, 0, 0, 0);
                 } else {
                     GLFW_invoke_CursorEnter((void*) showingWindow, 1);
                 }
@@ -210,7 +223,7 @@ void send_key(int key, int scancode, int action, int mods) {
     if (GLFW_invoke_Key && isInputReady) {
         keyDownBuffer[max(0, key-31)] = (jbyte) action;
         if (isUseStackQueueCall) {
-            sendData(EVENT_TYPE_KEY, key, scancode, action, mods);
+            send_int_data(EVENT_TYPE_KEY, key, scancode, action, mods);
         } else {
             GLFW_invoke_Key((void*) showingWindow, key, scancode, action, mods);
         }
@@ -221,7 +234,7 @@ void send_mouse_button(int button, uint8_t action, int mods) {
     if (GLFW_invoke_MouseButton && isInputReady) {
         mouseDownBuffer[max(0, button)] = (jbyte) action;
         if (isUseStackQueueCall) {
-            sendData(EVENT_TYPE_MOUSE_BUTTON, button, action, mods, 0);
+            send_int_data(EVENT_TYPE_MOUSE_BUTTON, button, action, mods, 0);
         } else {
             GLFW_invoke_MouseButton((void*) showingWindow, button, action, mods);
         }
@@ -234,7 +247,7 @@ void send_screen_size(int width, int height) {
         if (GLFW_invoke_FramebufferSize) {
             printf("[ColorMC Info] send buffer change");
             if (isUseStackQueueCall) {
-                sendData(EVENT_TYPE_FRAMEBUFFER_SIZE, width, height, 0, 0);
+                send_int_data(EVENT_TYPE_FRAMEBUFFER_SIZE, width, height, 0, 0);
             } else {
                 GLFW_invoke_FramebufferSize((void *) showingWindow, width, height);
             }
@@ -243,7 +256,7 @@ void send_screen_size(int width, int height) {
         if (GLFW_invoke_WindowSize) {
             printf("[ColorMC Info] send window change");
             if (isUseStackQueueCall) {
-                sendData(EVENT_TYPE_WINDOW_SIZE, width, height, 0, 0);
+                send_int_data(EVENT_TYPE_WINDOW_SIZE, width, height, 0, 0);
             } else {
                 GLFW_invoke_WindowSize((void *) showingWindow, width, height);
             }
@@ -253,12 +266,12 @@ void send_screen_size(int width, int height) {
     fflush(stdout);
 }
 
-void send_scroll(double xoffset, double yoffset) {
+void send_scroll(float xoffset, float yoffset) {
     if (GLFW_invoke_Scroll && isInputReady) {
         if (isUseStackQueueCall) {
-            sendData(EVENT_TYPE_SCROLL, (int)xoffset, (int)yoffset, 0, 0);
+            send_float_data(EVENT_TYPE_SCROLL, xoffset, yoffset, 0, 0);
         } else {
-            GLFW_invoke_Scroll((void*) showingWindow, (double) xoffset, (double) yoffset);
+            GLFW_invoke_Scroll((void *) showingWindow, xoffset, yoffset);
         }
     }
 }

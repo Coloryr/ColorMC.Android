@@ -264,6 +264,7 @@ Java_org_lwjgl_glfw_GLFW_nglfwGetCursorPosA(JNIEnv *env, jclass clazz, __attribu
 JNIEXPORT void JNICALL JavaCritical_org_lwjgl_glfw_GLFW_glfwSetCursorPos(jlong window, jdouble xpos, jdouble ypos) {
     cLastX = cursorX = xpos;
     cLastY = cursorY = ypos;
+
 }
 
 JNIEXPORT void JNICALL
@@ -313,8 +314,7 @@ JNIEXPORT jboolean JNICALL Java_org_lwjgl_glfw_CallbackBridge_nativeSetInputRead
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_glfw_CallbackBridge_nativeSetGrabbing(JNIEnv* env, jclass clazz, jboolean grabbing) {
-    JNIEnv *dalvikEnv;
-    //TODO Grabbing
+    send_grabbing(grabbing);
     isGrabbing = grabbing;
 }
 

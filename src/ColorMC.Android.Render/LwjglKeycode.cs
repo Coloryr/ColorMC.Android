@@ -1,6 +1,6 @@
 ﻿namespace ColorMC.Android.GLRender;
 
-public static class Keycode
+public static class LwjglKeycode
 {
     /** The unknown key. */
     public const short GLFW_KEY_UNKNOWN = 0; // should be -1

@@ -8,7 +8,6 @@
 #include <string.h>
 #include <EGL//egl.h>
 #include <stdbool.h>
-#include <pthread.h>
 #include <android/hardware_buffer.h>
 
 #include "GL/gl.h"
@@ -22,24 +21,14 @@
 #include "dl_loader/gl_loader.h"
 #include "dl_loader/ah_loader.h"
 #include "events.h"
+#include "context_list.h"
 
 #define EXTERNAL_API __attribute__((used))
-
-#define ENV_COUNT 20
 
 EGLDisplay display = EGL_NO_DISPLAY;
 EGLSurface surface = EGL_NO_SURFACE;
 EGLConfig config;
 EGLint format;
-
-pthread_mutex_t mutex;
-
-typedef struct {
-    EGLContext context;
-    GLuint fbo;
-    GLuint texture;
-    bool init;
-} context_env;
 
 int width = 640;
 int height = 480;
@@ -47,9 +36,6 @@ int height = 480;
 int gles_version = 3;
 
 bool v2 = false;
-
-context_env env_list[ENV_COUNT] = {0};
-context_env *now_env;
 
 bool can_run = false;
 
@@ -60,10 +46,18 @@ enum RENDER_STATE {
     RENDER_CHANGE_SIZE
 };
 
+enum RENDER_TYPE{
+    GL4ES,
+    ANGLE,
+    ZINK
+};
+
 uint8_t render_state;
 
 AHardwareBuffer *a_buffer = NULL;
 EGLImageKHR eglImage = EGL_NO_IMAGE_KHR;
+
+uint8_t render_type;
 
 const char *getEGLError() {
     switch (eglGetError_p()) {
@@ -102,7 +96,8 @@ const char *getEGLError() {
     }
 }
 
-void make_buffer() {
+//创建一个native buffer
+void ah_create_buffer() {
     AHardwareBuffer_Desc desc = {
             width,
             height,
@@ -125,10 +120,12 @@ void make_buffer() {
     fflush(stdout);
 }
 
+//交换egl_buffer
 void egl_swap_interval(int swapInterval) {
     eglSwapInterval_p(display, swapInterval);
 }
 
+//创建surface
 void egl_create_surface() {
     printf("[ColorMC Info] egl create surface\n");
     // 创建Pbuffer表面
@@ -145,6 +142,7 @@ void egl_create_surface() {
     fflush(stdout);
 }
 
+//创建image
 void egl_create_image() {
     printf("[ColorMC Info] egl_create_image\n");
     EGLClientBuffer clientBuffer = eglGetNativeClientBufferANDROID_p(a_buffer);
@@ -169,14 +167,15 @@ void egl_create_image() {
     }
 }
 
+/*
+ * egl创建
+ * 初始化EGL，创建显示器
+ * 创建EGL配置
+ * 创建native buffer
+ * 创建surface与image
+ */
 bool egl_create() {
     printf("[ColorMC Info] egl create\n");
-
-    char *temp1 = getenv("GL_ES_VERSION");
-    if (temp1 != NULL) {
-        gles_version = strtol(temp1, NULL, 0);
-        if (gles_version < 0 || gles_version > INT16_MAX) gles_version = 2;
-    }
 
     display = eglGetDisplay_p(EGL_DEFAULT_DISPLAY);
     if (display == EGL_NO_DISPLAY) {
@@ -219,7 +218,7 @@ bool egl_create() {
 
     EGLBoolean bindResult;
     char *temp = getenv("GAME_RENDER");
-    if (temp != NULL && strcmp(temp, "gl4es") == 0) {
+    if (temp != NULL && strcmp(temp, "angle") == 0) {
         printf("[ColorMC Info] EGL Binding to desktop OpenGL\n");
         bindResult = eglBindAPI_p(EGL_OPENGL_API);
     } else {
@@ -231,55 +230,20 @@ bool egl_create() {
     }
     fflush(stdout);
 
-    make_buffer();
+    ah_create_buffer();
     egl_create_surface();
     egl_create_image();
 
     return true;
 }
 
-context_env * find_empty() {
-    pthread_mutex_lock(&mutex);
-    for (int a = 0; a < ENV_COUNT; a++) {
-        if (env_list[a].context == EGL_NO_CONTEXT) {
-            pthread_mutex_unlock(&mutex);
-            return &env_list[a];
-        }
-    }
-
-    pthread_mutex_unlock(&mutex);
-    return NULL;
-}
-
-context_env * find_match(EGLContext context) {
-    pthread_mutex_lock(&mutex);
-    for (int a = 0; a < ENV_COUNT; a++) {
-        if (env_list[a].context == context) {
-            pthread_mutex_unlock(&mutex);
-            return &env_list[a];
-        }
-    }
-
-    pthread_mutex_unlock(&mutex);
-    return NULL;
-}
-
-void remove_context(EGLContext context){
-    pthread_mutex_lock(&mutex);
-    for (int a = 0; a < ENV_COUNT; a++) {
-        if (env_list[a].context == context) {
-            env_list[a].context = EGL_NO_CONTEXT;
-            env_list[a].fbo = 0;
-            env_list[a].texture = 0;
-            env_list[a].init = false;
-        }
-    }
-    pthread_mutex_unlock(&mutex);
-}
-
-void gl_create(context_env * env) {
-    printf("[ColorMC Info] gl create\n");
-
+/*
+ * gl创建材质，用于显存共享
+ * 创建一个材质，设置属性
+ * 与EGLimage进行绑定
+ */
+void gl_create_texture(context_env * env){
+    printf("[ColorMC Info] gl create texture\n");
     glGenTextures_p(1, &env->texture);
     glBindTexture_p(GL_TEXTURE_2D, env->texture);
 
@@ -291,6 +255,15 @@ void gl_create(context_env * env) {
     glEGLImageTargetTexture2DOES_p(GL_TEXTURE_2D, (GLeglImageOES) eglImage);
     glBindTexture_p(GL_TEXTURE_2D, 0);
 
+    fflush(stdout);
+}
+
+/*
+ * 创建gl的fbo用于显存共享
+ * 创建一个fbo
+ * 将材质附加到fbo中
+ */
+void gl_create_fbo(context_env * env){
     glGenFramebuffers_p(1, &env->fbo);
     glBindFramebuffer_p(GL_FRAMEBUFFER, env->fbo);
     glFramebufferTexture2D_p(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, env->texture, 0);
@@ -301,20 +274,29 @@ void gl_create(context_env * env) {
         printf("[ColorMC Info] gl framebuffer ok\n");
     }
 
-    glBindTexture_p(GL_TEXTURE_2D, 0);
     glBindFramebuffer_p(GL_FRAMEBUFFER, 0);
-
     fflush(stdout);
+}
 
+/*
+ * 用于context首次初始化
+ */
+void gl_create(context_env * env) {
+    printf("[ColorMC Info] gl create\n");
+    fflush(stdout);
+    gl_create_texture(env);
+    gl_create_fbo(env);
     env->init = true;
-
     send_data(COMMAND_DISPLAY_READY);
 }
 
+/*
+ * egl创建一个context
+ */
 void* egl_create_context(void * share) {
     printf("[ColorMC Info] egl_create_context input: %p\n", share);
 
-    context_env *env = find_empty();
+    context_env *env = context_find_empty();
     if (env == NULL) {
         printf("[ColorMC Error] gl context is full\n");
         fflush(stdout);
@@ -340,6 +322,9 @@ void* egl_create_context(void * share) {
     return env->context;
 }
 
+/*
+ * 获取正在使用的context
+ */
 void* egl_get_context() {
     if (now_env == NULL) {
         printf("[ColorMC Info] egl_get_context no now env\n");
@@ -350,9 +335,15 @@ void* egl_get_context() {
     return now_env->context;
 }
 
+/*
+ * 切换context
+ * 若context没有初始化过，则进行初始化
+ */
 void egl_make_current(void* context) {
     printf("[ColorMC Info] egl_make_current context: %p\n", context);
+
     if (context == NULL) {
+        //进行context取消绑定
         printf("[ColorMC Info] unbind egl context\n");
         fflush(stdout);
         eglMakeCurrent_p(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
@@ -360,19 +351,21 @@ void egl_make_current(void* context) {
         return;
     }
 
-    context_env *env = find_match(context);
+    context_env *env = context_find_match(context);
     if (env == NULL) {
         printf("[ColorMC Error] egl context not find in list\n");
         fflush(stdout);
         exit(1);
     }
 
+    //进行context切换
     if (eglMakeCurrent_p(display, surface, surface, context) != EGL_TRUE) {
         printf("[ColorMC Error] eglMakeCurrent returned with error: %s\n", getEGLError());
     } else {
         now_env = env;
         showingWindow = env->context;
         if(env->init == false) {
+            //进行context初始化
             gl_create(env);
         }
         printf("[ColorMC Info] bind egl context to :%p\n", context);
@@ -380,10 +373,13 @@ void egl_make_current(void* context) {
     fflush(stdout);
 }
 
+/*
+ * 销毁一个context
+ */
 void egl_destroy_context(void * input) {
     printf("[ColorMC Info] egl_destroy_context input: %p\n", input);
 
-    context_env *env = find_match(input);
+    context_env *env = context_find_match(input);
     if (env == NULL) {
         printf("[ColorMC Error] gl context can't find\n");
         fflush(stdout);
@@ -401,36 +397,63 @@ void egl_destroy_context(void * input) {
         now_env = NULL;
     }
 
-    remove_context(env->context);
+    context_remove(env->context);
 }
 
+/*
+ * 改变渲染大小
+ */
 void egl_change_size() {
     printf("[ColorMC Info] egl reload\n");
     fflush(stdout);
 
-//    glDeleteTextures_p(1, &texture);
-//    if (eglImage != EGL_NO_IMAGE_KHR) {
-//        eglDestroyImageKHR_p(display, eglImage);
-//        eglImage = EGL_NO_IMAGE_KHR;
-//    }
-//    if (a_buffer) {
-//        AHardwareBuffer_release_p(a_buffer);
-//        a_buffer = NULL;
-//    }
-//
-//    eglMakeCurrent_p(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-//    eglDestroySurface_p(display, surface);
-//    surface = EGL_NO_SURFACE;
-//
-//    egl_make_current(context);
-//
-//    send_data(COMMAND_SET_SIZE);
+    context_env *env = now_env;
+    if (env == NULL) {
+        return;
+    }
+    //删除fbo
+    glDeleteFramebuffers_p(1, &env->fbo);
+    //删除texture
+    glDeleteTextures_p(1, &env->texture);
+    //删除image
+    if (eglImage != EGL_NO_IMAGE_KHR) {
+        eglDestroyImageKHR_p(display, eglImage);
+        eglImage = EGL_NO_IMAGE_KHR;
+    }
+    //删除buffer
+    if (a_buffer) {
+        AHardwareBuffer_release_p(a_buffer);
+        a_buffer = NULL;
+    }
+    //删除surface
+    egl_make_current(NULL);
+    eglDestroySurface_p(display, surface);
+    surface = EGL_NO_SURFACE;
+
+    //创建surface
+    egl_create_surface();
+    egl_make_current(env->context);
+    //创建buffer
+    ah_create_buffer();
+    //创建image
+    egl_create_image();
+    //创建texture
+    gl_create_texture(env);
+    //创建fbo
+    gl_create_fbo(env);
+
+    fflush(stdout);
+
+    send_data(COMMAND_SET_SIZE);
 }
 
 void egl_start_change_size() {
     render_state = RENDER_CHANGE_SIZE;
 }
 
+/*
+ * egl完整删除
+ */
 void egl_close() {
     if (now_env != NULL) {
         egl_destroy_context(now_env->context);
@@ -443,16 +466,25 @@ void egl_close() {
     eglReleaseThread_p();
 }
 
+/*
+ * egl初始化
+ * 读取环境变量，GAME_RENDER：渲染器名字，GL_ES_VERSION：GLES版本等
+ * 启动sock服务器
+ * 等待主进程链接
+ * 加载so库，并查找符号
+ * 创建egl环境
+ * 初始化context列表
+ */
 bool egl_init() {
     printf("[ColorMC Info] egl init\n");
 
-    char *env = getenv("glfwstub.windowWidth");
-    if (env == NULL) {
+    //显示宽度
+    char *temp1 = getenv("glfwstub.windowWidth");
+    if (temp1 == NULL) {
         printf("[ColorMC Error] no set glfwstub.windowWidth env\n");
         width = 0;
-    }
-    else {
-        width = strtol(env, NULL, 0);
+    } else {
+        width = strtol(temp1, NULL, 0);
     }
 
     if (width <= 0) {
@@ -460,13 +492,37 @@ bool egl_init() {
         width = 640;
     }
 
-    env = getenv("glfwstub.windowHeight");
-    if (env == NULL) {
+    //显示高度
+    temp1 = getenv("glfwstub.windowHeight");
+    if (temp1 == NULL) {
         printf("[ColorMC Error] no set glfwstub.windowHeight env\n");
         height = 0;
+    } else {
+        height = strtol(temp1, NULL, 0);
     }
-    else {
-        height = strtol(env, NULL, 0);
+
+    //渲染器类型
+    temp1 = getenv("GAME_RENDER");
+    if (temp1 == NULL) {
+        printf("[ColorMC Error] no GAME_RENDER\n");
+        return false;
+    }
+    if (strcmp(temp1, "gl4es")) {
+        render_type = GL4ES;
+    } else if (strcmp(temp1, "angle")) {
+        render_type = ANGLE;
+    } else if (strcmp(temp1, "zink")) {
+        render_type = ZINK;
+    } else {
+        printf("[ColorMC Error] unsupper GAME_RENDER :%s\n", temp1);
+        return false;
+    }
+
+    //GLES版本
+    temp1 = getenv("GL_ES_VERSION");
+    if (temp1 != NULL) {
+        gles_version = strtol(temp1, NULL, 0);
+        if (gles_version < 0 || gles_version > INT16_MAX) gles_version = 2;
     }
 
     if (height <= 0) {
@@ -474,6 +530,7 @@ bool egl_init() {
         height = 480;
     }
 
+    //启动sock服务器
     if (game_sock_server() == false) {
         printf("[ColorMC Error] sock init fail\n");
         fflush(stdout);
@@ -486,12 +543,14 @@ bool egl_init() {
         return false;
     }
 
+    //等待链接
     while (!can_run) {
         printf("[ColorMC Info] wait run start\n");
         fflush(stdout);
         sleep(1);
     }
 
+    //加载符号
     if (egl_load() == false) {
         printf("[ColorMC Error] egl load fail\n");
         fflush(stdout);
@@ -510,26 +569,29 @@ bool egl_init() {
         return false;
     }
 
+    //创建egl环境
     if (!egl_create()) {
         printf("[ColorMC Error] Egl create fail\n");
         fflush(stdout);
         return false;
     }
 
-    pthread_mutex_init(&mutex, NULL);
+    context_list_init();
 
     fflush(stdout);
 
     return true;
 }
 
+//交换buffer
 void egl_swap_buffers() {
     if (now_env == NULL) {
         return;
     }
     glBindFramebuffer_p(GL_READ_FRAMEBUFFER, 0);
     glBindFramebuffer_p(GL_DRAW_FRAMEBUFFER, now_env->fbo);
-    glBlitFramebuffer_p(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBlitFramebuffer_p(0, 0, width, height, 0, 0,
+                        width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer_p(GL_READ_FRAMEBUFFER, 0);
     glBindFramebuffer_p(GL_DRAW_FRAMEBUFFER, 0);
@@ -547,75 +609,3 @@ bool sendTexture(int sock) {
     }
     return AHardwareBuffer_sendHandleToUnixSocket_p(a_buffer, sock) == 0;
 }
-
-//EXTERNAL_API int run(int argc, char** args) {
-//    printf("[Info] run start\n");
-//
-//    if (game_sock_server() == false) {
-//        printf("[Error] sock init fail\n");
-//        return 1;
-//    }
-//
-//    while (!can_run) {
-//        printf("[Info] wait run start\n");
-//        sleep(1);
-//    }
-//
-//    if (egl_load() == false) {
-//        printf("[Error] egl load fail\n");
-//        return 1;
-//    }
-//
-//    if (gl_load() == false) {
-//        printf("[Error] gl load fail\n");
-//        return 1;
-//    }
-//
-//    if (ah_load() == false) {
-//        printf("[Error] AH load fail\n");
-//        return 1;
-//    }
-//    egl_create();
-//    egl_create_context(NULL);
-//
-//    egl_make_current(context);
-//
-//    if (render_sock_server() == false) {
-//        printf("[Error] sock init fail\n");
-//        return 1;
-//    }
-//
-//    //render test
-//    gl_init();
-//
-//    render_state = RENDER_RUN;
-//
-//    while (true) {
-//        switch (render_state) {
-//            case RENDER_RUN:
-//                gl_draw();
-//                egl_swap_buffers();
-//                GLenum error;
-//                while ((error = glGetError_p()) != GL_NO_ERROR) {
-//                    printf("[Error] OpenGL error status: 0x%x\n", error);
-//                    fflush(stdout);
-//                }
-//                break;
-//            case RENDER_CHANGE_SIZE:
-//                egl_change_size();
-//                render_state = RENDER_RUN;
-//                break;
-//        }
-//        usleep(1000);
-//    }
-//
-//    /*printf("gl clear\n");
-//    gl_clear();
-//
-//    printf("egl clear\n");
-//    egl_clear();*/
-//
-//    printf("run exit\n");
-//
-//    return 0;
-//}
