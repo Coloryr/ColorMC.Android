@@ -8,14 +8,12 @@
     <RelativeLayout
         android:id="@+id/surface_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minWidth="25px"
-        android:minHeight="25px">
+        android:layout_height="match_parent">
     </RelativeLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="设定"
-        android:id="@+id/button1"/>
+    <RelativeLayout
+        android:id="@+id/button_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </RelativeLayout>
 </RelativeLayout>

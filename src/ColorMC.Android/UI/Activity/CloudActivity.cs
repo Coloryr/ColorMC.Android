@@ -5,7 +5,7 @@ using Android.Widget;
 using AndroidX.AppCompat.App;
 using ColorMC.Gui.Utils;
 
-namespace ColorMC.Android;
+namespace ColorMC.Android.UI.Activity;
 
 [Activity(Name = "colormc.android.CloudActivity", Exported = true)]
 [IntentFilter([Intent.ActionView], Categories =

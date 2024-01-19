@@ -14,7 +14,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     private static QuadRenderer qrender;
 
-    private int width, height;
+    private int renderWidth, renderHeight;
 
     public GameRender NowGame;
 
@@ -124,13 +124,13 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     private void NowGame_SizeChange()
     {
-        XRenderRatio = (float)NowGame.RenderWidth / width;
-        YRenderRatio = (float)NowGame.RenderHeight / height;
+        XRenderRatio = (float)NowGame.GameWidth / renderWidth;
+        YRenderRatio = (float)NowGame.GameHeight / renderHeight;
     }
 
     public void OnDrawFrame(IGL10? gl)
     {
-        GLES20.GlViewport(0, 0, width, height);
+        GLES20.GlViewport(0, 0, renderWidth, renderHeight);
         GLES20.GlClearColor(0, 0, 0, 0);
         GLES20.GlClear(GLES20.GlColorBufferBit);
 
@@ -142,17 +142,15 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
             }
             else
             {
-                qrender.DrawTexture(NowGame.TexId, width, height,
-                    NowGame.RenderWidth, NowGame.RenderHeight, NowGame.ShowType, false);
+                qrender.DrawTexture(NowGame.TexId, renderWidth, renderHeight,
+                    NowGame.GameWidth, NowGame.GameHeight, NowGame.ShowType, NowGame.FlipY,
+                    out renderWidth, out renderHeight);
             }
         }
     }
 
     public void OnSurfaceChanged(IGL10? gl, int width, int height)
     {
-        this.width = width;
-        this.height = height;
-
         RenderNative.Available();
 
         qrender = new();
@@ -161,19 +159,6 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
     public void OnSurfaceCreated(IGL10? gl, Javax.Microedition.Khronos.Egl.EGLConfig? config)
     {
 
-    }
-
-    public void SetSize(string? text1, string? text2)
-    {
-        if (ushort.TryParse(text1, out var width)
-            && ushort.TryParse(text2, out var height))
-        {
-            NowGame.SetSize(width, height);
-        }
-        else
-        {
-            Toast.MakeText(Context!, "错误的输入", ToastLength.Short).Show();
-        }
     }
 
     private bool DoTouch(float x, float y)
@@ -187,11 +172,11 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
         {
             //检查是否在游戏窗口内
             float temp = Width / 2;
-            float temp1 = NowGame.RenderWidth / 2;
+            float temp1 = renderWidth / 2;
             float widthStart = temp - temp1;
             float widthEnd = temp + temp1;
             float temp2 = Height / 2;
-            float temp3 = NowGame.RenderHeight / 2;
+            float temp3 = renderHeight / 2;
             float heightStart = temp2 - temp3;
             float heightEnd = temp2 + temp3;
 
@@ -205,10 +190,10 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
             }
 
             float x1, y1;
-            x1 = x - temp + temp1;
-            y1 = y - temp2 + temp3;
+            x1 = x - widthStart;
+            y1 = y - heightStart;
 
-            NowGame.SendCursorPos(x1, y1);
+            NowGame.SendCursorPos(x1 * XRenderRatio, y1 * YRenderRatio);
             return true;
         }
     }
@@ -256,116 +241,116 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
         }
 
         // Check double tap state, used for the hotbar
-        bool hasDoubleTapped = _doubleTapDetector.OnTouchEvent(e);
+        //bool hasDoubleTapped = _doubleTapDetector.OnTouchEvent(e);
 
-        switch (e.ActionMasked)
-        {
-            case MotionEventActions.Move:
-                int pointerCount = e.PointerCount;
+        //switch (e.ActionMasked)
+        //{
+        //    case MotionEventActions.Move:
+        //        int pointerCount = e.PointerCount;
 
-                // In-menu interactions
-                if (!NowGame.IsGrabbing)
-                {
-                    // Touch hover
-                    if (pointerCount == 1)
-                    {
-                        NowGame.SendCursorPos();
-                        mPrevX = e.GetX();
-                        mPrevY = e.GetY();
-                        break;
-                    }
+        //        // In-menu interactions
+        //        if (!NowGame.IsGrabbing)
+        //        {
+        //            // Touch hover
+        //            if (pointerCount == 1)
+        //            {
+        //                NowGame.SendCursorPos();
+        //                mPrevX = e.GetX();
+        //                mPrevY = e.GetY();
+        //                break;
+        //            }
 
-                    // Scrolling feature
-                    //if (LauncherPreferences.PREF_DISABLE_GESTURES) break;
-                    // The pointer count can never be 0, and it is not 1, therefore it is >= 2
-                    int hScroll = ((int)(e.GetX() - mScrollLastInitialX)) / FINGER_SCROLL_THRESHOLD;
-                    int vScroll = ((int)(e.GetY() - mScrollLastInitialY)) / FINGER_SCROLL_THRESHOLD;
+        //            // Scrolling feature
+        //            //if (LauncherPreferences.PREF_DISABLE_GESTURES) break;
+        //            // The pointer count can never be 0, and it is not 1, therefore it is >= 2
+        //            int hScroll = ((int)(e.GetX() - mScrollLastInitialX)) / FINGER_SCROLL_THRESHOLD;
+        //            int vScroll = ((int)(e.GetY() - mScrollLastInitialY)) / FINGER_SCROLL_THRESHOLD;
 
-                    if (vScroll != 0 || hScroll != 0)
-                    {
-                        NowGame.SendScroll(hScroll, vScroll);
-                        mScrollLastInitialX = e.GetX();
-                        mScrollLastInitialY = e.GetY();
-                    }
-                    break;
-                }
+        //            if (vScroll != 0 || hScroll != 0)
+        //            {
+        //                NowGame.SendScroll(hScroll, vScroll);
+        //                mScrollLastInitialX = e.GetX();
+        //                mScrollLastInitialY = e.GetY();
+        //            }
+        //            break;
+        //        }
 
-                // Camera movement
-                int pointerIndex = e.FindPointerIndex(mCurrentPointerID);
-                // Start movement, due to new pointer or loss of pointer
-                if (pointerIndex == -1 || mLastPointerCount != pointerCount || !mShouldBeDown)
-                {
-                    mShouldBeDown = true;
-                    mCurrentPointerID = e.GetPointerId(0);
-                    mPrevX = e.GetX();
-                    mPrevY = e.GetY();
-                    break;
-                }
-                // Continue movement as usual
-                NowGame.MouseX += (e.GetX(pointerIndex) - mPrevX) * mSensitivityFactor;
-                NowGame.MouseY += (e.GetY(pointerIndex) - mPrevY) * mSensitivityFactor;
+        //        // Camera movement
+        //        int pointerIndex = e.FindPointerIndex(mCurrentPointerID);
+        //        // Start movement, due to new pointer or loss of pointer
+        //        if (pointerIndex == -1 || mLastPointerCount != pointerCount || !mShouldBeDown)
+        //        {
+        //            mShouldBeDown = true;
+        //            mCurrentPointerID = e.GetPointerId(0);
+        //            mPrevX = e.GetX();
+        //            mPrevY = e.GetY();
+        //            break;
+        //        }
+        //        // Continue movement as usual
+        //        NowGame.MouseX += (e.GetX(pointerIndex) - mPrevX) * mSensitivityFactor;
+        //        NowGame.MouseY += (e.GetY(pointerIndex) - mPrevY) * mSensitivityFactor;
 
-                mPrevX = e.GetX(pointerIndex);
-                mPrevY = e.GetY(pointerIndex);
+        //        mPrevX = e.GetX(pointerIndex);
+        //        mPrevY = e.GetY(pointerIndex);
 
-                NowGame.SendCursorPos();
-                break;
+        //        NowGame.SendCursorPos();
+        //        break;
 
-            case MotionEventActions.Down: // 0
-                NowGame.SendCursorPos();
-                mPrevX = e.GetX();
-                mPrevY = e.GetY();
+        //    case MotionEventActions.Down: // 0
+        //        NowGame.SendCursorPos();
+        //        mPrevX = e.GetX();
+        //        mPrevY = e.GetY();
 
-                if (NowGame.IsGrabbing)
-                {
-                    mCurrentPointerID = e.GetPointerId(0);
-                    // It cause hold left mouse while moving camera
-                    mInitialX = NowGame.MouseX;
-                    mInitialY = NowGame.MouseY;
-                    mHandler.SendEmptyMessageDelayed(MSG_LEFT_MOUSE_BUTTON_CHECK, 2000);
+        //        if (NowGame.IsGrabbing)
+        //        {
+        //            mCurrentPointerID = e.GetPointerId(0);
+        //            // It cause hold left mouse while moving camera
+        //            mInitialX = NowGame.MouseX;
+        //            mInitialY = NowGame.MouseY;
+        //            mHandler.SendEmptyMessageDelayed(MSG_LEFT_MOUSE_BUTTON_CHECK, 2000);
 
-                    //LauncherPreferences.PREF_LONGPRESS_TRIGGER
-                }
-                break;
+        //            //LauncherPreferences.PREF_LONGPRESS_TRIGGER
+        //        }
+        //        break;
 
-            case MotionEventActions.Up: // 1
-            case MotionEventActions.Cancel: // 3
-                mShouldBeDown = false;
-                mCurrentPointerID = -1;
+        //    case MotionEventActions.Up: // 1
+        //    case MotionEventActions.Cancel: // 3
+        //        mShouldBeDown = false;
+        //        mCurrentPointerID = -1;
 
-                // We only treat in world events
-                if (!NowGame.IsGrabbing) break;
+        //        // We only treat in world events
+        //        if (!NowGame.IsGrabbing) break;
 
-                // Stop the dropping of items
+        //        // Stop the dropping of items
 
-                // Remove the mouse left button
-                if (triggeredLeftMouseButton)
-                {
-                    NowGame.MouseEvent(LwjglKeycode.GLFW_MOUSE_BUTTON_LEFT, false);
-                    triggeredLeftMouseButton = false;
-                    break;
-                }
-                mHandler.RemoveMessages(MSG_LEFT_MOUSE_BUTTON_CHECK);
+        //        // Remove the mouse left button
+        //        if (triggeredLeftMouseButton)
+        //        {
+        //            NowGame.MouseEvent(LwjglKeycode.GLFW_MOUSE_BUTTON_LEFT, false);
+        //            triggeredLeftMouseButton = false;
+        //            break;
+        //        }
+        //        mHandler.RemoveMessages(MSG_LEFT_MOUSE_BUTTON_CHECK);
 
-                // In case of a short click, just send a quick right click
-                if (MathUtils.dist(mInitialX, mInitialY, NowGame.MouseX, NowGame.MouseY) < FINGER_STILL_THRESHOLD)
-                {
-                    NowGame.MouseEvent(LwjglKeycode.GLFW_MOUSE_BUTTON_RIGHT, true);
-                    NowGame.MouseEvent(LwjglKeycode.GLFW_MOUSE_BUTTON_RIGHT, false);
-                }
-                break;
+        //        // In case of a short click, just send a quick right click
+        //        if (MathUtils.dist(mInitialX, mInitialY, NowGame.MouseX, NowGame.MouseY) < FINGER_STILL_THRESHOLD)
+        //        {
+        //            NowGame.MouseEvent(LwjglKeycode.GLFW_MOUSE_BUTTON_RIGHT, true);
+        //            NowGame.MouseEvent(LwjglKeycode.GLFW_MOUSE_BUTTON_RIGHT, false);
+        //        }
+        //        break;
 
-            case MotionEventActions.PointerDown: // 5
-                //TODO Hey we could have some sort of middle click detection ?
+        //    case MotionEventActions.PointerDown: // 5
+        //        //TODO Hey we could have some sort of middle click detection ?
 
-                mScrollLastInitialX = e.GetX();
-                mScrollLastInitialY = e.GetY();
-                break;
+        //        mScrollLastInitialX = e.GetX();
+        //        mScrollLastInitialY = e.GetY();
+        //        break;
 
-        }
+        //}
 
-        // Actualise the pointer count
-        mLastPointerCount = e.PointerCount;
+        //// Actualise the pointer count
+        //mLastPointerCount = e.PointerCount;
 
         return true;
     }

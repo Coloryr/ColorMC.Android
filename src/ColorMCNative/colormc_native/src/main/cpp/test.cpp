@@ -8,42 +8,6 @@
 #include <pthread.h>
 #include <dirent.h>
 
-//int main(int argc, char** args)
-//{
-//    printf("[ColorMC Info] game load\n");
-//    char * env = getenv("RUN_SO");
-//    if(!env)
-//    {
-//        printf("[ColorMC Error] no RUN_SO\n");
-//        return 1; // 返回一个错误码
-//    }
-//    else
-//    {
-//        printf("[ColorMC Info] RUN_SO: %s\n", env);
-//    }
-//    void * ptr = dlopen(env, RTLD_LAZY);
-//    if (!ptr)
-//    {
-//        printf("[ColorMC Error] Error loading library: %s\n", dlerror());
-//        return 1; // 返回一个错误码
-//    }
-//    int (*run)(int, char**) = (int (*)(int, char **))dlsym(ptr, "main");
-//    if (!run)
-//    {
-//        printf("[ColorMC Error] Error finding 'run' function: %s\n", dlerror());
-//        dlclose(ptr); // 关闭库
-//        return 1; // 返回一个错误码
-//    }
-//    printf("[ColorMC Info] game start\n");
-//    // 调用run函数
-//    int result = run(argc, args);
-//
-//    // 关闭库
-//    dlclose(ptr);
-//
-//    return result;
-//}
-
 #define FULL_VERSION "1.8.0-internal"
 #define DOT_VERSION "1.8"
 
@@ -72,9 +36,14 @@ const char* load_first[]={
         "libjli.so", "libjvm.so","libverify.so",
         "libjava.so","libnet.so","libnio.so",
         "libawt.so", "libawt_headless.so","libfreetype.so",
-        "libfontmanager.so" };
+        "libfontmanager.so"};
+
+const char* load_lib[] = {
+        "libawt_xawt.so"
+};
 
 const int num_libs = sizeof(load_first) / sizeof(load_first[0]);
+const int num_natives = sizeof(load_lib) / sizeof(load_lib[0]);
 
 bool load_so_first(char *dir_path, const char* lib_name) {
     DIR *dir;
@@ -182,6 +151,12 @@ int main(int argc, char** args) {
         return 1;
     }
 
+//    char *dir1 = getenv("NATIVE_DIR");
+//    if (dir1 == NULL) {
+//        printf("[ColorMC Error] no NATIVE_DIR\n");
+//        return 1;
+//    }
+
     printf("[ColorMC Info] load first\n");
     dlopen("/system/lib64/libjpeg.so", RTLD_LAZY);
     for (int i = 0; i < num_libs; i++) {
@@ -190,6 +165,14 @@ int main(int argc, char** args) {
             return 1;
         }
     }
+
+//    printf("[ColorMC Info] load lib\n");
+//    for (int i = 0; i < num_natives; i++) {
+//        if (!load_so_first(dir1, load_lib[i])) {
+//            printf("[ColorMC Info] load lib fail\n");
+//            return 1;
+//        }
+//    }
 
     printf("[ColorMC Info] load all\n");
     if (!load_so_files(dir)) {

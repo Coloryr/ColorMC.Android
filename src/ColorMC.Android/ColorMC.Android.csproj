@@ -44,6 +44,8 @@
     <None Remove="Resources\layout\fragment_tab1.xml" />
     <None Remove="Resources\layout\fragment_tab2.xml" />
     <None Remove="Resources\layout\fragment_tab3.xml" />
+    <None Remove="Resources\layout\fragment_tab4.xml" />
+    <None Remove="Resources\layout\game_item.xml" />
     <None Remove="Resources\values\string.xml" />
   </ItemGroup>
 

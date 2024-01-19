@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using Android.Graphics;
+using System.Diagnostics;
 using System.Net.Sockets;
+using static Java.Util.Jar.Attributes;
 
 namespace ColorMC.Android.GLRender;
 
@@ -197,8 +199,12 @@ public class GameRender
 
     public int TexId { get; private set; }
 
-    public int RenderWidth { get; private set; }
-    public int RenderHeight { get; private set; }
+    public ushort GameWidth { get; private set; }
+    public ushort GameHeight { get; private set; }
+
+    public string Name { get; init; }
+    public Bitmap Icon { get; init; }
+
 
     private bool _isGrabbing;
 
@@ -230,8 +236,11 @@ public class GameRender
     public DisplayType ShowType = DisplayType.Scale;
     public bool FlipY;
 
-    public GameRender(string dir, string uuid, Process process, RenderType gameRender)
+    public GameRender(string dir, string uuid, string name,
+        Bitmap icon, Process process, RenderType gameRender)
     {
+        Icon = icon;
+        Name = name;
         _uuid = uuid;
 
         _render = $"{dir}/{uuid}.{Render}";
@@ -262,9 +271,10 @@ public class GameRender
         {
             TexId = GLHelper.CreateTexture();
         }
-        HaveTexture = RenderNative.BindTexture(TexId, buffer, out var width, out var height, out texture);
-        RenderWidth = width;
-        RenderHeight = height;
+        HaveTexture = RenderNative.BindTexture(TexId, buffer, 
+            out var width, out var height, out texture);
+        GameWidth = (ushort)width;
+        GameHeight = (ushort)height;
         SizeChange?.Invoke();
     }
 

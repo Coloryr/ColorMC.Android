@@ -1,6 +1,7 @@
 ﻿using Android.Runtime;
 using Android.Systems;
 using Android.Util;
+using ColorMC.Android.UI.Activity;
 using ColorMC.Core;
 using ColorMC.Core.Helpers;
 using ICSharpCode.SharpZipLib.Core;
@@ -87,6 +88,8 @@ public class JavaUnpack
 
         Unpack(path + "/");
         Rename(path);
+
+        File.Copy(MainActivity.NativeLibDir + "/libawt_xawt.so", path + "/lib/libawt_xawt.so");
     }
 
     public static string GetLibPath(string path)

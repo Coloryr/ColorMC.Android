@@ -4,33 +4,51 @@ using Android.Views;
 using AndroidX.ViewPager2.Widget;
 using ColorMC.Android.GLRender;
 using Google.Android.Material.Tabs;
-using static Google.Android.Material.Tabs.TabLayoutMediator;
 using DialogFragment = AndroidX.Fragment.App.DialogFragment;
 
 namespace ColorMC.Android.UI;
 
-public class TabsDialogFragment : DialogFragment, ITabConfigurationStrategy
+public class TabsDialogFragment : DialogFragment, TabLayoutMediator.ITabConfigurationStrategy
 {
-    public int Width, Height;
-    public GLSurface.DisplayType ShowType;
+    public ushort Width, Height;
+    public GameRender.DisplayType ShowType;
     public bool FlipY;
 
-    public GLSurface Render { get; init; }
+    public GameRender Game { get; init; }
+    public GLSurface Surface { get; init; }
 
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
+
+    public TabsDialogFragment(GLSurface surface)
+    {
+        Surface = surface;
+        Game = surface.NowGame;
+        if (Game == null)
+        {
+            return;
+        }
+
+        Width = Game.GameWidth;
+        Height = Game.GameHeight;
+        FlipY = Game.FlipY;
+        ShowType = Game.ShowType;
+    }
 
     public void OnConfigureTab(TabLayout.Tab p0, int p1)
     {
         switch (p1)
         {
             case 0:
-                p0.SetText(Resource.String.tabs_text1);
+                p0.SetText(Resource.String.tabs_text4);
                 break;
             case 1:
-                p0.SetText(Resource.String.tabs_text2);
+                p0.SetText(Resource.String.tabs_text1);
                 break;
             case 2:
+                p0.SetText(Resource.String.tabs_text2);
+                break;
+            case 3:
                 p0.SetText(Resource.String.tabs_text3);
                 break;
         }
@@ -57,18 +75,35 @@ public class TabsDialogFragment : DialogFragment, ITabConfigurationStrategy
 
     public void SetWindow()
     {
-        if (Render == null)
+        if (Game == null)
         {
             return;
         }
 
+        if (Width != Game.GameWidth || Height != Game.GameHeight)
+        {
+            Game.SetSize(Width, Height);
+        }
 
+        Game.ShowType = ShowType;
+        Game.FlipY = FlipY;
+        Dismiss();
+    }
+
+    public void SetGame(GameRender item)
+    {
+        Surface.SetGame(item);
+        Dismiss();
     }
 
     private void SetupViewPager(ViewPager2 viewPager)
     {
         var adapter = new ViewPagerAdapter(this);
         // 添加Fragment
+        adapter.AddFragment(new Tab4Fragment()
+        {
+            Tabs = this
+        });
         adapter.AddFragment(new Tab1Fragment()
         {
             Tabs = this

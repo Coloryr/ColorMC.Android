@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Systems;
@@ -8,7 +9,6 @@ using Avalonia.Android;
 using Avalonia.Controls;
 using ColorMC.Android.components;
 using ColorMC.Android.GLRender;
-using ColorMC.Android.UI;
 using ColorMC.Core;
 using ColorMC.Core.Helpers;
 using ColorMC.Core.LaunchPath;
@@ -19,10 +19,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Path = System.IO.Path;
 using Process = System.Diagnostics.Process;
 using Uri = Android.Net.Uri;
 
-namespace ColorMC.Android;
+namespace ColorMC.Android.UI.Activity;
 
 [Activity(Label = "ColorMC",
     Theme = "@style/MyTheme.NoActionBar",
@@ -66,14 +67,6 @@ public class MainActivity : AvaloniaMainActivity<App>
         ResourceUnPack.StartUnPack(this);
 
         BackRequested += MainActivity_BackRequested;
-
-        var display = AndroidHelper.GetDisplayMetrics(this);
-        var dialogFragment = new TabsDialogFragment()
-        {
-            Width = display.WidthPixels,
-            Height = display.HeightPixels
-        };
-        dialogFragment.Show(SupportFragmentManager, "tabs_dialog");
     }
 
     private string PhoneGetFrp(FrpType type)
@@ -111,11 +104,12 @@ public class MainActivity : AvaloniaMainActivity<App>
         var LD_LIBRARY_PATH = $"{path1}/{(File.Exists($"{path1}/server/libjvm.so") ? "server" : "client")}"
             + $":{path}:{path1}/jli:{path1}:"
             + "/system/lib64:/vendor/lib64:/vendor/lib64/hw:"
-            + ApplicationContext.ApplicationInfo.NativeLibraryDir;
+            + NativeLibDir;
 
         info.Environment.Add("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
         info.Environment.Add("PATH", path1 + "/bin:" + temp1);
         info.Environment.Add("JAVA_HOME", path);
+        info.Environment.Add("NATIVE_DIR", NativeLibDir);
         info.Environment.Add("HOME", ColorMCCore.BaseDir);
         info.Environment.Add("TMPDIR", ApplicationContext.CacheDir.AbsolutePath);
         info.ArgumentList.Add("-Djava.home=" + path);
@@ -139,7 +133,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         p.StartInfo.WorkingDirectory = dir;
         p.StartInfo.ArgumentList.Add("-Djava.io.tmpdir=" + ApplicationContext.CacheDir.AbsolutePath);
-        p.StartInfo.ArgumentList.Add("-Djna.boot.library.path=" + ApplicationInfo.NativeLibraryDir);
+        p.StartInfo.ArgumentList.Add("-Djna.boot.library.path=" + NativeLibDir);
         p.StartInfo.ArgumentList.Add("-Duser.home=" + ApplicationContext.GetExternalFilesDir(null).AbsolutePath);
         p.StartInfo.ArgumentList.Add("-Duser.language=" + Java.Lang.JavaSystem.GetProperty("user.language"));
         p.StartInfo.ArgumentList.Add("-Dos.name=Linux");
@@ -273,7 +267,18 @@ public class MainActivity : AvaloniaMainActivity<App>
             p.StartInfo.Environment.Add("GAME_V2", "1");
         }
 
-        var game = new GameRender(ApplicationContext!.FilesDir!.AbsolutePath, obj.UUID, p, render);
+        Bitmap bitmap;
+        var image = obj.GetIconFile();
+        if (File.Exists(image))
+        {
+            bitmap = BitmapFactory.DecodeFile(image);
+        }
+        else
+        {
+            bitmap = BitmapFactory.DecodeResource(Resources, Resource.Drawable.icon);
+        }
+        var game = new GameRender(ApplicationContext.FilesDir.AbsolutePath, obj.UUID, obj.Name,
+            bitmap, p, render);
         game.GameReady += Game_GameReady;
 
         Games.Remove(obj.UUID);

@@ -91,7 +91,8 @@ public class QuadRenderer
     }
 
     public void DrawTexture(int inputTexture, int width, int height,
-        int renderWidth, int renderHeight, GameRender.DisplayType type, bool flipY)
+        int textureWidth, int textureHeight, GameRender.DisplayType type, bool flipY,
+        out int renderWidth, out int renderHeight)
     {
         GLES20.GlUseProgram(_program);
 
@@ -102,48 +103,48 @@ public class QuadRenderer
         GLES20.GlVertexAttribPointer(_texCoordHandle, 2, GLES20.GlFloat, false, 0, _uvBuffer);
 
         // Calculate viewport based on fill and scale parameters
-        int viewportWidth = renderWidth, viewportHeight = renderHeight, x = 0, y = 0;
+        int x = 0, y = 0;
         if (type == GameRender.DisplayType.Scale)
         {
             // Scale to full screen while maintaining aspect ratio
-            float aspectRatioTexture = (float)renderWidth / renderHeight;
+            float aspectRatioTexture = (float)textureWidth / textureHeight;
             float aspectRatioWindow = (float)width / height;
             if (aspectRatioWindow > aspectRatioTexture)
             {
                 // Window is wider than texture
-                viewportHeight = height;
-                viewportWidth = (int)(height * aspectRatioTexture);
+                renderHeight = height;
+                renderWidth = (int)(height * aspectRatioTexture);
             }
             else
             {
                 // Window is taller than texture
-                viewportWidth = width;
-                viewportHeight = (int)(width / aspectRatioTexture);
+                renderWidth = width;
+                renderHeight = (int)(width / aspectRatioTexture);
             }
 
             // Center the viewport
-            x = 0;
-            y = 0;
+            x = (width - renderWidth) / 2;
+            y = (height - renderHeight) / 2;
         }
         else if (type == GameRender.DisplayType.Full)
         {
             // Stretch to full screen without maintaining aspect ratio
-            viewportWidth = width;
-            viewportHeight = height;
+            renderWidth = width;
+            renderHeight = height;
             x = 0;
             y = 0;
         }
-        else if (type == GameRender.DisplayType.None)
+        else
         {
-            viewportWidth = renderWidth;
-            viewportHeight = renderHeight;
+            renderWidth = textureWidth;
+            renderHeight = textureHeight;
 
             // Center the viewport
-            x = (width - viewportWidth) / 2;
-            y = (height - viewportHeight) / 2;
+            x = (width - renderWidth) / 2;
+            y = (height - renderHeight) / 2;
         }
 
-        GLES20.GlViewport(x, y, viewportWidth, viewportHeight);
+        GLES20.GlViewport(x, y, renderWidth, renderHeight);
 
         GLES20.GlActiveTexture(GLES20.GlTexture0);
         GLES20.GlBindTexture(GLES20.GlTexture2d, inputTexture);

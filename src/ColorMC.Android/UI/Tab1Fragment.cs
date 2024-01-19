@@ -102,19 +102,35 @@ public class Tab1Fragment : Fragment
 
     private void Height_AfterTextChanged(object? sender, AfterTextChangedEventArgs e)
     {
-        if (int.TryParse(_height.Text, out var height))
+        if (string.IsNullOrWhiteSpace(_height.Text))
+        {
+            return;
+        }
+        if (ushort.TryParse(_height.Text, out var height))
         {
             Tabs.Height = height;
             Select();
+        }
+        else
+        {
+            e.Editable?.Replace(0, e.Editable.Length(), "720");
         }
     }
 
     private void Width_AfterTextChanged(object? sender, AfterTextChangedEventArgs e)
     {
-        if (int.TryParse(_width.Text, out var width))
+        if (string.IsNullOrWhiteSpace(_width.Text))
+        {
+            return;
+        }
+        if (ushort.TryParse(_width.Text, out var width))
         {
             Tabs.Width = width;
             Select();
+        }
+        else
+        {
+            e.Editable?.Replace(0, e.Editable.Length(), "1280");
         }
     }
 
