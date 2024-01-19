@@ -2,14 +2,11 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using ColorMC.Android.GLRender;
-using ColorMC.Android.UI;
 using ColorMC.Android.UI.GameButton;
-using Java.Util;
-using System;
+using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 
 namespace ColorMC.Android.UI.Activity;
 
@@ -52,6 +49,26 @@ public class GameActivity : AppCompatActivity, IButtonFuntion
         //panel.AddView(new TestSurface(ApplicationContext));
     }
 
+    public override void OnBackPressed()
+    {
+        if (!view.NowGame.IsGameClose)
+        {
+            // 这里处理返回事件，比如弹出对话框
+            new AlertDialog.Builder(ApplicationContext)
+                .SetMessage("是否同时关闭游戏")
+                .SetCancelable(false)
+                .SetPositiveButton("是", (a, b) =>
+                {
+                    view.NowGame.Kill();
+                })
+                .SetNegativeButton("保持运行", (a, b) => 
+                {
+                    
+                })
+                .Show();
+        }
+    }
+
     private void LoadButtons(ButtonLayout layout)
     {
         _layout = layout;
@@ -87,33 +104,33 @@ public class GameActivity : AppCompatActivity, IButtonFuntion
         }
     }
 
-    public override bool DispatchKeyEvent(KeyEvent? e)
-    {
-        if (isEdit)
-        {
-            if (e.KeyCode == Keycode.Back)
-            {
-                if (e.Action == KeyEventActions.Down)
-                {
-                    //mControlLayout.askToExit(this);
-                }
-                return true;
-            }
-            return base.DispatchKeyEvent(e);
-        }
-        bool handleEvent = false;
-        //if (!(handleEvent = view.processKeyEvent(e)))
-        //{
-        //    //输入框
-        //    //&& !touchCharInput.isEnabled()
-        //    if (e.KeyCode == Keycode.Back)
-        //    {
-        //        view.NowGame.SendKey(LwjglKeycode.GLFW_KEY_ESCAPE, e.Action == KeyEventActions.Down);
-        //        return true;
-        //    }
-        //}
-        return handleEvent;
-    }
+    //public override bool DispatchKeyEvent(KeyEvent? e)
+    //{
+    //    if (isEdit)
+    //    {
+    //        if (e.KeyCode == Keycode.Back)
+    //        {
+    //            if (e.Action == KeyEventActions.Down)
+    //            {
+    //                //mControlLayout.askToExit(this);
+    //            }
+    //            return true;
+    //        }
+    //        return base.DispatchKeyEvent(e);
+    //    }
+    //    bool handleEvent = false;
+    //    //if (!(handleEvent = view.processKeyEvent(e)))
+    //    //{
+    //    //    //输入框
+    //    //    //&& !touchCharInput.isEnabled()
+    //    //    if (e.KeyCode == Keycode.Back)
+    //    //    {
+    //    //        view.NowGame.SendKey(LwjglKeycode.GLFW_KEY_ESCAPE, e.Action == KeyEventActions.Down);
+    //    //        return true;
+    //    //    }
+    //    //}
+    //    return handleEvent;
+    //}
 
     public void ShowSetting()
     {

@@ -291,7 +291,6 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         p.Exited += (a, b) =>
         {
-            game.Close();
             Games.Remove(obj.UUID);
         };
 

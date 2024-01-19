@@ -47,7 +47,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
                 float x = surface.NowGame.MouseX;
                 float y = surface.NowGame.MouseY;
                 if (surface.NowGame.IsGrabbing &&
-                        MathUtils.dist(x, y, surface.mInitialX, surface.mInitialY) < surface.FINGER_STILL_THRESHOLD)
+                        MathUtils.Dist(x, y, surface.mInitialX, surface.mInitialY) < surface.FINGER_STILL_THRESHOLD)
                 {
                     surface.triggeredLeftMouseButton = true;
                     surface.NowGame.MouseEvent(LwjglKeycode.GLFW_MOUSE_BUTTON_LEFT, true);
@@ -130,7 +130,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     public void OnDrawFrame(IGL10? gl)
     {
-        GLES20.GlViewport(0, 0, renderWidth, renderHeight);
+        GLES20.GlViewport(0, 0, Width, Height);
         GLES20.GlClearColor(0, 0, 0, 0);
         GLES20.GlClear(GLES20.GlColorBufferBit);
 
@@ -142,11 +142,18 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
             }
             else
             {
-                qrender.DrawTexture(NowGame.TexId, renderWidth, renderHeight,
+                qrender.DrawTexture(NowGame.TexId, Width, Height,
                     NowGame.GameWidth, NowGame.GameHeight, NowGame.ShowType, NowGame.FlipY,
                     out renderWidth, out renderHeight);
             }
         }
+    }
+
+    protected override void OnDetachedFromWindow()
+    {
+        base.OnDetachedFromWindow();
+
+        NowGame.DeleteTexture();
     }
 
     public void OnSurfaceChanged(IGL10? gl, int width, int height)

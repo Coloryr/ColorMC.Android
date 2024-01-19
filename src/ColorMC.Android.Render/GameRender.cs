@@ -1,11 +1,10 @@
 ﻿using Android.Graphics;
 using System.Diagnostics;
 using System.Net.Sockets;
-using static Java.Util.Jar.Attributes;
 
 namespace ColorMC.Android.GLRender;
 
-public class GameSock
+public class GameSock(string socketPath)
 {
     public enum CommandType : byte
     {
@@ -23,18 +22,10 @@ public class GameSock
 
     private static readonly byte[] MagicHead = [(byte)'c', (byte)'o', (byte)'l', (byte)'o', (byte)'r', (byte)'y'];
 
-    private readonly UnixDomainSocketEndPoint _socketPath;
-    private readonly Socket _socket;
+    private readonly UnixDomainSocketEndPoint _socketPath = new(socketPath);
+    private readonly Socket _socket = new(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
 
     public Action<CommandType, byte[], int>? CommandRead;
-
-    public GameSock(string socketPath)
-    {
-        _socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
-
-        _socketPath = new UnixDomainSocketEndPoint(socketPath);
-
-    }
 
     public bool Connect()
     {
@@ -236,12 +227,17 @@ public class GameRender
     public DisplayType ShowType = DisplayType.Scale;
     public bool FlipY;
 
+    private Process _process;
+
     public GameRender(string dir, string uuid, string name,
         Bitmap icon, Process process, RenderType gameRender)
     {
         Icon = icon;
         Name = name;
         _uuid = uuid;
+        _process = process;
+
+        process.Exited += Process_Exited;
 
         _render = $"{dir}/{uuid}.{Render}";
         _game = $"{dir}/{uuid}.{Game}";
@@ -259,6 +255,11 @@ public class GameRender
         process.StartInfo.Environment.Add("LIBGL_NORMALIZE", "1");
         process.StartInfo.Environment.Add("GL_ES_VERSION", "3");
         process.StartInfo.Environment.Add("GAME_RENDER", gameRender.GetName());
+    }
+
+    private void Process_Exited(object? sender, EventArgs e)
+    {
+        Close();
     }
 
     public void BindTexture()
@@ -401,7 +402,14 @@ public class GameRender
     {
         HaveBuffer = false;
         HaveTexture = false;
+        GLHelper.DeleteTexture(TexId);
+        TexId = 0;
         RenderNative.DeleteBuffer(buffer, texture);
+    }
+
+    public void DeleteTexture()
+    {
+        HaveTexture = false;
         GLHelper.DeleteTexture(TexId);
         TexId = 0;
     }
@@ -432,5 +440,10 @@ public class GameRender
     public void SendKey(short key, bool value)
     {
         Sock.SendKeyPress(key, GetCurrentMods(), value);
+    }
+
+    public void Kill()
+    {
+        _process?.Kill();
     }
 }

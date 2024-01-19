@@ -1,13 +1,11 @@
-﻿using Android.Graphics;
+﻿using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Fragment.App;
 using ColorMC.Android.UI.Activity;
-using System;
-using System.Linq;
 
 namespace ColorMC.Android.UI;
 
@@ -38,6 +36,19 @@ public class Tab4Fragment : Fragment
                 Tabs.SetGame(item);
             };
 
+            var layoutParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MatchParent,
+                    ViewGroup.LayoutParams.WrapContent);
+
+            int marginInDp = 3; // 假设我们要设置16dp的外边距
+            float scale = Context.Resources.DisplayMetrics.Density;
+            int marginInPx = (int)(marginInDp * scale + 0.5f);
+
+            layoutParams.SetMargins(marginInPx, marginInPx, marginInPx, marginInPx);
+
+            // 将LayoutParams应用到你的视图上
+            item1.LayoutParameters = layoutParams;
+
             if (item == Tabs.Game)
             {
                 // 创建一个GradientDrawable对象
@@ -46,7 +57,7 @@ public class Tab4Fragment : Fragment
                 border.SetStroke(2, Color.ParseColor("#0064b1")); // 设置边框宽度和颜色
 
                 // 将创建的Drawable作为背景设置到LinearLayout
-                linearLayout.Background = border;
+                item1.Background = border;
             }
 
             linearLayout.AddView(item1);

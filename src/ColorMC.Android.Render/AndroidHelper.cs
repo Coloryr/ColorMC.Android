@@ -14,7 +14,7 @@ public static class MathUtils
     }
 
     /** Returns the distance between two points. */
-    public static float dist(float x1, float y1, float x2, float y2)
+    public static float Dist(float x1, float y1, float x2, float y2)
     {
         float x = (x2 - x1);
         float y = (y2 - y1);
