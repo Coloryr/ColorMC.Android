@@ -9,27 +9,27 @@ public class QuadRenderer
     // Vertex coordinates
     private static readonly float[] s_vertex =
     [
-        -1.0f, -1.0f, 0.0f,  
-        -1.0f,  1.0f, 0.0f, 
-         1.0f,  1.0f, 0.0f,  
-         1.0f, -1.0f, 0.0f, 
+        -1.0f, -1.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
     ];
 
     private static readonly float[] s_vertex_y =
     [
-        -1.0f,  1.0f, 0.0f,  
-        -1.0f, -1.0f, 0.0f, 
-         1.0f, -1.0f, 0.0f,  
-         1.0f,  1.0f, 0.0f   
+        -1.0f,  1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         1.0f,  1.0f, 0.0f
     ];
 
     // Texture coordinates
-    private static readonly float[] s_uv = 
+    private static readonly float[] s_uv =
     [
         0.0f, 0.0f,
         0.0f, 1.0f,
         1.0f, 1.0f,
-        1.0f, 0.0f 
+        1.0f, 0.0f
     ];
 
     private const string vertexShaderCode =
@@ -91,7 +91,7 @@ public class QuadRenderer
     }
 
     public void DrawTexture(int inputTexture, int width, int height,
-        int renderWidth, int renderHeight, bool fill, bool scale, bool flipY)
+        int renderWidth, int renderHeight, GameRender.DisplayType type, bool flipY)
     {
         GLES20.GlUseProgram(_program);
 
@@ -102,8 +102,8 @@ public class QuadRenderer
         GLES20.GlVertexAttribPointer(_texCoordHandle, 2, GLES20.GlFloat, false, 0, _uvBuffer);
 
         // Calculate viewport based on fill and scale parameters
-        int viewportWidth, viewportHeight, x, y;
-        if (scale && !fill)
+        int viewportWidth = renderWidth, viewportHeight = renderHeight, x = 0, y = 0;
+        if (type == GameRender.DisplayType.Scale)
         {
             // Scale to full screen while maintaining aspect ratio
             float aspectRatioTexture = (float)renderWidth / renderHeight;
@@ -120,30 +120,28 @@ public class QuadRenderer
                 viewportWidth = width;
                 viewportHeight = (int)(width / aspectRatioTexture);
             }
+
+            // Center the viewport
+            x = 0;
+            y = 0;
         }
-        else if (!scale && fill)
+        else if (type == GameRender.DisplayType.Full)
         {
             // Stretch to full screen without maintaining aspect ratio
             viewportWidth = width;
             viewportHeight = height;
+            x = 0;
+            y = 0;
         }
-        else if (!scale && !fill)
+        else if (type == GameRender.DisplayType.None)
         {
-            // Do not stretch or scale, render at original size and position
             viewportWidth = renderWidth;
             viewportHeight = renderHeight;
-        }
-        else // if (scale && fill)
-        {
-            // Scale to full screen while maintaining aspect ratio
-            // This case is identical to scale && !fill
-            viewportWidth = width;
-            viewportHeight = height;
-        }
 
-        // Center the viewport
-        x = (width - viewportWidth) / 2;
-        y = (height - viewportHeight) / 2;
+            // Center the viewport
+            x = (width - viewportWidth) / 2;
+            y = (height - viewportHeight) / 2;
+        }
 
         GLES20.GlViewport(x, y, viewportWidth, viewportHeight);
 
@@ -175,7 +173,7 @@ public class QuadRenderer
 
 public static partial class RenderNative
 {
-    [LibraryImport("libcolormcnative_display.so", EntryPoint = "getBuffer", 
+    [LibraryImport("libcolormcnative_display.so", EntryPoint = "getBuffer",
         StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr GetBuffer(string path);
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="tabs_text1">显示设置</string>
+	<string name="tabs_text2">控制设置</string>
+	<string name="tabs_text3">手柄设置</string>
+
+	<string name="tab1_text1">宽</string>
+	<string name="tab1_text2">高</string>
+
+	<string name="tab1_text3">原始大小</string>
+	<string name="tab1_text4">拉伸到屏幕</string>
+	<string name="tab1_text5">比例拉伸</string>
+
+	<string name="tab1_text6">1280x720</string>
+	<string name="tab1_text7">1920x1080</string>
+	<string name="tab1_text8">2560x1440</string>
+	<string name="tab1_text9">3840x2160</string>
+
+	<string name="tab1_text10">分辨率</string>
+	<string name="tab1_text11">显示方式</string>
+	<string name="tab1_text12">镜像Y轴</string>
+	<string name="tab1_text13">应用设置</string>
+</resources>

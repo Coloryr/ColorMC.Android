@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- RadioButton选中状态 -->
+	<item android:state_checked="true">
+		<shape android:shape="rectangle">
+			<!-- 选中后的背景色 -->
+			<solid android:color="#0081e4"/>
+
+			<!-- 圆角半径 -->
+			<corners android:radius="4dp"/>
+			
+		</shape>
+	</item>
+	<!-- RadioButton未选中状态 -->
+	<item android:state_checked="false">
+		<shape android:shape="rectangle">
+			<!-- 未选中的背景色 -->
+			<solid android:color="#5a5e5f"/>
+			<!-- 圆角半径 -->
+			<corners android:radius="4dp"/>
+		</shape>
+	</item>
+</selector>

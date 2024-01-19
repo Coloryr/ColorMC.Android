@@ -1,16 +1,9 @@
 ﻿using Android.Content;
-using Android.Icu.Number;
 using Android.Opengl;
 using Android.OS;
-using Android.Text.Method;
 using Android.Util;
 using Android.Views;
-using Android.Widget;
-using ColorMC.Core.Net.Apis;
-using Java.Interop;
-using Java.Util;
 using Javax.Microedition.Khronos.Opengles;
-using Tomlyn;
 
 namespace ColorMC.Android.GLRender;
 
@@ -26,7 +19,6 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
     public GameRender NowGame;
 
     private float XRenderRatio, YRenderRatio;
-    private bool Full, Scale = true;
 
     private float mPrevX, mPrevY;
     private float mScrollLastInitialX, mScrollLastInitialY;
@@ -45,7 +37,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     private bool triggeredLeftMouseButton = false;
 
-    private class HandlerClass(GLSurface surface, Looper? looper) : Handler(looper)
+    private class HandlerClass(GLSurface surface, Looper looper) : Handler(looper)
     {
         public override void HandleMessage(Message? msg)
         {
@@ -66,7 +58,6 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
     }
 
     private Handler mHandler;
-
 
     public GLSurface(Context? context, DisplayMetrics display) : this(context, attributeSet: null)
     {
@@ -152,7 +143,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
             else
             {
                 qrender.DrawTexture(NowGame.TexId, width, height,
-                    NowGame.RenderWidth, NowGame.RenderHeight, Full, Scale, false);
+                    NowGame.RenderWidth, NowGame.RenderHeight, NowGame.ShowType, false);
             }
         }
     }
@@ -187,7 +178,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     private bool DoTouch(float x, float y)
     {
-        if (Full)
+        if (NowGame.ShowType == GameRender.DisplayType.Full)
         {
             NowGame.SendCursorPos(x * XRenderRatio, y * YRenderRatio);
             return true;

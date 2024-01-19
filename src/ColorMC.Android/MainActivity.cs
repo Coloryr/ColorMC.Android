@@ -1,15 +1,14 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
-using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
 using Android.Systems;
-using Android.Util;
 using Avalonia.Android;
 using Avalonia.Controls;
 using ColorMC.Android.components;
 using ColorMC.Android.GLRender;
+using ColorMC.Android.UI;
 using ColorMC.Core;
 using ColorMC.Core.Helpers;
 using ColorMC.Core.LaunchPath;
@@ -20,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using static Android.Icu.Text.IDNA;
 using Process = System.Diagnostics.Process;
 using Uri = Android.Net.Uri;
 
@@ -68,6 +66,14 @@ public class MainActivity : AvaloniaMainActivity<App>
         ResourceUnPack.StartUnPack(this);
 
         BackRequested += MainActivity_BackRequested;
+
+        var display = AndroidHelper.GetDisplayMetrics(this);
+        var dialogFragment = new TabsDialogFragment()
+        {
+            Width = display.WidthPixels,
+            Height = display.HeightPixels
+        };
+        dialogFragment.Show(SupportFragmentManager, "tabs_dialog");
     }
 
     private string PhoneGetFrp(FrpType type)
@@ -103,7 +109,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         var temp1 = Os.Getenv("PATH");
 
         var LD_LIBRARY_PATH = $"{path1}/{(File.Exists($"{path1}/server/libjvm.so") ? "server" : "client")}"
-            + $":{path}:{path1}/jli:{path1}:" 
+            + $":{path}:{path1}/jli:{path1}:"
             + "/system/lib64:/vendor/lib64:/vendor/lib64/hw:"
             + ApplicationContext.ApplicationInfo.NativeLibraryDir;
 
@@ -160,7 +166,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         return ContentResolver?.OpenInputStream(uri);
     }
 
-    protected override void OnActivityResult(int requestCode, 
+    protected override void OnActivityResult(int requestCode,
         [GeneratedEnum] Result resultCode, Intent data)
     {
         base.OnActivityResult(requestCode, resultCode, data);
@@ -256,7 +262,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         ResourceUnPack.GetCacioJavaArgs(list1, display.WidthPixels, display.HeightPixels, jvm.MajorVersion == 8);
 
         list1.AddRange(list);
-        
+
         var p = PhoneJvmRun(obj, jvm, obj.GetGamePath(), list1, env);
 
         p.StartInfo.Environment.Add("glfwstub.windowWidth", $"{display.WidthPixels}");

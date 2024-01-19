@@ -29,7 +29,7 @@ public class TapDetector
      */
     public TapDetector(int tapNumberToDetect, int detectionMethod, DisplayMetrics display)
     {
-        _tapStopSquarePx = 
+        _tapStopSquarePx =
             (int)Math.Pow(100 * display.Density, 2);
         _detectionMethod = detectionMethod;
         //We expect both ACTION_DOWN and ACTION_UP for the DETECTION_METHOD_BOTH

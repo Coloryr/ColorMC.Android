@@ -81,8 +81,8 @@ public class GameSock
             }
         }
         catch
-        { 
-            
+        {
+
         }
     }
 
@@ -177,6 +177,13 @@ public class GameRender
         zink = 2
     }
 
+    public enum DisplayType
+    {
+        None,
+        Full,
+        Scale
+    }
+
     private const string Render = "render.sock";
     private const string Game = "game.sock";
 
@@ -191,15 +198,15 @@ public class GameRender
     public int TexId { get; private set; }
 
     public int RenderWidth { get; private set; }
-    public int RenderHeight{ get; private set; }
+    public int RenderHeight { get; private set; }
 
     private bool _isGrabbing;
 
-    public bool IsGrabbing 
+    public bool IsGrabbing
     {
         get { return _isGrabbing; }
         set
-        { 
+        {
             _isGrabbing = value;
             IsGrabbingChange?.Invoke();
         }
@@ -219,6 +226,9 @@ public class GameRender
     public float MouseX, MouseY;
 
     public bool IsGameClose { get; private set; }
+
+    public DisplayType ShowType = DisplayType.Scale;
+    public bool FlipY;
 
     public GameRender(string dir, string uuid, Process process, RenderType gameRender)
     {
@@ -246,7 +256,7 @@ public class GameRender
     {
         if (HaveTexture || !HaveBuffer)
         {
-            return; 
+            return;
         }
         if (TexId == 0)
         {

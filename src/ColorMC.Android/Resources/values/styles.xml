@@ -6,4 +6,15 @@
 		<item name="android:windowBackground">@drawable/splash_screen</item>
 		<item name="android:windowNoTitle">true</item>
 	</style>
+
+	<style name="CustomRadioButtonStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+		<item name="android:button">@null</item>
+		<!-- 去掉圆点 -->
+		<item name="android:background">@drawable/radio_button_selector</item>
+		<!-- 使用自定义背景 -->
+		<item name="android:padding">10dp</item>
+		<!-- 内边距 -->
+		<item name="android:textColor">#FFFFFF</item>
+		<!-- 文本颜色selector -->
+	</style>
 </resources>

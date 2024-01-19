@@ -67,8 +67,8 @@ public class JavaUnpack
                         Os.Symlink(entry.TarHeader.Name, entry.TarHeader.LinkName);
                     }
                     catch
-                    { 
-                        
+                    {
+
                     }
                     TarArchive_ProgressMessageEvent(null, entry, null);
                     continue;
@@ -81,8 +81,8 @@ public class JavaUnpack
             stream.Close();
         }
         catch (Exception e)
-        { 
-            
+        {
+
         }
 
         Unpack(path + "/");
@@ -199,7 +199,7 @@ public class JavaUnpack
         {
             if (item.Extension != ".pack")
             {
-                continue;   
+                continue;
             }
 
             try

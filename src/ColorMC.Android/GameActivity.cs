@@ -1,36 +1,36 @@
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
 using ColorMC.Android.GLRender;
+using ColorMC.Android.UI;
+using System;
 
 namespace ColorMC.Android;
 
 [Activity(Label = "GameActivity",
-    //MainLauncher = true,
     Theme = "@style/MyTheme.NoActionBar",
     TaskAffinity = "colormc.android.game.render",
-   
+    ScreenOrientation = ScreenOrientation.SensorLandscape,
     Icon = "@drawable/icon")]
-public class GameActivity : Activity, View.IOnClickListener
+public class GameActivity : AppCompatActivity
 {
-    private EditText width, height;
+    private Button button;
     private GLSurface view;
     private bool IsEdit;
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
-         
+
         SetContentView(Resource.Layout.activity_main);
 
         var panel = FindViewById<RelativeLayout>(Resource.Id.surface_view);
-        width = FindViewById<EditText>(Resource.Id.width_setting);
-        height = FindViewById<EditText>(Resource.Id.height_setting);
+        var button = FindViewById<Button>(Resource.Id.button1);
 
-        var button = FindViewById<Button>(Resource.Id.setting);
-        
-        button.SetOnClickListener(this);
+        button.Click += Button_Click;
 
         var display = AndroidHelper.GetDisplayMetrics(this);
 
@@ -43,12 +43,23 @@ public class GameActivity : Activity, View.IOnClickListener
         //panel.AddView(new TestSurface(ApplicationContext));
     }
 
+    private void Button_Click(object? sender, EventArgs e)
+    {
+        DisplaySetting();
+    }
+
     protected override void OnNewIntent(Intent? intent)
     {
         base.OnNewIntent(intent);
         string uuid = intent.GetStringExtra("GAME_UUID");
         var game = MainActivity.Games[uuid];
         view.SetGame(game);
+    }
+
+    private void DisplaySetting()
+    {
+        var dialogFragment = new TabsDialogFragment();
+        dialogFragment.Show(SupportFragmentManager, "tabs_dialog");
     }
 
     public override bool DispatchKeyEvent(KeyEvent? e)
@@ -77,11 +88,5 @@ public class GameActivity : Activity, View.IOnClickListener
         //    }
         //}
         return handleEvent;
-    }
-
-
-    public void OnClick(View? v)
-    {
-        view.SetSize(width.Text, height.Text);
     }
 }

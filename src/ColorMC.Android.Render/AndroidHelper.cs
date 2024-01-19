@@ -1,7 +1,6 @@
 ﻿using Android.Opengl;
 using Android.OS;
 using Android.Util;
-using System.Text;
 
 namespace ColorMC.Android.GLRender;
 

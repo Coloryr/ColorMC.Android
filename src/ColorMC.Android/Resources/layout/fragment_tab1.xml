@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="@string/tab1_text1"/>
+            <EditText
+                android:id="@+id/tab1_width"
+                android:layout_marginStart="10dp"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="20dp"
+                android:text="@string/tab1_text2"/>
+            <EditText
+                android:id="@+id/tab1_height"
+                android:layout_marginStart="10dp"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab1_text10"
+                android:layout_gravity="center_vertical"
+                android:textSize="20sp"/>
+            <RadioGroup
+                android:id="@+id/tab1_resolution"
+                android:layout_width="wrap_content" 
+                android:orientation="horizontal"
+                android:layout_marginStart="5dp"
+                android:layout_height="wrap_content" >
+                <RadioButton 
+                    android:id="@+id/tab1_group1_1"
+                    android:text="@string/tab1_text6"
+                    android:layout_width="wrap_content" 
+                    style="@style/CustomRadioButtonStyle"
+                    android:layout_height="wrap_content" />
+
+                <RadioButton 
+                    android:id="@+id/tab1_group1_2"
+                    android:text="@string/tab1_text7" 
+                    android:layout_width="wrap_content" 
+                    style="@style/CustomRadioButtonStyle"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content" />
+
+                <RadioButton 
+                    android:id="@+id/tab1_group1_3"
+                    android:text="@string/tab1_text8" 
+                    android:layout_width="wrap_content" 
+                    style="@style/CustomRadioButtonStyle"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content" />
+
+                <RadioButton 
+                    android:id="@+id/tab1_group1_4"
+                    android:text="@string/tab1_text9" 
+                    android:layout_width="wrap_content" 
+                    style="@style/CustomRadioButtonStyle"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content" />
+            </RadioGroup>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab1_text11"
+                android:layout_gravity="center_vertical"
+                android:textSize="20sp"/>
+            <RadioGroup
+                    android:id="@+id/tab1_display_type"
+                    android:layout_width="wrap_content" 
+                    android:orientation="horizontal"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content" >
+                <RadioButton 
+                    android:id="@+id/tab1_group2_1"
+                    android:text="@string/tab1_text3"
+                    style="@style/CustomRadioButtonStyle"
+                    android:layout_width="wrap_content" 
+                    android:layout_height="wrap_content" />
+
+                <RadioButton 
+                    android:id="@+id/tab1_group2_2"
+                    android:text="@string/tab1_text4" 
+                    style="@style/CustomRadioButtonStyle"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content" 
+                    android:layout_height="wrap_content" />
+
+                <RadioButton 
+                    android:id="@+id/tab1_group2_3"
+                    android:text="@string/tab1_text5" 
+                    style="@style/CustomRadioButtonStyle"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content" 
+                    android:layout_height="wrap_content" />
+            </RadioGroup>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <CheckBox
+                android:id="@+id/tab1_filpY"
+                android:textSize="20sp"
+                android:text="@string/tab1_text12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <Button
+            android:id="@+id/tab1_button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tab1_text13"/>
+    </LinearLayout>
+</FrameLayout>
