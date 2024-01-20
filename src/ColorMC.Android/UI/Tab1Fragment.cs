@@ -20,7 +20,6 @@ public class Tab1Fragment : Fragment
     public override View OnCreateView(LayoutInflater? inflater,
         ViewGroup? container, Bundle? savedInstanceState)
     {
-        // 使用 inflater.inflate 方法加载布局文件
         var view = inflater!.Inflate(Resource.Layout.fragment_tab1, container, false)!;
         _width = view.FindViewById<EditText>(Resource.Id.tab1_width)!;
         _height = view.FindViewById<EditText>(Resource.Id.tab1_height)!;
@@ -33,6 +32,7 @@ public class Tab1Fragment : Fragment
         _height.Text = Tabs.Height.ToString();
         _filpY.Checked = Tabs.FlipY;
 
+        Select();
         Select1();
 
         _resolution.CheckedChange += Resolution_CheckedChange;

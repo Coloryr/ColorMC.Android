@@ -9,11 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ColorMC\src\ColorMC.Core\ColorMC.Core.csproj" />
+    <None Remove="NativeLib\arm64-v8a\libunpack200.so" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="NativeLib\arm64-v8a\" />
+    <ProjectReference Include="..\ColorMC\src\ColorMC.Core\ColorMC.Core.csproj" />
   </ItemGroup>
-
 </Project>

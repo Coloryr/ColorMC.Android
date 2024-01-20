@@ -16,7 +16,6 @@ using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
 using ColorMC.Gui;
 using ColorMC.Gui.Objs;
-using Java.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
