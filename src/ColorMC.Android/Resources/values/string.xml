@@ -21,4 +21,8 @@
 	<string name="tab1_text11">显示方式</string>
 	<string name="tab1_text12">镜像Y轴</string>
 	<string name="tab1_text13">应用设置</string>
+
+	<string name="game_info1">是否同时关闭游戏</string>
+	<string name="game_info2">关闭游戏</string>
+	<string name="game_info3">保持运行</string>
 </resources>

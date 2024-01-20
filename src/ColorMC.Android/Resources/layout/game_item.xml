@@ -12,9 +12,15 @@
         android:layout_height="80dp"/>
     <TextView
         android:id="@+id/game_item_name"
-        android:layout_gravity="center"
+        android:gravity="center"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        android:textAlignment="center"
         android:textSize="15sp"/>
 </LinearLayout>

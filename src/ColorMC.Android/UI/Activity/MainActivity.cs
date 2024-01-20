@@ -7,6 +7,7 @@ using Android.Runtime;
 using Android.Systems;
 using Avalonia.Android;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using ColorMC.Android.components;
 using ColorMC.Android.GLRender;
 using ColorMC.Core;
@@ -15,10 +16,12 @@ using ColorMC.Core.LaunchPath;
 using ColorMC.Core.Objs;
 using ColorMC.Gui;
 using ColorMC.Gui.Objs;
+using Java.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Path = System.IO.Path;
 using Process = System.Diagnostics.Process;
 using Uri = Android.Net.Uri;
@@ -60,7 +63,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         ColorMCGui.StartPhone(GetExternalFilesDir(null)!.AbsolutePath + "/");
         PhoneConfigUtils.Init(ColorMCCore.BaseDir);
 
-        NativeLibDir = ApplicationInfo.NativeLibraryDir;
+        NativeLibDir = ApplicationInfo!.NativeLibraryDir!;
 
         base.OnCreate(savedInstanceState);
 
@@ -291,10 +294,44 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         p.Exited += (a, b) =>
         {
-            Games.Remove(obj.UUID);
+            if(Games.Remove(obj.UUID, out var game))
+            {
+                game.Close();
+            }
+            Update();
         };
 
+        Update();
+
         return p;
+    }
+
+    private void Update()
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (App.AllWindow is { } win)
+            {
+                if (Games.Count > 0)
+                {
+                    win.Model.SetChoiseContent("ColorMC", "回到游戏");
+                    win.Model.SetChoiseCall("ColorMC", () =>
+                    {
+                        AndroidHelper.Main.Post(() =>
+                        {
+                            var intent = new Intent(this, typeof(GameActivity));
+                            intent.PutExtra("GAME_UUID", Games.Keys.ToArray()[0]);
+                            intent.AddFlags(ActivityFlags.SingleTop);
+                            StartActivity(intent);
+                        });
+                    });
+                }
+                else
+                {
+                    win.Model.RemoveChoiseData("ColorMC");
+                }
+            }
+        });
     }
 
     private void P_ErrorDataReceived(object sender, DataReceivedEventArgs e)

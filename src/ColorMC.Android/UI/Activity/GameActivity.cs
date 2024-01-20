@@ -50,14 +50,17 @@ public class GameActivity : AppCompatActivity, IButtonFuntion
 
     private void GameClose()
     {
-        if (MainActivity.Games.Count == 0)
+        AndroidHelper.Main.Post(() =>
         {
-            Finish();
-        }
-        else
-        {
-            view.SetGame(MainActivity.Games.Values.ToArray()[0]);
-        }
+            if (MainActivity.Games.Count == 0)
+            {
+                Finish();
+            }
+            else
+            {
+                view.SetGame(MainActivity.Games.Values.ToArray()[0]);
+            }
+        });
     }
 
     public override void OnBackPressed()
@@ -65,18 +68,22 @@ public class GameActivity : AppCompatActivity, IButtonFuntion
         if (view.NowGame?.IsClose == false)
         {
             _ = new AlertDialog.Builder(this)!
-                .SetMessage("是否同时关闭游戏")!
+                .SetMessage(Resource.String.game_info1)!
                 .SetCancelable(false)!
-                .SetPositiveButton("是", (a, b) =>
+                .SetPositiveButton(Resource.String.game_info2, (a, b) =>
                 {
                     view.NowGame.Kill();
                     Finish();
                 })
-                .SetNegativeButton("保持运行", (a, b) => 
+                .SetNegativeButton(Resource.String.game_info3, (a, b) =>
                 {
                     Finish();
                 })
                 .Show();
+        }
+        else
+        {
+            Finish();
         }
     }
 

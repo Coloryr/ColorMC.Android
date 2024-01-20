@@ -16,7 +16,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
     private int renderWidth, renderHeight;
     private float XRenderRatio, YRenderRatio;
 
-    public GameRender? NowGame;
+    public GameRender NowGame;
 
     public GLSurface(Context? context, DisplayMetrics display) : base(context)
     {
@@ -28,7 +28,7 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     public void SetGame(GameRender game)
     {
-        if (NowGame != null && NowGame != game)
+        if (NowGame != null)
         {
             NowGame.SwitchOff();
             NowGame.SizeChange -= NowGame_SizeChange;
@@ -45,19 +45,14 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
     {
         Post(() =>
         {
-            
+
         });
     }
 
     private void NowGame_SizeChange()
     {
-        if (NowGame == null)
-        {
-            return;
-        }
-
-        XRenderRatio = (float)NowGame.GameWidth / renderWidth;
-        YRenderRatio = (float)NowGame.GameHeight / renderHeight;
+        XRenderRatio = (float)NowGame.GameWidth / Width;
+        YRenderRatio = (float)NowGame.GameHeight / Height;
     }
 
     public void OnDrawFrame(IGL10? gl)
@@ -65,11 +60,6 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
         GLES20.GlViewport(0, 0, Width, Height);
         GLES20.GlClearColor(0, 0, 0, 0);
         GLES20.GlClear(GLES20.GlColorBufferBit);
-
-        if (NowGame == null)
-        {
-            return;
-        }
 
         if (NowGame.HaveBuffer)
         {
@@ -88,8 +78,6 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
         else if(NowGame.IsClose)
         {
             displayList.Remove(NowGame);
-
-            NowGame = null;
         }
     }
 
@@ -117,11 +105,6 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     private bool DoTouch(float x, float y)
     {
-        if (NowGame == null)
-        {
-            return false;
-        }
-
         if (NowGame.ShowType == GameRender.DisplayType.Full)
         {
             NowGame.SendCursorPos(x * XRenderRatio, y * YRenderRatio);
@@ -159,11 +142,6 @@ public class GLSurface : GLSurfaceView, ISurfaceHolderCallback, GLSurfaceView.IR
 
     public bool OnTouch(View? v, MotionEvent? e)
     {
-        if (NowGame == null)
-        {
-            return false;
-        }
-
         // Looking for a mouse to handle, won't have an effect if no mouse exists.
         for (int i = 0; i < e.PointerCount; i++)
         {

@@ -237,8 +237,6 @@ public class GameRender
         _uuid = uuid;
         _process = process;
 
-        process.Exited += Process_Exited;
-
         _render = $"{dir}/{uuid}.{Render}";
         _game = $"{dir}/{uuid}.{Game}";
         Sock = new(_game)
@@ -255,11 +253,6 @@ public class GameRender
         process.StartInfo.Environment.Add("LIBGL_NORMALIZE", "1");
         process.StartInfo.Environment.Add("GL_ES_VERSION", "3");
         process.StartInfo.Environment.Add("GAME_RENDER", gameRender.GetName());
-    }
-
-    private void Process_Exited(object? sender, EventArgs e)
-    {
-        Close();
     }
 
     public void BindTexture()
