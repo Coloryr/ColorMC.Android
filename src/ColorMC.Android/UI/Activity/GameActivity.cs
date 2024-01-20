@@ -6,14 +6,14 @@ using Android.Widget;
 using AndroidX.AppCompat.App;
 using ColorMC.Android.GLRender;
 using ColorMC.Android.UI.GameButton;
+using System.Linq;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 
 namespace ColorMC.Android.UI.Activity;
 
 [Activity(Label = "GameActivity",
-    Theme = "@style/MyTheme.NoActionBar",
+    Theme = "@style/Theme.AppCompat.DayNight.NoActionBar",
     TaskAffinity = "colormc.android.game.render",
-    //MainLauncher = true,
     ScreenOrientation = ScreenOrientation.SensorLandscape,
     Icon = "@drawable/icon")]
 public class GameActivity : AppCompatActivity, IButtonFuntion
@@ -41,29 +41,40 @@ public class GameActivity : AppCompatActivity, IButtonFuntion
         if (uuid != null
             && MainActivity.Games.TryGetValue(uuid, out var game))
         {
+            game.GameClose = GameClose;
             view.SetGame(game);
         }
 
         LoadButtons(ButtonLayout.GenDefault());
+    }
 
-        //panel.AddView(new TestSurface(ApplicationContext));
+    private void GameClose()
+    {
+        if (MainActivity.Games.Count == 0)
+        {
+            Finish();
+        }
+        else
+        {
+            view.SetGame(MainActivity.Games.Values.ToArray()[0]);
+        }
     }
 
     public override void OnBackPressed()
     {
-        if (!view.NowGame.IsGameClose)
+        if (view.NowGame?.IsClose == false)
         {
-            // 这里处理返回事件，比如弹出对话框
-            new AlertDialog.Builder(ApplicationContext)
-                .SetMessage("是否同时关闭游戏")
-                .SetCancelable(false)
+            _ = new AlertDialog.Builder(this)!
+                .SetMessage("是否同时关闭游戏")!
+                .SetCancelable(false)!
                 .SetPositiveButton("是", (a, b) =>
                 {
                     view.NowGame.Kill();
+                    Finish();
                 })
                 .SetNegativeButton("保持运行", (a, b) => 
                 {
-                    
+                    Finish();
                 })
                 .Show();
         }
@@ -100,37 +111,10 @@ public class GameActivity : AppCompatActivity, IButtonFuntion
         if (uuid != null && 
             MainActivity.Games.TryGetValue(uuid, out var game))
         {
+            game.GameClose = GameClose;
             view.SetGame(game);
         }
     }
-
-    //public override bool DispatchKeyEvent(KeyEvent? e)
-    //{
-    //    if (isEdit)
-    //    {
-    //        if (e.KeyCode == Keycode.Back)
-    //        {
-    //            if (e.Action == KeyEventActions.Down)
-    //            {
-    //                //mControlLayout.askToExit(this);
-    //            }
-    //            return true;
-    //        }
-    //        return base.DispatchKeyEvent(e);
-    //    }
-    //    bool handleEvent = false;
-    //    //if (!(handleEvent = view.processKeyEvent(e)))
-    //    //{
-    //    //    //输入框
-    //    //    //&& !touchCharInput.isEnabled()
-    //    //    if (e.KeyCode == Keycode.Back)
-    //    //    {
-    //    //        view.NowGame.SendKey(LwjglKeycode.GLFW_KEY_ESCAPE, e.Action == KeyEventActions.Down);
-    //    //        return true;
-    //    //    }
-    //    //}
-    //    return handleEvent;
-    //}
 
     public void ShowSetting()
     {

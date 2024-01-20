@@ -215,19 +215,19 @@ public class GameRender
     public event Action<string>? GameReady;
     public event Action? SizeChange;
     public event Action? IsGrabbingChange;
-    public event Action? GameClose;
+    public Action? GameClose;
 
     public bool holdingAlt, holdingCapslock, holdingCtrl,
             holdingNumlock, holdingShift;
 
     public float MouseX, MouseY;
 
-    public bool IsGameClose { get; private set; }
+    public bool IsClose { get; private set; }
 
     public DisplayType ShowType = DisplayType.Scale;
     public bool FlipY;
 
-    private Process _process;
+    private readonly Process _process;
 
     public GameRender(string dir, string uuid, string name,
         Bitmap icon, Process process, RenderType gameRender)
@@ -315,7 +315,7 @@ public class GameRender
 
     public void SetSize(ushort width, ushort height)
     {
-        if (IsGameClose)
+        if (IsClose)
         {
             return;
         }
@@ -325,7 +325,7 @@ public class GameRender
 
     public void SendCursorPos(float x, float y)
     {
-        if (IsGameClose)
+        if (IsClose)
         {
             return;
         }
@@ -345,7 +345,7 @@ public class GameRender
         {
             while (true)
             {
-                if (IsGameClose)
+                if (IsClose)
                 {
                     return;
                 }
@@ -365,7 +365,7 @@ public class GameRender
 
     public void MouseEvent(int key, bool value)
     {
-        if (IsGameClose)
+        if (IsClose)
         {
             return;
         }
@@ -416,7 +416,7 @@ public class GameRender
 
     public void Close()
     {
-        IsGameClose = true;
+        IsClose = true;
         Sock.Close();
         GameClose?.Invoke();
         AndroidHelper.Main.Post(RenderClose);
@@ -424,7 +424,7 @@ public class GameRender
 
     public void SendScroll(float hScroll, float vScroll)
     {
-        if (IsGameClose)
+        if (IsClose)
         {
             return;
         }
@@ -445,5 +445,23 @@ public class GameRender
     public void Kill()
     {
         _process?.Kill();
+    }
+
+    public void SwitchOff()
+    {
+        if (IsClose)
+        {
+            return;
+        }
+
+    }
+
+    public void SwitchOn()
+    {
+        if (IsClose)
+        {
+            return;
+        }
+
     }
 }

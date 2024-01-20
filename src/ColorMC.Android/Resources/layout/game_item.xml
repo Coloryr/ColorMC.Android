@@ -12,9 +12,9 @@
         android:layout_height="80dp"/>
     <TextView
         android:id="@+id/game_item_name"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="center"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
-        android:textSize="20sp"/>
+        android:textSize="15sp"/>
 </LinearLayout>
